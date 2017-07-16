@@ -9,15 +9,15 @@ to start the server on port 80 from the command line, use ```sudo php -S localho
 example structure for json file sent from getfeed.php
 ```
 {
-	"user": {
+	"user" : {
 		"image" : "https://www.example.com/img.jpg",
-		"name" : "@angusfindlay"
+		"name" : "findlang"
 	},
 	"subject" : {
 		"image" : "https://www.example.com/img.jpg",
-		"name" : "More Life"
+		"name" : "POWER"
 	},
-	"rating" : 5,
+	"rating" : 4,
 	"text" : "i thought this song was really #terrible"
 }
 ```
