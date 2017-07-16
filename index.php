@@ -1,9 +1,8 @@
 <html>
 	<head>
-		<script src="script.css"></script>
+		<script src="script.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheet.css">
 		<title>SongScore</title>
-		<?php include "classes.php" ?>
 	</head>
 	<body>
 		<div id="container">
@@ -17,11 +16,7 @@
 			</div>
 			<div class="section">
 				<div id="reviews">
-					<?php
-					foreach ($userAccount->getFeed(5) as $review) {
-						echo $review->toHtml();
-					}
-					?>
+					<!-- use javascript to add to this -->
 				</div>
 			</div>
 		</div>
