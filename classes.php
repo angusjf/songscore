@@ -3,28 +3,28 @@ class Review {
 	public $id;
 	public $user;
 	public $subject;
-	public $score;
+	public $rating;
 	public $text;
 
-	public function __construct($id, $subject, $user, $score, $text) {
+	public function __construct($id, $subject, $user, $rating, $text) {
 		$this->id = $id;
 		$this->subject = $subject;
 		$this->user = $user;
-		$this->score = $score;
+		$this->rating = $rating;
 		$this->text = $text;
 	}
 
-	public function toHtml() {
-		return "
-		<div class='review'>
-			<img class='userPicture' src='{$this->user->image}'>
-			<div class='userName'>{$this->user->name}</div>
-			<img class='subjectPicture' src='{$this->subject->image}'>
-			<div class='subjectName'>{$this->subject->name}</div>
-			<div class='rating'>{$this->rating}</div>
-			<div class='text'>{$this->text}</div>
-		</div>
-		";
+	public function toJson() {
+		$json = new stdClass();
+		$json->user = new stdClass();
+		$json->user->image = $this->user->image;
+		$json->user->name = $this->user->name;
+		$json->subject = new stdClass();
+		$json->subject->image = $this->subject->image;
+		$json->subject->name = $this->subject->name;
+		$json->rating = $this->rating;
+		$json->text = $this->text;
+		return json_encode($json);
 	}
 }
 
@@ -75,9 +75,9 @@ class Subject { //eg a song or album (or artist?)
 	public $image;
 	
 	public function __construct($name, $artist, $image) {
-		$this->name = name;
-		$this->artist = artist;
-		$this->image = image;
+		$this->name = $name;
+		$this->artist = $artist;
+		$this->image = $image;
 	}
 }
 
