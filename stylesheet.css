@@ -1,6 +1,6 @@
 html {
 	font-family: sans-serif;
-	background-color: rgb(200,250,230);
+	background-color: rgb(225,220,220);
 }
 
 body {
@@ -17,4 +17,8 @@ body {
 	background-color: rgb(255,255,255);
 	padding: 10px;
 	margin: 10px;
+}
+
+img {
+	width: 128px;
 }
