@@ -3,6 +3,7 @@
 		<script src="script.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheet.css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300'>
 		<title>SongScore</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
 	</head>
@@ -23,12 +24,25 @@
 
 			<div id="container">
 			<div class="section shadow-1">
-				<form>
-					<input type="submit">
-				</form>
+				<div class="section-content">
+					<h2 class="capital">Write a review</h2>
+					<form>
+						<div class="form-group">
+							<input class="text-input" placeholder="Type what song/album you're reviewing..." type="text" required>
+							<span class="highlight"></span>
+							<span class="bar"></span>
+						</div>
+						<div class="form-group">
+							<input class="text-input" placeholder="Expand on your review with up to 200 characters..." type="text" required>
+							<span class="highlight"></span>
+							<span class="bar"></span>
+						</div>
+						<input type="submit">
+					</form>
+				</div>
 			</div>
 			<div class="section shadow-1">
-				<div id="reviews">
+				<div id="reviews" class="section-content">
 					<!-- use script.js to add to this -->
 				</div>
 			</div>
