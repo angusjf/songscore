@@ -15,16 +15,7 @@ class Review {
 	}
 
 	public function toJson() {
-		$json = new stdClass();
-		$json->user = new stdClass();
-		$json->user->image = $this->user->image;
-		$json->user->name = $this->user->name;
-		$json->subject = new stdClass();
-		$json->subject->image = $this->subject->image;
-		$json->subject->name = $this->subject->name;
-		$json->rating = $this->rating;
-		$json->text = $this->text;
-		return json_encode($json);
+		return json_encode($this);
 	}
 }
 

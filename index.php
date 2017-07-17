@@ -21,10 +21,24 @@
 			</nav>
 		</nav>
 
-			<div id="container">
+		<div id="container">
 			<div class="section shadow-1">
 				<form>
-					<input type="submit">
+					<div>
+						WRITE A REVIEW
+					</div>
+					<div>
+						<input type="text" placeholder="Song name...">
+						<input type="button" value="*">
+						<input type="button" value="*">
+						<input type="button" value="*">
+						<input type="button" value="*">
+						<input type="button" value="*">
+					</div>
+					<div>
+						<input type="text" placeholder="why did you give this rating? (optional)">
+						<input type="submit">
+					</div>
 				</form>
 			</div>
 			<div class="section shadow-1">

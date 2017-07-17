@@ -28,3 +28,12 @@ function appendNewReviews(responseJSON) {
 	`;
 	reviewsDiv.innerHTML += html;
 }
+
+function submitNewReview(song, rating, text) {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function () {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) appendNewReviews(JSON.parse(xmlhttp.responseText));
+	};
+	xmlhttp.open("POST","submit.php", true);
+	xmlhttp.send("?song=" + song + "&rating=" + rating + "&text=" + text);
+}
