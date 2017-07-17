@@ -1,4 +1,4 @@
-# SongSearch
+# SongScore
 
 ## server
 to start the server on port 80 from the command line, use ```sudo php -S localhost:80```.
