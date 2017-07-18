@@ -24,7 +24,6 @@
 
 		<div id="container">
 			<div class="section shadow-1">
-<<<<<<< HEAD
 				<div class="section-content">
 					<h2 class="capital">Write a review</h2>
 					<form>
@@ -48,7 +47,6 @@
 						<input class="form-group" type="submit">
 					</form>
 				</div>
-=======
 				<form>
 					<div>
 						WRITE A REVIEW
@@ -66,7 +64,6 @@
 						<input type="submit">
 					</div>
 				</form>
->>>>>>> origin/master
 			</div>
 			<div class="section shadow-1">
 				<div id="reviews" class="section-content">
