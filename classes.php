@@ -15,16 +15,7 @@ class Review {
 	}
 
 	public function toJson() {
-		$json = new stdClass();
-		$json->user = new stdClass();
-		$json->user->image = $this->user->image;
-		$json->user->name = $this->user->name;
-		$json->subject = new stdClass();
-		$json->subject->image = $this->subject->image;
-		$json->subject->name = $this->subject->name;
-		$json->rating = $this->rating;
-		$json->text = $this->text;
-		return json_encode($json);
+		return json_encode($this);
 	}
 }
 
@@ -43,6 +34,16 @@ class Account {
 
 	public static function getById($id) {
 		return new Account($id, "@angusfindlay", "https://pbs.twimg.com/profile_images/771860008300666880/4kN1xN5S_bigger.jpg", "kung fu kenny fanboy");
+		/*
+		$conn = new mysqli("localhost", "root", "password", "db");
+		$all = array();
+		$results = $conn->query("SELECT * FROM Accounts WHERE UserId = '$this->id' ORDER BY id DESC;");
+		$conn->close();
+		while($m = $results->fetch_assoc()) {
+			$all[] = new Message($m['Id'], $m['text'], $m['UserId']);
+		}
+		return $all;
+		*/
 	}
 
 	public function getReviews() {

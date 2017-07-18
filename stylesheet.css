@@ -33,7 +33,7 @@ body {
 }
 
 .section-content {
-  padding: 20px;
+  padding: 30px;
 }
 
 .capital {
@@ -159,73 +159,134 @@ img {
 }
 
 .form-group { /* each text entry is in a group */
-  padding: 15px 0;
+  margin: 15px 0;
   position: relative;
+  display: inline-block;
+}
+
+.text-group { /* each text entry is in a group */
+  width:80%;
 }
 
 .text-input	{ /* actual text box*/
-  font-size:1em;
+  font-size: 1em;
   padding-bottom: 10px;
-  display:block;
-  width:100%;
   border:none;
   border-bottom:1px solid #757575;
+  width: 100%;
+  display: block;
 }
 input:focus 		{ outline:none; }
 
 
 /* BOTTOM BAR */
-.bar 	{ position:relative; display:block; width:100%; }
+.bar 	{
+  position: relative;
+  display: block;
+  width: 100%;
+}
 .bar:before, .bar:after 	{
-  content:'';
-  height:2px;
-  width:0;
-  bottom:1px;
-  position:absolute;
-  background:#cd3538;
-  transition:0.2s ease all;
-  -moz-transition:0.2s ease all;
-  -webkit-transition:0.2s ease all;
+  content: '';
+  height: 2px;
+  width: 0;
+  bottom: 1px;
+  position: absolute;
+  background: #cd3538;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
 }
 .bar:before { /*centre the bar*/
-  left:50%;
+  left: 50%;
 }
 .bar:after {
-  right:50%;
+  right: 50%;
 }
 
 /* BOX SELECTED */
 input:focus ~ .bar:before, input:focus ~ .bar:after {
-  width:50%;
+  width: 50%;
 }
 
 .highlight {
-  position:absolute;
-  height:60%;
-  width:100px;
-  top:25%;
-  left:0;
-  pointer-events:none;
-  opacity:0.5;
+  position: absolute;
+  height: 100%;
+  width: 100px;
+  top: 25%;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /* active state */
 input:focus ~ .highlight {
-  -webkit-animation:inputHighlighter 0.3s ease;
-  -moz-animation:inputHighlighter 0.3s ease;
-  animation:inputHighlighter 0.3s ease;
+  -webkit-animation: inputHighlighter 0.3s ease;
+  -moz-animation: inputHighlighter 0.3s ease;
+  animation: inputHighlighter 0.3s ease;
 }
 
 /* ANIMATIONS FOR ALL BROWSERS*/
 @-webkit-keyframes inputHighlighter {
-	from { background:#cd3538; }
-  to 	{ width:0; background:transparent; }
+	from { background: #cd3538; }
+  to 	{ width: 0; background: transparent; }
 }
 @-moz-keyframes inputHighlighter {
-	from { background:#cd3538; }
-  to 	{ width:0; background:transparent; }
+	from { background: #cd3538; }
+  to 	{ width: 0; background: transparent; }
 }
 @keyframes inputHighlighter {
-	from { background:#cd3538; }
-  to 	{ width:0; background:transparent; }
+	from { background: #cd3538; }
+  to 	{ width: 0; background: transparent; }
+}
+
+/*BEGIN STAR RATING CSS*/
+.rating {
+  width: 150px;
+  float: right;
+}
+
+/* :not(:checked) is a filter, so that browsers that don’t support :checked don’t
+   follow these rules. Every browser that supports :checked also supports :not(), so
+   it doesn’t make the test unnecessarily selective */
+.rating:not(:checked) > input {
+    position: absolute;
+    clip: rect(0,0,0,0);
+}
+
+.rating:not(:checked) > label {
+    float: right;
+    width: 1em;
+    padding: 0 .1em;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 150%;
+    line-height: 1.2;
+    color: #ddd;
+}
+
+.rating:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.rating > input:checked ~ label {
+    color: #cd3538;
+}
+
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label {
+    color: #cd3538;
+}
+
+.rating > input:checked + label:hover,
+.rating > input:checked + label:hover ~ label,
+.rating > input:checked ~ label:hover,
+.rating > input:checked ~ label:hover ~ label,
+.rating > label:hover ~ input:checked ~ label {
+    color: #cd3538;
+}
+
+.rating > label:active { /*could add animation when star clicked*/
+    position:relative;
+    /*font-size: 220%; (example bad animation)*/
 }
