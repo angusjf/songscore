@@ -22,7 +22,7 @@ function appendNewReviews(responseJSON) {
 			<div class='review'>
 				<img class='userPicture' src='${review.user.image}'>
 				<div class='Name'>${review.user.name}</div>
-				<div class='userName'>${review.user.username}</div>
+				<div class='userName'><a href='/user.php?username=${review.user.username}'>${review.user.username}</a></div>
 				<img class='subjectPicture' src='${review.subject.image}'>
 				<div class='subjectName'>${review.subject.name}</div>
 				<div class='subjectName'>${review.subject.artist}</div>

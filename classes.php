@@ -75,7 +75,7 @@ class Account {
 	}
 
 	public static function getByUsername($username) {
-		Account::getById(1);
+		return Account::getById(1);
 	}
 }
 
