@@ -5,35 +5,18 @@ class Review {
 	public $subject;
 	public $rating;
 	public $text;
+	public $date;
 
-	public function __construct($id, $subject, $user, $rating, $text) {
+	public function __construct($id, $subject, $user, $rating, $text, $date) {
 		$this->id = $id;
 		$this->subject = $subject;
 		$this->user = $user;
 		$this->rating = $rating;
 		$this->text = $text;
+		$this->date = $date;
 	}
 
-	public function toJson() {
-		return json_encode($this);
-	}
-}
-
-class Account {
-	public $id;
-	public $name;
-	public $image;
-	public $bio;
-
-	public function __construct($id, $name, $image, $bio) {
-		$this->id = $id;
-		$this->name = $name;
-		$this->image = $image;
-		$this->bio = $bio;
-	}
-
-	public static function getById($id) {
-		return new Account($id, "@angusfindlay", "https://pbs.twimg.com/profile_images/771860008300666880/4kN1xN5S_bigger.jpg", "kung fu kenny fanboy");
+	public static function addToDatabase($subject, $user, $rating, $text) {
 		/*
 		$conn = new mysqli("localhost", "root", "password", "db");
 		$all = array();
@@ -44,6 +27,26 @@ class Account {
 		}
 		return $all;
 		*/
+	}
+}
+
+class Account {
+	public $id;
+	public $username;
+	public $name;
+	public $image;
+	public $bio;
+
+	public function __construct($id, $username, $name, $image, $bio) {
+		$this->id = $id;
+		$this->username = $username;
+		$this->name = $name;
+		$this->image = $image;
+		$this->bio = $bio;
+	}
+
+	public static function getById($id) {
+		return new Account($id, "@angusfindlay", "Angus Findlay", "https://pbs.twimg.com/profile_images/771860008300666880/4kN1xN5S_bigger.jpg", "kung fu kenny fanboy");
 	}
 
 	public function getReviews() {
@@ -62,11 +65,17 @@ class Account {
 	}
 
 	public function getFeed($number) {
-		return array(
-			new Review(
-				1, new Subject("More Life", "Dronk", "http://images.genius.com/4672f8523e0fbf7f7848185256e946f4.1000x1000x1.jpg"), $this, 5, "really trash"
-			),
-		);
+		$feed = [];
+		for ($i = 0; $i < $number; $i++) {
+			$feed[] = new Review(1, new Subject("More Life", "Dronk", "http://images.genius.com/4672f8523e0fbf7f7848185256e946f4.1000x1000x1.jpg"), $this, 5, "really trash", "July 20");
+			// $feed[] = 
+			// SELECT * FROM Reviews WHERE Review.UserId IN (SELECT * FROM Follows where User);
+		}
+		return $feed;
+	}
+
+	public static function getByUsername($username) {
+		Account::getById(1);
 	}
 }
 

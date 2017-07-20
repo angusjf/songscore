@@ -1,6 +1,6 @@
 // when the site loads
 window.onload = function () {
-	requestNewReviews(10);
+	requestNewReviews(32); // get 32 new reviews as JSON
 }
 
 // send a request from client to server
@@ -16,16 +16,22 @@ function requestNewReviews(numberOfReviews) {
 // called when the request responds
 function appendNewReviews(responseJSON) {
 	var reviewsDiv = document.getElementById("reviews");
-	var html = `
-		<div class='review'>
-			<img class='userPicture' src='${responseJSON.user.image}'>
-			<div class='userName'>${responseJSON.user.name}</div>
-			<img class='subjectPicture' src='${responseJSON.subject.image}'>
-			<div class='subjectName'>${responseJSON.subject.name}</div>
-			<div class='rating'>${responseJSON.rating}</div>
-			<div class='text'>${responseJSON.text}</div>
-		</div>
-	`;
+	var html = '';
+	responseJSON.forEach(function (review) {
+		html += `
+			<div class='review'>
+				<img class='userPicture' src='${review.user.image}'>
+				<div class='Name'>${review.user.name}</div>
+				<div class='userName'>${review.user.username}</div>
+				<img class='subjectPicture' src='${review.subject.image}'>
+				<div class='subjectName'>${review.subject.name}</div>
+				<div class='subjectName'>${review.subject.artist}</div>
+				<div class='rating'>${review.rating}</div>
+				<div class='text'>${review.text}</div>
+				<div class='date'>${review.date}</div>
+			</div>
+		`;
+	});
 	reviewsDiv.innerHTML += html;
 }
 

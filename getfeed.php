@@ -4,10 +4,8 @@ include "classes.php";
 
 header('Content-Type: application/json');
 
-$numberOfPosts = $_GET["n"];
+$numberOfPosts = $_GET["n"] ?: 0;
 
-foreach ($userAccount->getFeed($numberOfPosts) as $review) {
-	echo $review->toJson();
-}
+echo json_encode($userAccount->getFeed($numberOfPosts));
 
 ?>

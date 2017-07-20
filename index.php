@@ -47,28 +47,12 @@
 						<input class="form-group" type="submit">
 					</form>
 				</div>
-				<form>
-					<div>
-						WRITE A REVIEW
-					</div>
-					<div>
-						<input type="text" placeholder="Song name...">
-						<input type="button" value="*">
-						<input type="button" value="*">
-						<input type="button" value="*">
-						<input type="button" value="*">
-						<input type="button" value="*">
-					</div>
-					<div>
-						<input type="text" placeholder="why did you give this rating? (optional)">
-						<input type="submit">
-					</div>
-				</form>
 			</div>
 			<div class="section shadow-1">
 				<div id="reviews" class="section-content">
 					<!-- use script.js to add to this -->
 				</div>
+				<button onclick="requestNewReviews(32);">Load More...</button>
 			</div>
 		</div>
 	</body>
