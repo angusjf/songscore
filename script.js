@@ -1,7 +1,23 @@
 // when the site loads
-window.onload = function () {
+$(document).ready(function () {
 	requestNewReviews(32); // get 32 new reviews as JSON
-}
+
+	var newReviewSubjectBox = document.getElementById("#"); // form textbox
+	var newReviewSubjectDropdown = document.getElementById("#");
+	newReviewSongBox.onchange = function () {
+		if (newReviewSongBox.value.length > 0) {
+			newReviewSubjectDropdown.visible = true;
+			var resultsJson = getResultsJson(newReviewSongBox.value);
+			resultsJson.results.trackmatches.track.forEach(
+				function (track) {
+					//newReviewSubjectDropdown.
+				}
+			);
+		} else {
+			newReviewSubjectDropdown.visible = false;
+		}
+	};
+});
 
 // send a request from client to server
 function requestNewReviews(numberOfReviews) {
@@ -42,4 +58,8 @@ function submitNewReview(song, rating, text) {
 	};
 	xmlhttp.open("POST","submit.php", true);
 	xmlhttp.send("?song=" + song + "&rating=" + rating + "&text=" + text);
+}
+
+function getResultsJson(text) {
+	return JSON.Parse("{}");
 }

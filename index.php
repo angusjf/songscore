@@ -1,5 +1,7 @@
+<?php include "classes.php"; ?>
 <html>
 	<head>
+		<script src="jquery-3.2.1.min.js"></script>
 		<script src="script.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheet.css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -13,11 +15,11 @@
 				<input type="checkbox" id="menu-toggle">
 				</input>
 				<ul>
-					<li><a href="#"><i class="material-icons">home</i></a></li>
+					<li><a href="/"><i class="material-icons">home</i></a></li>
 					<li><a href="#"><i class="material-icons">notifications</i></a></li>
 				</ul>
-				<img class="logo" src="logo.png"></img>
-				<img class="logo circle" src="user-avatar.png"></img>
+				<img class="logo" src="images/logo.png"></img>
+				<img class="logo circle" src="<?php echo $userAccount->image; ?>"></img>
 				<label for="menu-toggle" class="label-toggle"></label>
 			</nav>
 		</nav>
