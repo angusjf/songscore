@@ -19,16 +19,28 @@ function appendNewReviews(responseJSON) {
 	var html = '';
 	responseJSON.forEach(function (review) {
 		html += `
-			<div class='review'>
-				<img class='userPicture' src='${review.user.image}'>
-				<div class='Name'>${review.user.name}</div>
-				<div class='userName'><a href='/user.php?username=${review.user.username}'>${review.user.username}</a></div>
-				<img class='subjectPicture' src='${review.subject.image}'>
-				<div class='subjectName'>${review.subject.name}</div>
-				<div class='subjectName'>${review.subject.artist}</div>
-				<div class='rating'>${review.rating}</div>
-				<div class='text'>${review.text}</div>
-				<div class='date'>${review.date}</div>
+			<div class='review section shadow-1'>
+				<div class="section-content review-content">
+					<div class='subject-group'>
+						<div class="subjectPictureDiv">
+							<img class='subjectPicture' src='${review.subject.image}'>
+						</div>
+						<div class='subjectName'>${review.subject.name}</div>
+						<div class='subjectName'>${review.subject.artist}</div>
+					</div>
+
+					<div class="review-right">
+						<div class="top-group">
+							<a href='/user.php?username=${review.user.username}'><div class='Name'>${review.user.name}</div>
+							<img class='userPicture' src='${review.user.image}'>
+							<div class='userName'>${review.user.username}</div></a>
+							<div class='rating'>${review.rating}</div>
+						</div>
+						<div class="text-group"
+						<div class='text'>${review.text}</div>
+						<div class='date'>${review.date}</div>
+					</div>
+				</div>
 			</div>
 		`;
 	});

@@ -48,10 +48,9 @@
 					</form>
 				</div>
 			</div>
-			<div class="section shadow-1">
-				<div id="reviews" class="section-content">
+			<div id="reviews" class="">
 					<!-- use script.js to add to this -->
-				</div>
+			</div>
 				<button onclick="requestNewReviews(32);">Load More...</button>
 			</div>
 		</div>

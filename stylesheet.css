@@ -290,3 +290,52 @@ input:focus ~ .highlight {
     position:relative;
     /*font-size: 220%; (example bad animation)*/
 }
+
+.review {
+  display: flex;
+}
+
+.review-content {
+  flex-direction: row;
+  display: flex;
+  width: 100%;
+  -webkit-box-flex:
+}
+
+.subject-group {
+  min-width: 60px;
+  max-width: 150px;
+  width: 50%;
+  display: block;
+}
+
+.subject-group > * {
+  text-align: center;
+}
+
+.review-right {
+  padding-left: 40px;
+}
+
+.top-group a > * {
+  display: inline-block;
+  text-decoration: none;
+  margin-right: 8px;
+}
+
+.userpicture {
+  width: 20px;
+}
+
+.subjectpicturediv {
+  position: relative;
+}
+
+.subjectpicture {
+  width: 100%;
+  height: auto;
+}
+
+.text-group {
+  margin-top: 20px;
+}
