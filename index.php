@@ -28,7 +28,7 @@
 					<h2 class="capital">Write a review</h2>
 					<form>
 						<div class="form-group text-group">
-							<input class="text-input" placeholder="Type what song/album you're reviewing..." type="text" required>
+							<input class="text-input light-text" placeholder="Type what song/album you're reviewing..." type="text" required>
 							<span class="highlight"></span>
 							<span class="bar"></span>
 						</div>
@@ -40,7 +40,7 @@
 					    <input type="radio" id="star1" name="rating" value="1" /><label for="star1">1 star</label>
 						</div>
 						<div class="form-group text-group">
-							<input class="text-input" placeholder="Expand on your review with up to 200 characters..." type="text" data-length="200">
+							<input class="text-input light-text" placeholder="Expand on your review with up to 200 characters..." type="text" data-length="200">
 							<span class="highlight"></span>
 							<span class="bar"></span>
 						</div>

@@ -25,20 +25,21 @@ function appendNewReviews(responseJSON) {
 						<div class="subjectPictureDiv">
 							<img class='subjectPicture' src='${review.subject.image}'>
 						</div>
-						<div class='subjectName'>${review.subject.name}</div>
-						<div class='subjectName'>${review.subject.artist}</div>
+						<div class='subjectName light-text'>${review.subject.name}</div>
+						<div class='subjectArtist light-text'>${review.subject.artist}</div>
 					</div>
 
 					<div class="review-right">
 						<div class="top-group">
 							<a href='/user.php?username=${review.user.username}'><div class='Name'>${review.user.name}</div>
 							<img class='userPicture' src='${review.user.image}'>
-							<div class='userName'>${review.user.username}</div></a>
+							<div class='userName light-text'>${review.user.username}</div></a>
 							<div class='rating'>${review.rating}</div>
 						</div>
-						<div class="text-group"
+						<div class="text-group light-text">
 						<div class='text'>${review.text}</div>
 						<div class='date'>${review.date}</div>
+					</div>
 					</div>
 				</div>
 			</div>

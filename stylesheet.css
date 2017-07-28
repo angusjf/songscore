@@ -39,6 +39,11 @@ body {
   text-transform: uppercase;
 }
 
+.light-text {
+  font-weight: 300;
+  color: #6a6969;
+}
+
 /*SHADOWS*/
 .shadow-1 { /*lowest shadow depth*/
 -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
@@ -183,6 +188,7 @@ input:focus 		{ outline:none; }
   position: relative;
   display: block;
   width: 100%;
+  color: #6a6969;
 }
 .bar:before, .bar:after 	{
   content: '';
@@ -274,7 +280,7 @@ input:focus ~ .highlight {
 
 .rating:not(:checked) > label:hover,
 .rating:not(:checked) > label:hover ~ label {
-    color: #cd3538;
+    color: #e83e41;
 }
 
 .rating > input:checked + label:hover,
@@ -282,16 +288,18 @@ input:focus ~ .highlight {
 .rating > input:checked ~ label:hover,
 .rating > input:checked ~ label:hover ~ label,
 .rating > label:hover ~ input:checked ~ label {
-    color: #cd3538;
+    color: #e83e41;
 }
 
 .rating > label:active { /*could add animation when star clicked*/
     position:relative;
+    top: 3px; /*added a good animation boi*/
     /*font-size: 220%; (example bad animation)*/
 }
 
 .review {
   display: flex;
+  margin: 2px 0;
 }
 
 .review-content {
@@ -303,8 +311,7 @@ input:focus ~ .highlight {
 
 .subject-group {
   min-width: 60px;
-  max-width: 150px;
-  width: 50%;
+  max-width: 100px;
   display: block;
 }
 
@@ -313,6 +320,7 @@ input:focus ~ .highlight {
 }
 
 .review-right {
+  width: 100%;
   padding-left: 40px;
 }
 
@@ -323,7 +331,7 @@ input:focus ~ .highlight {
 }
 
 .userpicture {
-  width: 20px;
+  width: 23px;
 }
 
 .subjectpicturediv {
@@ -335,6 +343,22 @@ input:focus ~ .highlight {
   height: auto;
 }
 
+
 .text-group {
   margin-top: 20px;
+}
+
+.name {
+  font-size: 1.5em;
+  color: black;
+}
+
+.subjectname {
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.top-group .rating {
+  display: inline-block;
+  float: none;
 }
