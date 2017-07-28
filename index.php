@@ -16,8 +16,8 @@
 					<li><a href="#"><i class="material-icons">home</i></a></li>
 					<li><a href="#"><i class="material-icons">notifications</i></a></li>
 				</ul>
-				<img class="logo" src="logo.png"></img>
-				<img class="logo circle" src="user-avatar.png"></img>
+				<img class="logo" src="images/logo.png"></img>
+				<img class="logo circle" src="images/user-avatar.png"></img>
 				<label for="menu-toggle" class="label-toggle"></label>
 			</nav>
 		</nav>
