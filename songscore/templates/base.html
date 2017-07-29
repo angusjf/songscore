@@ -1,0 +1,31 @@
+<html>
+	<head>
+		{% block head %}
+		<script src="/static/jquery-3.2.1.min.js"></script>
+		<script src="/static/script.js"></script>
+		<link rel="stylesheet" type="text/css" href="/static/stylesheet.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300'>
+		<title>{% block title %}SongScore{% endblock title %}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+		{% endblock head %}
+	</head>
+	<body>
+		<nav class="navBar shadow-1">
+			<nav class="nav-wrapper">
+				<input type="checkbox" id="menu-toggle">
+				</input>
+				<ul>
+					<li><a href="/"><i class="material-icons">home</i></a></li>
+					<li><a href="#"><i class="material-icons">notifications</i></a></li>
+				</ul>
+				<img class="logo" src="/static/images/logo.png"></img>
+				<img class="logo circle" src="{{ profile_image }}"></img>
+				<label for="menu-toggle" class="label-toggle"></label>
+			</nav>
+		</nav>
+		<div id="container">
+		{% block content %}{% endblock content %}
+		</div>
+	</body>
+</html>

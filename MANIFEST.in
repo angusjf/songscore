@@ -1,0 +1,3 @@
+graft songscore/templates
+graft songscore/static
+include songscore/schema.sql
