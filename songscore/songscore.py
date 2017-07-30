@@ -1,6 +1,9 @@
 import os
 import psycopg2
-import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    import urlparse
 from flask import Flask, session, render_template, request, redirect, url_for, g, abort, flash, Response
 
 app = Flask(__name__)
