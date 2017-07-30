@@ -25,3 +25,9 @@ create table replies (
 	upvotes int default 0 check (upvotes >= 0),
 	downvotes int default 0 check (downvotes >= 0)
 );
+
+drop table if exists followings;
+create table followings (
+	userId int foreign key references users(id),
+	followingId int foreign key references users(id)
+);

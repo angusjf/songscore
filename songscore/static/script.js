@@ -20,18 +20,19 @@ $(document).ready(function () {
 	};
 	*/
 
-	$('#newReview').submit(function (e) {
-		console.log('jfkdljfalsdfjsakl');
-		$.ajax({
-			type: 'POST',
-			url: '/submit',
-			data: $(this).serialize(),
-			success: function (data) {
-				alert($(this).serialize());
-			}
-		});
-		e.preventDefault();
+});
+
+$('#newReview').submit(function (e) {
+	console.log('jfkdljfalsdfjsakl');
+	$.ajax({
+		type: 'POST',
+		url: '/submit',
+		data: $(this).serialize(),
+		success: function (data) {
+			alert($(this).serialize());
+		}
 	});
+	e.preventDefault();
 });
 
 // send a request from client to server

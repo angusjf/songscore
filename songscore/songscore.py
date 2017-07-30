@@ -1,14 +1,12 @@
 import os
 import psycopg2
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    import urlparse
+#import urllib.parse
 from flask import Flask, session, render_template, request, redirect, url_for, g, abort, flash, Response
 
 app = Flask(__name__)
 
-urlparse.uses_netloc.append("postgres")
+"""
+urllib.parse.urlparse.uses_netloc.append("postgres")
 url = urlparse.urlparse(os.environ["DATABASE_URL"])
 
 conn = psycopg2.connect (
@@ -18,7 +16,9 @@ conn = psycopg2.connect (
     host=url.hostname,
     port=url.port
 )
+"""
 
+"""
 # config
 app.config.from_object(__name__)
 app.config.update(dict(
@@ -27,6 +27,7 @@ app.config.update(dict(
     USERNAME='root',
     PASSWORD='whodatboy'
 ))
+"""
 
 """
 def connect_db():
@@ -90,12 +91,15 @@ def getFeed():
     ]
 }""", mimetype="application/json")
 
-@app.route('/submit')
+@app.route('/submit', methods=["POST"])
 def submit():
     subjectName = request.values.get("subjectName")
     rating = request.values.get("rating")
     text = request.values.get("text")
-    print (subjectName + ', ' + rating + ', ' + text)
+    print(subjectName)
+    print(rating)
+    print(text)
+    return "wagwan"
     #if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
         #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
     #else
@@ -113,3 +117,13 @@ def review(reviewId):
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for("index"))
+
+@app.route('/follow', methods=['POST'])
+def logout():
+    # get userid
+    # get followingId
+    # if not following
+        # INSERT INTO followings (userId, followingId) VALUES (userId, followingId)
+        #return "user followed"
+    # else
+        #return "user followed"
