@@ -9,6 +9,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask',
-        'psycopg2'
+        'psycopg2',
+        'urlparse'
     ],
 )
