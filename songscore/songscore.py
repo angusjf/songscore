@@ -1,23 +1,7 @@
-import os
-import psycopg2
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    import urlparse
+import sqlite3
 from flask import Flask, session, render_template, request, redirect, url_for, g, abort, flash, Response
 
 app = Flask(__name__)
-
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
-
-conn = psycopg2.connect (
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
 
 # config
 app.config.from_object(__name__)
@@ -39,7 +23,7 @@ def connect_db():
 @app.route('/')
 def index():
     if not session.get('logged_in') == True:
-        return render_template("feed.html", profile_image="https://lastfm-img2.akamaized.net/i/u/armed/f7d5a1bd4ee759cd813cc73de4cac47c.jpg")
+        return render_template("feed.html", profile_image="static/images/default.png")
     else:
         return render_template("login.html")
 
@@ -92,14 +76,14 @@ def getFeed():
 
 @app.route('/submit')
 def submit():
-    subjectName = request.values.get("subjectName")
-    rating = request.values.get("rating")
-    text = request.values.get("text")
-    print (subjectName + ', ' + rating + ', ' + text)
-    #if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
-        #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
-    #else
-        #echo "yo like post some data";
+	subjectMBID = request.values.get("subjectMBID")
+	userId = request.values.get("userId")
+	rating = request.values.get("rating")
+	text = request.values.get("text")
+	#if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
+	    #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
+	#else
+	    #echo "yo like post some data";
 
 @app.route('/user/<username>')
 def user(username):
