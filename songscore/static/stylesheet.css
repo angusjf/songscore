@@ -29,10 +29,18 @@ body {
 .section {
 	background-color: rgb(255,255,255);
 	margin: 50px 0;
+  display: flex;
 }
 
 .section-content {
   padding: 40px;
+  width: 100%;
+}
+
+.section-content form {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
 .capital {
@@ -169,7 +177,8 @@ img {
 }
 
 .text-group { /* each text entry is in a group */
-  width:80%;
+  width:100%;
+  margin-top: 20px;
 }
 
 .text-input	{ /* actual text box*/
@@ -306,7 +315,6 @@ input:focus ~ .highlight {
   flex-direction: row;
   display: flex;
   width: 100%;
-  -webkit-box-flex:
 }
 
 .subject-group {
@@ -343,9 +351,17 @@ input:focus ~ .highlight {
   height: auto;
 }
 
+.submit-right {
+  width: 150px;
+  display: block;
+  flex-grow: 1;
+  padding-left: 40px;
+}
 
-.text-group {
-  margin-top: 20px;
+.submit-left {
+  width: 100%;
+  min-width: 200px;
+  display: block;
 }
 
 .name {
@@ -361,4 +377,22 @@ input:focus ~ .highlight {
 .top-group .rating {
   display: inline-block;
   float: none;
+}
+
+@media screen and (max-width: 600px) {
+  .section-content form {
+    display: block;
+  }
+  .submit-right {
+    display: inline;
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 0;
+  }
+  .rating {
+    float: none;
+  }
+  .submit {
+    float: right;
+  }
 }

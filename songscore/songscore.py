@@ -119,7 +119,8 @@ def logout():
     return redirect(url_for("index"))
 
 @app.route('/follow', methods=['POST'])
-def logout():
+def follow():
+    return "todo"
     # get userid
     # get followingId
     # if not following
