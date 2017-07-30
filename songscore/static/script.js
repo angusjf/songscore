@@ -65,14 +65,17 @@ function appendNewReviews(responseJSON) {
 	reviewsDiv.innerHTML += html;
 }
 
-function submitNewReview(song, rating, text) {
-	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.onreadystatechange = function () {
-		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) appendNewReviews(JSON.parse(xmlhttp.responseText));
-	};
-	xmlhttp.open("POST","submit", true);
-	xmlhttp.send("?song=" + song + "&rating=" + rating + "&text=" + text);
-}
+$('#submitform').submit(function (e) {
+	$.ajax({
+		type: 'POST',
+		url: '/submit',
+		data: $(this).serialize(),
+		success: function (data) {
+			alert($(this).serialize());
+		}
+	});
+	e.preventDefault();
+});
 
 function getResultsJson(text) {
 	return JSON.Parse("{}");

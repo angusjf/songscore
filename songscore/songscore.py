@@ -74,19 +74,16 @@ def getFeed():
     ]
 }""", mimetype="application/json")
 
-"""
 @app.route('/submit')
 def submit():
-	$subjectMBID = $_POST["subjectMBID"];
-	$userId = $_POST["userId"];
-	$rating = $_POST["rating"];
-	$text = $_POST["text"];
-	if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text)) {
-		Review::addToDatabase($subjectMBID, $userId, $rating, $text);
-	} else {
-		echo "yo like post some data";
-	}
-"""
+	subjectMBID = request.values.get("subjectMBID")
+	userId = request.values.get("userId")
+	rating = request.values.get("rating")
+	text = request.values.get("text")
+	#if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
+	    #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
+	#else
+	    #echo "yo like post some data";
 
 @app.route('/user/<username>')
 def user(username):
