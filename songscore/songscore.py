@@ -89,14 +89,14 @@ def getFeed():
 
 @app.route('/submit')
 def submit():
-	subjectName = request.values.get("subjectName")
-	rating = request.values.get("rating")
-	text = request.values.get("text")
-        print (subjectName + ', ' + rating + ', ' + text)
-	#if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
-	    #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
-	#else
-	    #echo "yo like post some data";
+    subjectName = request.values.get("subjectName")
+    rating = request.values.get("rating")
+    text = request.values.get("text")
+    print (subjectName + ', ' + rating + ', ' + text)
+    #if (isset($subjectMBID) && isset($userId) && isset($rating) && isset($text))
+        #Review::addToDatabase($subjectMBID, $userId, $rating, $text);
+    #else
+        #echo "yo like post some data";
 
 @app.route('/user/<username>')
 def user(username):
