@@ -17,9 +17,17 @@ $(document).ready(function () {
 		} else {
 			newReviewSubjectDropdown.visible = false;
 		}
-	};
-	*/
+	};*/
 
+	var character_limit = 200;
+	$('#character_count').html(character_limit + '/' + character_limit);
+
+	$('#expansion-input').keyup(function() {
+		var text_length = $('#expansion-input').val().length;
+		var text_remaining = character_limit - text_length;
+
+		$('#character_count').html(text_remaining + '/' + character_limit);
+	});
 });
 
 $('#newReview').submit(function (e) {
