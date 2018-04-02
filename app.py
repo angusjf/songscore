@@ -1,23 +1,19 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g #from flask, we want to import flask and render_template
-from data import Reviews #from data.py, import the Reviews function
+from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g
+from data import Reviews # from data.py, import the Reviews function
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
 from functools import wraps
 
-app = Flask(__name__) #creates an instance of flask
+app = Flask(__name__) # creates an instance of flask
 app.secret_key = "secret"
 app.database = "database.db"
 
 Reviews = Reviews()
 
-def connect_db():
-    return sqlite3.connect(app.database)
-
-@app.route('/') #points flask to the index so it can load files
+@app.route('/') # points flask to the index so it can load files
 def index():
     return render_template('index.html', reviews = Reviews) #literally just return a string
-
 
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
@@ -37,19 +33,14 @@ def register():
         email = form.email.data
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data)) #encrypts the password before it's submitted.
-
-        #Creates the DictCursor
-        g.db = connect_db()
-        g.db.execute("INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)", (name, email, username, password))
-        g.db.commit()
-        g.db.close()
+        
+        query_db("INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)", (name, email, username, password))
 
         flash('You are now registered and can log in', 'success') #format this for a good message
         redirect(url_for('login'))
-
     return render_template('register.html', form=form) #if not a POST, it must be a get. Serve the form.
 
-    #Logging in
+#Logging in
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':#if they submit some data, catch it from the form
@@ -58,15 +49,10 @@ def login():
         password_candidate = request.form['password']#candidate means taking what they put into the login page and comparing it. It may or may not match
 
         #Creates the DictCursor
-        c = sqlite3.connect('database.db')
-        cur = c.cursor()
-        result = cur.execute("SELECT * FROM users WHERE username = ?", [username])
-        print("results: " + str(result))
+        data = query_db("SELECT * FROM users WHERE username = ?", [username], one=True)
 
-
-        if result: #as long as some rows are found in the table
+        if data != None: # user exists
             print("at least one result found")
-            data = cur.fetchone() #FETCHes the first ONE result that appears.
             print("data: " + str(data))
 
             password = data[4]
@@ -82,13 +68,10 @@ def login():
             else:
                 error = 'Password is incorrect'
                 return render_template('login.html', error = error)
-
         else:
             error = 'Username does not exist'
             return render_template('login.html', error = error)
-        cur.close()
-
-    return render_template('login.html')#else, they're not submitting anything. Redirect to login page.
+    return render_template('login.html') # else, they're not submitting anything. Redirect to login page.
 
 # Check if user logged in so they can't access pages they shouldn't.
 # Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
@@ -114,5 +97,28 @@ def logout():
 def profile():
     return render_template('profile.html')
 
+def get_db():
+    if not hasattr(g, 'db'):
+        g.db = sqlite3.connect(app.database)
+    return g.db
+
+@app.teardown_appcontext # makes sure if the server breaks we close. ignore the exception
+def close_db(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
+
+def query_db(query, args=(), one=False):
+    cursor = get_db().execute(query, args)
+    results = cursor.fetchall()
+    cursor.close()
+    if one: # one -> only expect one result, else returns a dict(?)
+        if len(results) > 0:
+            return results[0]
+        else:
+            return None
+    else:
+        return results
+
+# IMPORTANT -> if you use 'flask run' instead of 'python app.py' you can remove this. not really important but wanted u to read lol
 if __name__ == '__main__': #if the right application is being run...
     app.run() #run it. debut means you don't have to reload the server for every change
