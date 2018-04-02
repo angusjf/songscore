@@ -110,6 +110,7 @@ def close_db(exception):
 def query_db(query, args=(), one=False):
     cursor = get_db().execute(query, args)
     results = cursor.fetchall()
+    get_db().commit()
     cursor.close()
     if one: # one -> only expect one result, else returns a dict(?)
         if len(results) > 0:
