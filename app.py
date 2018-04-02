@@ -9,15 +9,6 @@ app = Flask(__name__) #creates an instance of flask
 app.secret_key = "secret"
 app.database = "database.db"
 
-#MySQL configuration
-#app.config['MYSQL_HOST'] = 'localhost'
-#app.config['MYSQL_USER'] = 'localhost'
-#app.config['MYSQL_PASSWORD'] = ''
-#app.config['MYSQL_DB'] = 'mysql'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor' #makes it save as a dictionary instead of a tuple
-#init MYSQL
-#mysql = MySQL(app)
-
 Reviews = Reviews()
 
 def connect_db():
@@ -124,4 +115,4 @@ def profile():
     return render_template('profile.html')
 
 if __name__ == '__main__': #if the right application is being run...
-    app.run(debug = True) #run it. debut means you don't have to reload the server for every change
+    app.run() #run it. debut means you don't have to reload the server for every change
