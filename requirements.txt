@@ -1,0 +1,10 @@
+Flask
+Flask-WTF
+Jinja2
+passlib
+WTForms
+
+click
+itsdangerous
+MarkupSafe
+Werkzeug
