@@ -6,12 +6,4 @@ FLASK_APP=app
 FLASK_DEBUG=TRUE
 
 # pip import requirements
-click
-Flask
-Flask-WTF
-itsdangerous
-Jinja2
-MarkupSafe
-passlib
-Werkzeug
-WTForms
+see `requirements.txt`

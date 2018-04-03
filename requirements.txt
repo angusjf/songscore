@@ -1,5 +1,4 @@
 flask
 wtforms
 passlib
-sqlite3
 functools
