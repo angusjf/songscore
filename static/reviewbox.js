@@ -1,3 +1,8 @@
+results = {
+	"albums" : [],
+	"songs" : []
+}
+
 // when the site loads
 $(document).ready(function () {
 	var character_limit = 200;
@@ -10,34 +15,7 @@ $(document).ready(function () {
 		$('#character_count').html(text_remaining + '/' + character_limit);
 	});
 
-	$('#subject-input').keyup(function() {
-		if ($('#expansion-input').val().length > 0) {
-			$.get(
-				"http://ws.audioscrobbler.com/2.0/",
-				{
-					'method' : "track.search",
-					'album' : query,
-					'api_key' : "b392916683d0336a30882ff34ff114f7",
-					'format' : "json",
-					'limit' : 5
-				},
-				data => {
-					/*
-					data.results.albummatches.album.forEach(album => {
-                        results.innerHTML += `
-                                <div>
-                                        <img src='${album.image[0]["#text"]}'/>
-                                        <span style="display: inline-block;">
-                                                <div>${album.name}</div>
-                                                <div>${album.artist}</div>
-										*/
-					// $('#subject-search').add( new html lelements)
-				}
-			);
-		} else {
-			// $('#subject-search').html(); . hide() ?
-		}
-	});
+	$('#subject-input').keyup(search);
 });
 
 $('#newReview').submit(function (e) {
@@ -51,3 +29,87 @@ $('#newReview').submit(function (e) {
 	});
 	e.preventDefault();
 });
+
+function updateResultsBoxContents() {
+	// never show results box if no text in search
+	if ($('#subject-input').val().length == 0) {
+		$('#subjects-results').hide();
+	} else {
+		$('#subjects-results').show();
+		results.albums.forEach((album) => {
+			$('#subjects-results').append(`
+				<div>
+					<img src='${album.image}'/>
+					<span style="display: inline-block;">
+						<div>${album.name}</div>
+						<div>${album.artist_name}</div>
+					</span>
+				</div>
+			`);
+		});
+		results.songs.forEach((song) => {
+			$('#subjects-results').append(`
+				<div>
+					<img src='${song.image}'/>
+					<span style="display: inline-block;">
+						<div>${song.name}</div>
+						<div>${song.artist_name}</div>
+					</span>
+				</div>
+			`);
+		});
+	}
+}
+
+/*
+ * updates the 'results' object with data from last fm,
+ * based on the content of a text box with id '#subject-input',
+ * and calls updateResultsBoxContents() when the results change
+ */
+function search () {
+	var query = $('#subject-input').val();
+	if ($('#subject-input').val().length > 0) {
+		jQuery.get(
+			"http://ws.audioscrobbler.com/2.0/",
+			{
+				'method' : "track.search",
+				'track' : query,
+				'api_key' : "b392916683d0336a30882ff34ff114f7",
+				'format' : "json",
+				'limit' : 3
+			},
+			data => {
+				results.songs = [];
+				data.results.trackmatches.track.forEach(track => {
+					results.songs.push({
+                        "name" : track.name,
+                        "artist_name" : track.artist,
+                        "image" : track.image[3]["#text"]
+					});
+				});
+				updateResultsBoxContents();
+			}
+		);
+		jQuery.get(
+			"http://ws.audioscrobbler.com/2.0/",
+			{
+				'method' : "album.search",
+				'album' : query,
+				'api_key' : "b392916683d0336a30882ff34ff114f7",
+				'format' : "json",
+				'limit' : 3
+			},
+			data => {
+				results.albums = [];
+				data.results.albummatches.album.forEach(album => {
+					results.albums.push({
+                        "name" : album.name,
+                        "artist_name" : album.artist,
+                        "image" : album.image[3]["#text"]
+					});
+				});
+				updateResultsBoxContents();
+			}
+		);
+	}
+}
