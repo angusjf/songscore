@@ -1,19 +1,17 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g
-from data import Reviews # from data.py, import the Reviews function
+from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
 from functools import wraps
+import json
 
 app = Flask(__name__) # creates an instance of flask
 app.secret_key = "secret"
 app.database = "database.db"
 
-Reviews = Reviews()
-
-@app.route('/') # points flask to the index so it can load files
+@app.route('/')
 def index():
-    return render_template('index.html', reviews = Reviews) #literally just return a string
+    return render_template('index.html')
 
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
@@ -54,12 +52,12 @@ def login():
             print("at least one result found")
             print("data: " + str(data))
 
-            password = data[4]
-            print("password: " + str(password))
-            print("password candidate: " + str(password_candidate))
+            password = data['password']
+            print("password:", str(password), "password candidate: ", str(password_candidate))
 
             if sha256_crypt.verify(password_candidate, password): # pass the password entered and the actual password found into the statement
                 session['logged_in'] = True
+                session['user_id'] = data['id']
                 session['username'] = username
 
                 flash('You will hopefully now be logged in (no promises lol)', 'success')
@@ -96,9 +94,47 @@ def logout():
 def profile():
     return render_template('profile.html')
 
+@app.route('/getfeed')
+def get_feed():
+    results = query_db("SELECT * FROM reviews WHERE user_id = ?", (session['user_id'],))
+    return Response(reviews_to_json(results), mimetype="application/json")
+
+def reviews_to_json(reviews):
+    reviewJson = []
+    for review in reviews:
+        user = query_db("SELECT * FROM users WHERE id = ?", (review['user_id'],), one=True)
+        reviewJson.append({
+            "id" : review["id"],
+            "user" : {
+                "name" : user['name'],
+                "username" : user['username'],
+                "img" : "static/images/profile.png"
+            },
+            "subject" : {
+                "name" : review['subject_name'],
+                "artist" : "ARTIST_NAME",
+                "img" : "static/images/subject.png"
+            },
+            "rating" : review['score'],
+            "text" : review['text'],
+            "upvotes" : 100,
+            "downvotes" : 10,
+            "date" : "1m ago",
+            "replies" : [ ]
+        })
+    print(reviewJson)
+    return json.dumps(reviewJson)
+
+@app.route('/submit', methods=['POST'])
+def submit_review():
+    query_db("INSERT INTO reviews (user_id, score, subject_name, text, type) VALUES (?, ?, ?, ?, ?)", (session['user_id'], request.form['rating'], request.form['subjectName'], request.form['text'], "song") )
+    return redirect(url_for("index"))
+
+# database functions
 def get_db():
     if not hasattr(g, 'db'):
         g.db = sqlite3.connect(app.database)
+        g.db.row_factory = dict_factory
     return g.db
 
 @app.teardown_appcontext
@@ -118,6 +154,13 @@ def query_db(query, args=(), one=False):
             return None
     else:
         return results
+
+def dict_factory(cursor, row):
+    # this means execute returns a dict instead of a list
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 # IMPORTANT -> if you use 'flask run' instead of 'python app.py' you can remove this. not really important but wanted u to read lol
 if __name__ == '__main__': #if the right application is being run...
