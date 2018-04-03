@@ -1,19 +1,7 @@
 // when the site loads
 $(document).ready(function () {
-	requestNewReviews(32); // get 32 new reviews as JSON
+	$.get("getfeed", {'n' : 32}, (data) => appendNewReviews(JSON.parse(data)));
 });
-
-// send a request from client to server
-function requestNewReviews(numberOfReviews) {
-	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.onreadystatechange = function () {
-		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			appendNewReviews(JSON.parse(xmlhttp.responseText));
-		}
-	};
-	xmlhttp.open("GET","getfeed?n=" + numberOfReviews, true);
-	xmlhttp.send();
-}
 
 // called when the request responds
 function appendNewReviews(responseJSON) {
@@ -26,10 +14,10 @@ function appendNewReviews(responseJSON) {
 				<div class="section-content review-content">
 					<div class='subject-group'>
 						<div class="subjectPictureDiv">
-							<img class='subjectPicture' src='${review.subject.image}'>
+							<img class='subjectPicture' src='${getAlbumArt(review.subject_name)}'>
 						</div>
-						<div class='subjectName'>${review.subject.name}</div>
-						<div class='subjectName'>${review.subject.artist}</div>
+						<div class='subjectName'>${review.subject_name}</div>
+						<div class='subjectName'>${getArtistName(review.subject_name)}</div>
 					</div>
 
 					<div class="review-right">
@@ -48,4 +36,12 @@ function appendNewReviews(responseJSON) {
 		`;
 	});
 	feed.innerHTML += html;
+}
+
+function getAlbumArt(subject_name) {
+	return "static/images/subject.png"
+}
+
+function getArtistName(subject_name) {
+	return "ARTIST_NAME"
 }
