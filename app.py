@@ -99,7 +99,7 @@ def get_reviews():
 @app.route('/getfeed')
 def get_feed_json(): # TODO following only
     numberOfReviews = request.args.get('n');
-    results = query_db("SELECT * FROM reviews WHERE user_id = ? LIMIT ?", (session['user_id'], numberOfReviews))
+    results = query_db("SELECT * FROM reviews WHERE user_id = ? ORDER BY date DESC LIMIT ?", (session['user_id'], numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/follow')
@@ -111,8 +111,6 @@ def follow():
 def submit_review():
     query_db("INSERT INTO reviews (user_id, score, subject_name, text, type) VALUES (?, ?, ?, ?, ?)", (session['user_id'], request.form['rating'], request.form['subjectName'], request.form['text'], "song") )
     return redirect(url_for("index"))
-
-@app.route('/vote', methods=['POST'])
 
 def reviews_to_json(reviews):
     reviewJson = []
