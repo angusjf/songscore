@@ -14,10 +14,10 @@ function appendNewReviews(responseJSON) {
 				<div class="section-content review-content">
 					<div class='subject-group'>
 						<div class="subjectPictureDiv">
-							<img class='subjectPicture' src='${getAlbumArt(review.subject_name)}'>
+							<img class='subjectPicture' src='${review.subject.image}'>
 						</div>
-						<div class='subjectName'>${review.subject_name}</div>
-						<div class='subjectName'>${getArtistName(review.subject_name)}</div>
+						<div class='subjectName'>${review.subject.name}</div>
+						<div class='subjectName'>${review.subject.artist_name}</div>
 					</div>
 
 					<div class="review-right">
@@ -36,12 +36,4 @@ function appendNewReviews(responseJSON) {
 		`;
 	});
 	feed.innerHTML += html;
-}
-
-function getAlbumArt(subject_name) {
-	return "static/images/subject.png"
-}
-
-function getArtistName(subject_name) {
-	return "ARTIST_NAME"
 }

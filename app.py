@@ -9,10 +9,6 @@ app = Flask('songscore') # creates an instance of flask
 app.secret_key = "secret"
 app.database = "database.db"
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
     username = StringField('Username', [validators.Length(min=4, max=25)]) #they must input a username between 4 and 25 characters
@@ -23,21 +19,38 @@ class RegisterForm(Form):
     ])
     confirm = PasswordField('Confirm Password')
 
-@app.route('/register', methods = ['GET', 'POST']) #needs to accept posts to collect data from the form
+# Check if user logged in so they can't access pages they shouldn't.
+# Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
+def is_logged_in(f):
+    @wraps(f) #pass in 'f'
+    def wrap(*args, **kwargs): #idk what this means tbh
+        if 'logged_in' in session: #check they're logged into a session
+            return f(*args, **kwargs)
+        else:
+            flash('Yo you dont have access for this get outta here', 'danger') #danger type of alert
+            return redirect(url_for('login')) #prompt them to log in
+    return wrap
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/register', methods=['GET', 'POST']) # needs to accept posts to collect data from the form
 def register():
     form = RegisterForm(request.form)
-    if request.method == 'POST' and form.validate(): #need to make sure the request is post, and that it matches the validation
+    if request.method == 'POST' and form.validate(): # need to make sure the request is post, and that it matches the validation
         query_db(
             "INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)",
             (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)))
         )
-        flash('You are now registered and can log in', 'success') #format this for a good message
-        redirect(url_for('login'))
-    return render_template('register.html', form=form) #if not a POST, it must be a get. Serve the form.
+        flash('You are now registered and can log in', 'success') # format this for a good message
+        return redirect(url_for('login'))
+    else:
+        return render_template('register.html', form=form) # if not a POST, it must be a get. Serve the form.
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':#if they submit some data, catch it from the form
+    if request.method == 'POST': # if they submit some data, catch it from the form
         #Not using WTForms cos there's no point
         username = request.form['username']
         password_candidate = request.form['password'] # candidate means taking what they put into the login page and comparing it. It may or may not match
@@ -45,11 +58,7 @@ def login():
         data = query_db("SELECT * FROM users WHERE username = ?", (username, ), one=True)
 
         if data != None: # user exists
-            print("at least one result found")
-            print("data: " + str(data))
-
             password = data['password']
-            print("password:", str(password), "password candidate: ", str(password_candidate))
 
             if sha256_crypt.verify(password_candidate, password): # pass the password entered and the actual password found into the statement
                 session['logged_in'] = True
@@ -64,19 +73,8 @@ def login():
         else:
             error = 'Username does not exist'
             return render_template('login.html', error = error)
-    return render_template('login.html') # else, they're not submitting anything. Redirect to login page.
-
-# Check if user logged in so they can't access pages they shouldn't.
-# Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
-def is_logged_in(f):
-    @wraps(f) #pass in 'f'
-    def wrap(*args, **kwargs): #idk what this means tbh
-        if 'logged_in' in session: #check they're logged into a session
-            return f(*args, **kwargs)
-        else:
-            flash('Yo you dont have access for this get outta here', 'danger') #danger type of alert
-            return redirect(url_for('login')) #prompt them to log in
-    return wrap
+    else:
+        return render_template('login.html') # else, they're not submitting anything. Redirect to login page.
 
 @app.route('/logout')
 def logout():
@@ -109,13 +107,21 @@ def follow():
 
 @app.route('/submit', methods=['POST'])
 def submit_review():
-    query_db("INSERT INTO reviews (user_id, score, subject_name, text, type) VALUES (?, ?, ?, ?, ?)", (session['user_id'], request.form['rating'], request.form['subjectName'], request.form['text'], "song") )
+    if False: # not ready until search implemented
+        subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
+
+        if subject == None: # not yet in the database
+            query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']))
+            subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
+
+        query_db("INSERT INTO reviews (user_id, score, subject_id, text, type) VALUES (?, ?, ?, ?, ?)", (session['user_id'], request.form['rating'], subject['id'], request.form['text'], "song"))
     return redirect(url_for("index"))
 
 def reviews_to_json(reviews):
     reviewJson = []
     for review in reviews:
         user = query_db("SELECT * FROM users WHERE id = ?", (review['user_id'],), one=True)
+        subject = query_db("SELECT * FROM subjects WHERE id = ?", (review['subject_id'],), one=True)
         upvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = ? AND UPVOTE == 1", (review['id'],), one=True)
         downvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = ? AND UPVOTE == 0", (review['id'],), one=True)
         comments_db = query_db("SELECT * FROM comments WHERE review_id = ?", (review['user_id'],))
@@ -140,7 +146,13 @@ def reviews_to_json(reviews):
                 "username" : user['username'],
                 "image" : user['picture']
             },
-            "subject_name" : review['subject_name'],
+            "subject" : {
+                "id" : subject['id'],
+                "name" : subject['name'],
+                "artist_name" : subject['artist_name'],
+                "type" : subject['type'],
+                "image" : subject['image']
+            },
             "rating" : review['score'],
             "text" : review['text'],
             "upvotes" : upvotes,

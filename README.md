@@ -1,9 +1,9 @@
 # SongScore
-Trying to learn Python and Flask through recreating the website Angus and I made and later add to the repo once I understand it.
+Learning Flask by creating a website to rate songs
 
 # environment varaibles
 FLASK_APP=app
-FLASK_DEBUG=TRUE
+FLASK_DEBUG=1
 
 # pip import requirements
 see `requirements.txt`
