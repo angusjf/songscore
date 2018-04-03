@@ -33,11 +33,11 @@ $('#newReview').submit(function (e) {
 function updateResultsBoxContents() {
 	// never show results box if no text in search
 	if ($('#subject-input').val().length == 0) {
-		$('#subjects-results').hide();
+		$('#subject-results').hide();
 	} else {
 		$('#subjects-results').show();
 		results.albums.forEach((album) => {
-			$('#subjects-results').append(`
+			$('#subject-results').append(`
 				<div>
 					<img src='${album.image}'/>
 					<span style="display: inline-block;">
@@ -48,7 +48,7 @@ function updateResultsBoxContents() {
 			`);
 		});
 		results.songs.forEach((song) => {
-			$('#subjects-results').append(`
+			$('#subject-results').append(`
 				<div>
 					<img src='${song.image}'/>
 					<span style="display: inline-block;">
@@ -84,7 +84,7 @@ function search () {
 					results.songs.push({
                         "name" : track.name,
                         "artist_name" : track.artist,
-                        "image" : track.image[3]["#text"]
+                        "image" : track.image[2]["#text"]
 					});
 				});
 				updateResultsBoxContents();
