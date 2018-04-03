@@ -32,6 +32,7 @@ $('#newReview').submit(function (e) {
 
 function updateResultsBoxContents() {
 	// never show results box if no text in search
+	$('#subject-results').empty();
 	if ($('#subject-input').val().length == 0) {
 		$('#subject-results').hide();
 	} else {
@@ -84,7 +85,7 @@ function search () {
 					results.songs.push({
                         "name" : track.name,
                         "artist_name" : track.artist,
-                        "image" : track.image[2]["#text"]
+                        "image" : track.image[1]["#text"]
 					});
 				});
 				updateResultsBoxContents();
