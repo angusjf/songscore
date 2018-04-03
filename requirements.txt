@@ -1,4 +1,10 @@
-flask
-wtforms
+Flask
+Flask-WTF
+Jinja2
 passlib
-functools
+WTForms
+
+click
+itsdangerous
+MarkupSafe
+Werkzeug
