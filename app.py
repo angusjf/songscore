@@ -4,7 +4,6 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
 from functools import wraps
-import database # database.py
 
 app = Flask(__name__) # creates an instance of flask
 app.secret_key = "secret"
@@ -96,6 +95,29 @@ def logout():
 @is_logged_in #makes it so they must be logged in to view it.
 def profile():
     return render_template('profile.html')
+
+def get_db():
+    if not hasattr(g, 'db'):
+        g.db = sqlite3.connect(app.database)
+    return g.db
+
+@app.teardown_appcontext
+def close_db(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
+
+def query_db(query, args=(), one=False):
+    cursor = get_db().execute(query, args)
+    results = cursor.fetchall()
+    get_db().commit()
+    cursor.close()
+    if one: # one -> only expect one result, else returns a dict(?)
+        if len(results) > 0:
+            return results[0]
+        else:
+            return None
+    else:
+        return results
 
 # IMPORTANT -> if you use 'flask run' instead of 'python app.py' you can remove this. not really important but wanted u to read lol
 if __name__ == '__main__': #if the right application is being run...
