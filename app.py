@@ -4,6 +4,7 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
 from functools import wraps
+import database # database.py
 
 app = Flask(__name__) # creates an instance of flask
 app.secret_key = "secret"
@@ -33,7 +34,7 @@ def register():
         email = form.email.data
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data)) #encrypts the password before it's submitted.
-        
+
         query_db("INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)", (name, email, username, password))
 
         flash('You are now registered and can log in', 'success') #format this for a good message
@@ -46,10 +47,9 @@ def login():
     if request.method == 'POST':#if they submit some data, catch it from the form
         #Not using WTForms cos there's no point
         username = request.form['username']
-        password_candidate = request.form['password']#candidate means taking what they put into the login page and comparing it. It may or may not match
+        password_candidate = request.form['password'] # candidate means taking what they put into the login page and comparing it. It may or may not match
 
-        #Creates the DictCursor
-        data = query_db("SELECT * FROM users WHERE username = ?", [username], one=True)
+        data = query_db("SELECT * FROM users WHERE username = ?", (username, ), one=True)
 
         if data != None: # user exists
             print("at least one result found")
@@ -59,7 +59,7 @@ def login():
             print("password: " + str(password))
             print("password candidate: " + str(password_candidate))
 
-            if sha256_crypt.verify(password_candidate, password):#pass the password entered and the actual password found into the statement
+            if sha256_crypt.verify(password_candidate, password): # pass the password entered and the actual password found into the statement
                 session['logged_in'] = True
                 session['username'] = username
 
@@ -96,29 +96,6 @@ def logout():
 @is_logged_in #makes it so they must be logged in to view it.
 def profile():
     return render_template('profile.html')
-
-def get_db():
-    if not hasattr(g, 'db'):
-        g.db = sqlite3.connect(app.database)
-    return g.db
-
-@app.teardown_appcontext # makes sure if the server breaks we close. ignore the exception
-def close_db(exception):
-    if hasattr(g, 'db'):
-        g.db.close()
-
-def query_db(query, args=(), one=False):
-    cursor = get_db().execute(query, args)
-    results = cursor.fetchall()
-    get_db().commit()
-    cursor.close()
-    if one: # one -> only expect one result, else returns a dict(?)
-        if len(results) > 0:
-            return results[0]
-        else:
-            return None
-    else:
-        return results
 
 # IMPORTANT -> if you use 'flask run' instead of 'python app.py' you can remove this. not really important but wanted u to read lol
 if __name__ == '__main__': #if the right application is being run...
