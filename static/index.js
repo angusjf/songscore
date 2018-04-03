@@ -1,6 +1,6 @@
 // when the site loads
 $(document).ready(function () {
-	$.get("getfeed", {'n' : 32}, (data) => appendNewReviews(JSON.parse(data)));
+	$.get("getfeed", {'n' : 32}, (data) => appendNewReviews(data));
 });
 
 // called when the request responds
