@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, rediret, url_for, request, session, logging, g, Response
+from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
@@ -51,7 +51,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST': # if they submit some data, catch it from the form
-        #Not using WTForms cos there's no point
+        # Not using WTForms cos there's no point
         username = request.form['username']
         password_candidate = request.form['password'] # candidate = what they put into the login page (may or may not match)
 
