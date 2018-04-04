@@ -82,22 +82,34 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
-@app.route('/profile') #points flask to the index so it can load files
+@app.route('/profile')
 @is_logged_in #makes it so they must be logged in to view it.
 def profile():
-    return render_template('profile.html')
+    data = query_db("SELECT * FROM users WHERE id = ?", (session['user_id'],), one=True)
+    return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'], picture=data['picture'])
 
-@app.route('/getreviews') #points flask to the index so it can load files
+@app.route('/user/<username>')
+def user_page(username):
+    data = query_db("SELECT * FROM users WHERE username = ?", (username,), one=True)
+    if data != None:
+        return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'], picture=data['picture'])
+    else:
+        return "user does not exist"
+
+@app.route('/getreviews')
 def get_reviews():
-    username = request.args.get('username')
+    user_id = request.args.get('user_id')
     numberOfReviews = request.args.get('n')
-    results = query_db("SELECT * FROM reviews WHERE user_id = (SELECT ) LIMIT ?", (session['user_id'], numberOfReviews))
+    if user_id == None:
+        return "{}" # no user with that name
+    results = query_db("SELECT * FROM reviews WHERE user_id = ? LIMIT ?", (user_id, numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/getfeed')
 def get_feed_json(): # TODO following only
     numberOfReviews = request.args.get('n')
-    results = query_db("SELECT * FROM reviews WHERE user_id = ? ORDER BY date DESC LIMIT ?", (session['user_id'], numberOfReviews))
+    results = query_db("SELECT * FROM reviews WHERE user_id = ? ORDER BY date DESC LIMIT ?",
+        (session['user_id'], numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/follow')
@@ -170,6 +182,7 @@ def get_db():
     if not hasattr(g, 'db'):
         g.db = sqlite3.connect(app.database)
         g.db.row_factory = dict_factory
+        init_db()
     return g.db
 
 @app.teardown_appcontext
@@ -189,6 +202,12 @@ def query_db(query, args=(), one=False):
             return None
     else:
         return results
+
+def init_db():
+    db = get_db()
+    with app.open_resource('schema.sql', mode='r') as f:
+        db.cursor().executescript(f.read())
+    db.commit()
 
 def dict_factory(cursor, row):
     # this means execute returns a dict instead of a list
