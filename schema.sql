@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS follows (
                          NOT NULL
 );
 CREATE TABLE IF NOT EXISTS reviews (
-    id         INTEGER  PRIMARY KEY AUTOINCREMENT
+    id         PRIMARY KEY SERIAL
                         UNIQUE
                         NOT NULL,
     user_id    INTEGER  REFERENCES users (id) ON DELETE CASCADE
@@ -30,14 +30,14 @@ CREATE TABLE IF NOT EXISTS reviews (
                         NOT NULL
 );
 CREATE TABLE IF NOT EXISTS subjects (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT
+    id          PRIMARY KEY SERIAL
                         NOT NULL,
     type        VARCHAR NOT NULL
                         CHECK (type == 'album' OR 
                                type == 'song'),
     name        NAME    NOT NULL,
     image       VARCHAR NOT NULL
-                        DEFAULT ('static/images/subject.png'),
+                        DEFAULT ('/static/images/subject.png'),
     artist_name VARCHAR NOT NULL
 );
 CREATE TABLE IF NOT EXISTS users (
