@@ -97,7 +97,7 @@ li::before {
 .register-content-inner {
   position: absolute;
   width: 90%;
-  max-width: 1000px;
+  max-width: 1200px;
  top: 50%;
  left: 50%;
  transform: translate(-50%, -50%);
@@ -289,7 +289,7 @@ img {
 }
 
 .img-container {
-  width: 39%;
+  width: 100%;
   display: inline-block;
 }
 
@@ -303,9 +303,10 @@ img {
 .register-left h1 {
     vertical-align: middle;
     display: inline-block;
-    width: 59%;
+    width: 100%;
     justify-content: baseline;
-    text-align: center;
+    text-align: left;
+    font-size: 3.5em;
 }
 
 .form-group { /* each text entry is in a group */
@@ -316,7 +317,7 @@ img {
 
 .text-group { /* each text entry is in a group */
   width:90%;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .text-input	{ /* actual text box*/
@@ -534,3 +535,64 @@ input:focus ~ .highlight {
     float: right;
   }
 }
+
+@media screen and (max-width: 950px) {
+  .register-content-inner {
+    margin: 0 auto;
+    width: 90%;
+    position: inherit;
+    transform: none;
+    display: block;
+    top: auto;
+    left: auto;
+  }
+  .img-container {
+    width: 39%;
+  }
+  .register-left h1 {
+    width: 59%;
+    font-size: 2.5em;
+  }
+  .welcome-banner {
+    width: 100%;
+    max-width: 500px;
+    padding-bottom: 30px;
+    margin: 0 auto;
+  }
+  .register-left {
+    margin: 0 0;
+  }
+  .register-right {
+    margin-top: 3em;
+    margin: 3em 0;
+    width: 100%;
+  }
+  .center-vert {
+    position: inherit;
+    transform: none;
+    top: auto;
+    left: auto;
+  }
+  .text-group {
+      margin-top: 20px;
+  }
+  .register-left li {
+    font-size: 1.3em;
+    padding-left: 3em;
+}
+li::before {
+    width: 2em;
+    background-size: 2em 2em;
+}
+  @media screen and (max-width: 500px) {
+    .img-container {
+      display: block;
+      width: 100%;
+    }
+    .welcome-banner {
+      text-align: center;
+    }
+    .register-left h1 {
+      text-align: center;
+      width: 100%;
+    }
