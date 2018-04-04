@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response
+from flask import Flask, render_template, flash, rediret, url_for, request, session, logging, g, Response
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 import sqlite3
@@ -53,7 +53,7 @@ def login():
     if request.method == 'POST': # if they submit some data, catch it from the form
         #Not using WTForms cos there's no point
         username = request.form['username']
-        password_candidate = request.form['password'] # candidate means taking what they put into the login page and comparing it. It may or may not match
+        password_candidate = request.form['password'] # candidate = what they put into the login page (may or may not match)
 
         data = query_db("SELECT * FROM users WHERE username = ?", (username, ), one=True)
 
@@ -89,14 +89,14 @@ def profile():
 
 @app.route('/getreviews') #points flask to the index so it can load files
 def get_reviews():
-    username = request.args.get('username');
-    numberOfReviews = request.args.get('n');
+    username = request.args.get('username')
+    numberOfReviews = request.args.get('n')
     results = query_db("SELECT * FROM reviews WHERE user_id = (SELECT ) LIMIT ?", (session['user_id'], numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/getfeed')
 def get_feed_json(): # TODO following only
-    numberOfReviews = request.args.get('n');
+    numberOfReviews = request.args.get('n')
     results = query_db("SELECT * FROM reviews WHERE user_id = ? ORDER BY date DESC LIMIT ?", (session['user_id'], numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
@@ -107,13 +107,17 @@ def follow():
 
 @app.route('/submit', methods=['POST'])
 def submit_review():
-    subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
+    subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?",
+        (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True)
 
     if subject == None: # not yet in the database
-        query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']))
-        subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
+        query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)",
+            (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']) )
+        subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?",
+            (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True)
 
-    query_db("INSERT INTO reviews (user_id, score, subject_id, text) VALUES (?, ?, ?, ?)", (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
+    query_db("INSERT INTO reviews (user_id, score, subject_id, text) VALUES (?, ?, ?, ?)",
+        (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
     return redirect(url_for("index"))
 
 def reviews_to_json(reviews):
@@ -192,7 +196,3 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
-
-# IMPORTANT -> if you use 'flask run' instead of 'python app.py' you can remove this. not really important but wanted u to read lol
-if __name__ == '__main__': #if the right application is being run...
-    app.run() #run it. debut means you don't have to reload the server for every change
