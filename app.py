@@ -110,7 +110,7 @@ def get_reviews():
 def get_feed_json(): # TODO following only
     numberOfReviews = request.args.get('n')
     results = query_db("SELECT * FROM reviews ORDER BY date DESC LIMIT %s",
-        (session['user_id'], numberOfReviews))
+        (numberOfReviews, ))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/follow')
