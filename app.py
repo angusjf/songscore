@@ -107,14 +107,13 @@ def follow():
 
 @app.route('/submit', methods=['POST'])
 def submit_review():
-    if False: # not ready until search implemented
+    subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
+
+    if subject == None: # not yet in the database
+        query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']))
         subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
 
-        if subject == None: # not yet in the database
-            query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']))
-            subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?", (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True);
-
-        query_db("INSERT INTO reviews (user_id, score, subject_id, text, type) VALUES (?, ?, ?, ?, ?)", (session['user_id'], request.form['rating'], subject['id'], request.form['text'], "song"))
+    query_db("INSERT INTO reviews (user_id, score, subject_id, text) VALUES (?, ?, ?, ?)", (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
     return redirect(url_for("index"))
 
 def reviews_to_json(reviews):

@@ -4,27 +4,31 @@
 	<form class="inline-form" id="newReview" action="/submit" method="post">
 		<div class="submit-left">
 			<div class="form-group text-group">
-			<input id="subject-input" class="text-input" name="subjectName" placeholder="What music are you reviewing?" type="text" required="">
-			<span class="highlight"></span>
-			<span class="bar"></span>
-			<div id="subject-results"></div>
+				<input id="subject-input" class="text-input" name="searchbox" placeholder="What music are you reviewing?" type="text" required=""/>
+				<span class="highlight"></span>
+				<span class="bar"></span>
+				<div id="subject-results"></div>
+			</div>
+			<div class="form-group text-group">
+				<input id="expansion-input" class="text-input" name="text" placeholder="Expand on your review" type="text" data-length="200"/>
+				<span class="highlight"></span>
+				<span class="bar"></span>
+			</div>
+			<div id="character_count">200/200</div>
 		</div>
-		<div class="form-group text-group">
-			<input id="expansion-input" class="text-input" name="text" placeholder="Expand on your review" type="text" data-length="200">
-			<span class="highlight"></span>
-			<span class="bar"></span>
-		</div>
-		<div id="character_count">200/200</div>
-	</div>
 		<div class="submit-right">
 			<div class="rating form-group">
-			<input type="radio" id="star5" name="rating" value="5"><label for="star5">5 stars</label>
-			<input type="radio" id="star4" name="rating" value="4"><label for="star4">4 stars</label>
-			<input type="radio" id="star3" name="rating" value="3"><label for="star3">3 stars</label>
-			<input type="radio" id="star2" name="rating" value="2"><label for="star2">2 stars</label>
-			<input type="radio" id="star1" name="rating" value="1"><label for="star1">1 star</label>
+				<input type="radio" id="star5" name="rating" value="5"><label for="star5">5 stars</label>
+				<input type="radio" id="star4" name="rating" value="4"><label for="star4">4 stars</label>
+				<input type="radio" id="star3" name="rating" value="3"><label for="star3">3 stars</label>
+				<input type="radio" id="star2" name="rating" value="2"><label for="star2">2 stars</label>
+				<input type="radio" id="star1" name="rating" value="1"><label for="star1">1 star</label>
+			</div>
+			<input class="submit form-group" type="submit"/>
 		</div>
-			<input class="submit form-group" type="submit">
-		</div>
+		<input type="TODO hidden" name="subject_name"/>
+		<input type="TODO hidden" name="subject_artist_name"/>
+		<input type="TODO hidden" name="subject_image"/>
+		<input type="TODO hidden" name="subject_type"/>
 	</form>
 </div>
