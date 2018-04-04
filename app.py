@@ -1,9 +1,10 @@
 from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
-import sqlite3
+import psycopg2
 from functools import wraps
 import json
+import psycopg2.extras
 
 app = Flask('songscore') # creates an instance of flask
 app.secret_key = "secret"
@@ -40,7 +41,7 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate(): # need to make sure the request is post, and that it matches the validation
         query_db(
-            "INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)",
+            "INSERT INTO users(name, email, username, password) VALUES(%s, %s, %s, %s)",
             (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)))
         )
         flash('You are now registered and can log in', 'success') # format this for a good message
@@ -55,7 +56,7 @@ def login():
         username = request.form['username']
         password_candidate = request.form['password'] # candidate = what they put into the login page (may or may not match)
 
-        data = query_db("SELECT * FROM users WHERE username = ?", (username, ), one=True)
+        data = query_db("SELECT * FROM users WHERE username = %s", (username, ), one=True)
 
         if data != None: # user exists
             password = data['password']
@@ -85,12 +86,12 @@ def logout():
 @app.route('/profile')
 @is_logged_in #makes it so they must be logged in to view it.
 def profile():
-    data = query_db("SELECT * FROM users WHERE id = ?", (session['user_id'],), one=True)
+    data = query_db("SELECT * FROM users WHERE id = %s", (session['user_id'],), one=True)
     return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'], picture=data['picture'])
 
 @app.route('/user/<username>')
 def user_page(username):
-    data = query_db("SELECT * FROM users WHERE username = ?", (username,), one=True)
+    data = query_db("SELECT * FROM users WHERE username = %s", (username,), one=True)
     if data != None:
         return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'], picture=data['picture'])
     else:
@@ -102,48 +103,48 @@ def get_reviews():
     numberOfReviews = request.args.get('n')
     if user_id == None:
         return "{}" # no user with that name
-    results = query_db("SELECT * FROM reviews WHERE user_id = ? LIMIT ?", (user_id, numberOfReviews))
+    results = query_db("SELECT * FROM reviews WHERE user_id = %s LIMIT %s", (user_id, numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/getfeed')
 def get_feed_json(): # TODO following only
     numberOfReviews = request.args.get('n')
-    results = query_db("SELECT * FROM reviews WHERE user_id = ? ORDER BY date DESC LIMIT ?",
+    results = query_db("SELECT * FROM reviews WHERE user_id = %s ORDER BY date DESC LIMIT %s",
         (session['user_id'], numberOfReviews))
     return Response(reviews_to_json(results), mimetype="application/json")
 
 @app.route('/follow')
 def follow():
-    query_db("INSERT INTO follows(follower_id, following_id) VALUES(?, ?)", (session['user_id'], request.args.get('user_id')))
+    query_db("INSERT INTO follows(follower_id, following_id) VALUES(%s, %s)", (session['user_id'], request.args.get('user_id')))
     return redirect(url_for('index'))
 
 @app.route('/submit', methods=['POST'])
 def submit_review():
-    subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?",
+    subject = query_db("SELECT id FROM subjects WHERE name = %s AND artist_name = %s AND type = %s",
         (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True)
 
     if subject == None: # not yet in the database
-        query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (?, ?, ?, ?)",
+        query_db("INSERT INTO subjects (name, artist_name, type, image) VALUES (%s, %s, %s, %s)",
             (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type'], request.form['subject_image']) )
-        subject = query_db("SELECT id FROM subjects WHERE name = ? AND artist_name = ? AND type = ?",
+        subject = query_db("SELECT id FROM subjects WHERE name = %s AND artist_name = %s AND type = %s",
             (request.form['subject_name'], request.form['subject_artist_name'], request.form['subject_type']), one=True)
 
-    query_db("INSERT INTO reviews (user_id, score, subject_id, text) VALUES (?, ?, ?, ?)",
+    query_db("INSERT INTO reviews (user_id, score, subject_id, text) VALUES (%s, %s, %s, %s)",
         (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
     return redirect(url_for("index"))
 
 def reviews_to_json(reviews):
     reviewJson = []
     for review in reviews:
-        user = query_db("SELECT * FROM users WHERE id = ?", (review['user_id'],), one=True)
-        subject = query_db("SELECT * FROM subjects WHERE id = ?", (review['subject_id'],), one=True)
-        upvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = ? AND UPVOTE == 1", (review['id'],), one=True)
-        downvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = ? AND UPVOTE == 0", (review['id'],), one=True)
-        comments_db = query_db("SELECT * FROM comments WHERE review_id = ?", (review['user_id'],))
+        user = query_db("SELECT * FROM users WHERE id = %s", (review['user_id'],), one=True)
+        subject = query_db("SELECT * FROM subjects WHERE id = %s", (review['subject_id'],), one=True)
+        upvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = %s AND UPVOTE = TRUE", (review['id'],), one=True)
+        downvotes = query_db("SELECT COUNT(review_Id) FROM VOTES WHERE REVIEW_ID = %s AND UPVOTE = FALSE", (review['id'],), one=True)
+        comments_db = query_db("SELECT * FROM comments WHERE review_id = %s", (review['user_id'],))
         comments = {}
 
         for comment in comments_db:
-            user = query_db("SELECT * FROM users WHERE id = ?", (comment['user_id'],), one=True)
+            user = query_db("SELECT * FROM users WHERE id = %s", (comment['user_id'],), one=True)
             comments.append({
                 "user" : {
                     "name" : user['name'],
@@ -180,8 +181,13 @@ def reviews_to_json(reviews):
 # database functions
 def get_db():
     if not hasattr(g, 'db'):
-        g.db = sqlite3.connect(app.database)
-        g.db.row_factory = dict_factory
+        g.db = psycopg2.connect(
+            dbname='d4muopol69lmv7',
+            user='yjrybcwtcrpgic',
+            host='ec2-79-125-125-97.eu-west-1.compute.amazonaws.com',
+            password='3e75d7694c8707e0a868c7123d53ef904bf6c671ee94dffe057331576ff58157',
+            port="5432"
+        )
         init_db()
     return g.db
 
@@ -191,27 +197,24 @@ def close_db(exception):
         g.db.close()
 
 def query_db(query, args=(), one=False):
-    cursor = get_db().execute(query, args)
-    results = cursor.fetchall()
+    cursor = get_db().cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(query, args)
     get_db().commit()
-    cursor.close()
-    if one: # one -> only expect one result, else returns a dict(?)
-        if len(results) > 0:
-            return results[0]
-        else:
-            return None
+    if cursor.description == None: # no results
+        cursor.close()
+        return None
     else:
-        return results
+        results = cursor.fetchall()
+        if one: # one -> only expect one result, else returns a dict(?)
+            if len(results) > 0:
+                return results[0]
+            else:
+                return None
+        else:
+            return results
 
 def init_db():
     db = get_db()
     with app.open_resource('schema.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
+        db.cursor().execute(f.read())
     db.commit()
-
-def dict_factory(cursor, row):
-    # this means execute returns a dict instead of a list
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
