@@ -17,18 +17,16 @@ $(document).ready(function () {
 
 	$('#subject-input').keyup(search);
 
-	$('#newReview').submit(function (e) {
+	// COMMENTED OUT BECAUSE I DONT THINK WE NEED IT
+	/* $('#newReview').submit(function (e) {
 		// TODO only submit if option selected
 		$.ajax({
 			type: 'POST',
 			url: '/submit',
 			data: $(this).serialize(),
-			success: function (data) {
-				alert($(this).serialize());
-			}
 		});
 		e.preventDefault();
-	});
+	}); */
 });
 
 function updateResultsBoxContents() {
