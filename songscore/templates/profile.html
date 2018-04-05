@@ -3,6 +3,7 @@
 {% block body %}
 <script src='/static/reviewbox.js'></script>
 <script>
+/*
     $(document).ready(function () {
         $('#follow').click(function () {
             console.log("eeee");
@@ -21,6 +22,7 @@
             data => data.forEach(review => $('#posts').append(generateReviewBox(review)))
         );
     });
+*/
 </script>
 <div class="section shadow-1">
     <div class="section-content">
@@ -31,5 +33,8 @@
     </div>
 </div>
 <div id="posts">
+    {% for review in reviews %}
+        {% include 'includes/_review.html' %}
+    {% endfor %}
 </div>
 {% endblock %}
