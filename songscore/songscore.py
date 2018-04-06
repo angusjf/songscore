@@ -16,10 +16,7 @@ class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
     username = StringField('Username', [validators.Length(min=4, max=25)]) #they must input a username between 4 and 25 characters
     email = StringField('Email', [validators.Length(min=6, max=50)]) #they must input a username between 4 and 25 characters
-    password = PasswordField ('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message = 'The passwords need to match yo')
-    ])
+    password = PasswordField ('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='The passwords need to match yo')])
     confirm = PasswordField('Confirm Password')
 
 # Check if user logged in so they can't access pages they shouldn't.
@@ -34,6 +31,9 @@ def is_logged_in(f):
             return redirect(url_for('login')) #prompt them to log in
     return wrap
 
+##########
+# ROUTES #
+##########
 
 @app.route('/')
 def index():
@@ -41,7 +41,6 @@ def index():
         return render_template('feed.html', reviews=get_reviews_from_following())
     else:
         return redirect(url_for('register'))
-
 
 @app.route('/register', methods=['GET', 'POST']) # needs to accept posts to collect data from the form
 def register():
@@ -53,7 +52,6 @@ def register():
         return redirect(url_for('login'))
     else:
         return render_template('register.html', form=form) # if not a POST, it must be a get. Serve the form.
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -77,13 +75,11 @@ def login():
     else:
         return render_template('login.html') # else, they're not submitting anything. Redirect to login page.
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
-
 
 @app.route('/profile')
 @is_logged_in #makes it so they must be logged in to view it.
@@ -91,7 +87,6 @@ def profile():
     data = query_db("SELECT * FROM users WHERE id = %s", (session['user_id'],), one=True)
     return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'],
         picture=data['picture'], reviews=get_reviews_from_user(data['id']))
-
 
 @app.route('/user/<username>')
 def user_page(username):
@@ -102,30 +97,10 @@ def user_page(username):
     else:
         return "user does not exist"
 
-
-@app.route('/getreviews')
-def get_reviews():
-    user_id = request.args.get('user_id')
-    numberOfReviews = request.args.get('n')
-    if user_id == None:
-        return "{}" # no user with that name
-    results = query_db("""
-        SELECT * FROM reviews WHERE user_id = %s LIMIT %s
-        INNER JOIN users ON reviews.user_id = user.id
-        INNER JOIN subjects ON reviews.subject_id = subject.id
-        INNER JOIN votes ON reviews.id = votes.review_id
-        INNER JOIN comments ON reviews.id = comments.review_id
-        """,
-        (user_id, numberOfReviews)
-    )
-    return jsonify(results)
-
-
 @app.route('/follow')
 def follow():
     query_db("INSERT INTO follows(follower_id, following_id) VALUES(%s, %s)", (session['user_id'], request.args.get('user_id')))
     return redirect(url_for('index'))
-
 
 @app.route('/submit', methods=['POST'])
 def submit_review():
@@ -140,17 +115,14 @@ def submit_review():
         (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
     return redirect(url_for("index"))
 
-
 @app.route('/vote', methods=['POST'])
 def submit_vote():
     if request['type'] == "upvote":
         upvote = "TRUE"
     elif request.form['type'] == "downvote":
-        upvote = "TRUE"
-    query_db("INSERT INTO votes (user_id, review_id, upvote) VALUES (%s, %s, %s)",
-        (session['user_id'], request.form['review_id'], upvote))
+        upvote = "FALSE"
+    query_db("INSERT INTO votes (user_id, review_id, upvote) VALUES (%s, %s, %s)", (session['user_id'], request.form['review_id'], upvote))
     return redirect(url_for("index"))
-
 
 @app.route('/comment', methods=['POST'])
 def submit_comment():
@@ -158,48 +130,61 @@ def submit_comment():
         (session['user_id'], request.form['review_id'], request.form['text']))
     return redirect(url_for("index"))
 
+@app.route('/getfeed')
+def get_feed_json():
+    number_of_reviews = request.args.get('n')
+    return jsonify(get_reviews_from_following(number_of_reviews))
 
-def get_reviews_from_following():
+@app.route('/getreviews')
+def get_reviews():
+    user_id = request.args.get('user_id')
+    number_of_reviews = request.args.get('n')
+    if user_id == None:
+        return "{}" # no user with that name
+    return jsonify(get_reviews_from_user(user_id, number_of_reviews))
+
+##############
+# NOT ROUTES #
+##############
+
+def get_reviews_from_following(amount=100):
     data = query_db("""
-            SELECT
-            subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
-            users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
-            reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
-            FROM reviews
-            JOIN users ON reviews.user_id = users.id
-            JOIN subjects ON reviews.subject_id = subjects.id
-            --WHERE reviews.user_id IN (SELECT following_id FROM follows WHERE follower_id = %s)
-            ORDER BY review_date DESC
-            LIMIT %s
+        SELECT
+        subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
+        users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
+        reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        JOIN subjects ON reviews.subject_id = subjects.id
+        --WHERE reviews.user_id IN (SELECT following_id FROM follows WHERE follower_id = %s) TODO
+        ORDER BY review_date DESC
+        LIMIT %s
         """,
-        (session['user_id'], 100)
+        (session['user_id'], amount)
     )
     return data
 
-def get_reviews_from_user(id):
+def get_reviews_from_user(id, amount=100):
     data = query_db("""
-            SELECT
-            subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
-            users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
-            reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
-            FROM reviews
-            JOIN users ON reviews.user_id = users.id
-            JOIN subjects ON reviews.subject_id = subjects.id
-            WHERE reviews.user_id = %s
-            ORDER BY review_date DESC
-            LIMIT %s
+        SELECT
+        subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
+        users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
+        reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        JOIN subjects ON reviews.subject_id = subjects.id
+        WHERE reviews.user_id = %s
+        ORDER BY review_date DESC
+        LIMIT %s
         """,
-        (id, 100)
+        (id, amount)
     )
     return data
 
-#@app.route('/getfeed')
-#def get_feed_json(): # TODO following only
-#    numberOfReviews = request.args.get('n')
-#    results = query_db("SELECT * FROM reviews ORDER BY date DESC LIMIT %s", (numberOfReviews, ))
-#    return jsonify(get_full_review_data(results))
+############
+# DATABASE #
+############
 
-# database functions
 def get_db():
     if not hasattr(g, 'db'):
         g.db = psycopg2.connect(app.config['DATABASE_URL'])
