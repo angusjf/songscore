@@ -40,8 +40,8 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate(): # need to make sure the request is post, and that it matches the validation
         query_db(
-            "INSERT INTO users(name, email, username, password) VALUES(?, ?, ?, ?)",
-            (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)))
+            "INSERT INTO users(name, username, email, password) VALUES(?, ?, ?, ?)",
+            (form.name.data, form.username.data, form.email.data, sha256_crypt.encrypt(str(form.password.data)))
         )
         flash('You are now registered and can log in', 'success') # format this for a good message
         return redirect(url_for('login'))
