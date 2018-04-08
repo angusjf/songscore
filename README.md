@@ -1,9 +1,13 @@
 # SongScore
-Learning Flask by creating a website to rate songs
+Learning Python/Flask by creating a website to rate songs. Currently hosted at [songscore.herokuapp.com](songscore.herokuapp.com)
 
-# environment varaibles
-FLASK_APP=app
-FLASK_DEBUG=1
+# environment variables
+```
+export DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<databasename>
+export FLASK_APP=songscore
+export FLASK_DEBUG=true
+export SECRET_KEY='secret key here'
+```
 
 # pip import requirements
 see `requirements.txt`
