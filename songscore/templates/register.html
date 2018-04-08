@@ -16,7 +16,9 @@
 	</head>
 
 <body class="red-bg">
-  		{% include 'includes/_messages.html'%}
+	{% include 'includes/_messages.html'%}
+	<a class="top-right-button button" href="login.html" style="">Log in</a>
+
 <div class="register-content-outer">
   <div class="register-content-inner">
     <div class="register-left white-text">
@@ -62,8 +64,9 @@
         <span class="bar"></span>
       </div>
       <div class="form-group text-group">
-        <input class="submit" value="I'm in!" type="submit">
+        <input class="submit button" value="I'm in!" type="submit">
       </div>
+			<a href="/login" class="sub-text" style="text-align: center"><p class="sub-text">I already have an account</p></a>
 		</form>
     </div>
   </div>
