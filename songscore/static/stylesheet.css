@@ -20,6 +20,24 @@ body {
 	margin: 0px;
 }
 
+.red-bg {
+  display: flex;
+min-height: 100vh;
+  background-color: #cd3538;
+}
+
+.white-bg {
+  background-color: #fff;
+}
+
+.white-text {
+  color: #fff;
+}
+
+.thin-text {
+  font-weight: lighter;
+}
+
 #container {
 	width: 90%;
 	max-width: 1000px;
@@ -30,6 +48,82 @@ body {
 	background-color: rgb(255,255,255);
 	margin: 50px 0;
   display: flex;
+}
+
+.register-left ul {
+  list-style-type: none;
+}
+
+.register-left li {
+  position: relative;
+  padding: 1em 0;
+  padding-left: 4em;
+  font-weight: lighter;
+  font-size: 1.5em;
+}
+
+li::before {
+  content: '';
+  position: absolute;
+  width: 3em;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-size: 3em 3em;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#one::before {
+  background-image: url("images/1.png")
+}
+
+#two::before {
+  background-image: url("images/2.png")
+
+}
+
+#three::before {
+  background-image: url("images/3.png")
+
+}
+
+.register-content-outer {
+  position: relative;
+  width: 100vw;
+  display: flex;
+}
+
+.register-content-inner {
+  position: absolute;
+  width: 90%;
+  max-width: 1200px;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ display: flex;
+ flex-direction: row;
+}
+
+.register-left {
+  position: relative;
+  width: 100%;
+  min-width: 200px;
+  display: block;
+  margin: 0 2em;
+}
+.register-right {
+  margin: 0 2em;
+  width: 80%;
+}
+
+.center-vert {
+  justify-content: space-between;
+  position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100%;
 }
 
 .section-content {
@@ -71,6 +165,26 @@ body {
 	margin: 1em 0;
 }
 
+input[type=submit] {
+  background-color: #cd3538;
+  margin: 5px 25px 5px 0;
+  color: #fff;
+  border-radius: 500px;
+  border: none;
+  display: inline-block;
+  position: relative;
+  font-size: 1em;
+  overflow: hidden;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  width: 100%;
+}
+
 .circle {
   background-color: #fff;
   border-radius: 50px;
@@ -107,7 +221,7 @@ nav li  {
 	justify-content: space-between;
 	margin: 0 auto;
 	width: 90%;
-	max-width: 1000px;
+	max-width: 1100px;
 }
 
   @media screen and (max-width: 370px) {
@@ -167,7 +281,32 @@ h2 {
 }
 
 img {
-	width: 128px;
+	width: 200px;
+}
+
+.welcome-banner {
+    padding-bottom: 30px;
+}
+
+.img-container {
+  width: 100%;
+  display: inline-block;
+}
+
+.img-container img{
+  display: inline-block;
+  height: auto;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.register-left h1 {
+    vertical-align: middle;
+    display: inline-block;
+    width: 100%;
+    justify-content: baseline;
+    text-align: left;
+    font-size: 3.5em;
 }
 
 .form-group { /* each text entry is in a group */
@@ -177,8 +316,8 @@ img {
 }
 
 .text-group { /* each text entry is in a group */
-  width:100%;
-  margin-top: 20px;
+  width:90%;
+  margin-top: 40px;
 }
 
 .text-input	{ /* actual text box*/
@@ -396,3 +535,64 @@ input:focus ~ .highlight {
     float: right;
   }
 }
+
+@media screen and (max-width: 950px) {
+  .register-content-inner {
+    margin: 0 auto;
+    width: 90%;
+    position: inherit;
+    transform: none;
+    display: block;
+    top: auto;
+    left: auto;
+  }
+  .img-container {
+    width: 39%;
+  }
+  .register-left h1 {
+    width: 59%;
+    font-size: 2.5em;
+  }
+  .welcome-banner {
+    width: 100%;
+    max-width: 500px;
+    padding-bottom: 30px;
+    margin: 0 auto;
+  }
+  .register-left {
+    margin: 0 0;
+  }
+  .register-right {
+    margin-top: 3em;
+    margin: 3em 0;
+    width: 100%;
+  }
+  .center-vert {
+    position: inherit;
+    transform: none;
+    top: auto;
+    left: auto;
+  }
+  .text-group {
+      margin-top: 20px;
+  }
+  .register-left li {
+    font-size: 1.3em;
+    padding-left: 3em;
+}
+li::before {
+    width: 2em;
+    background-size: 2em 2em;
+}
+  @media screen and (max-width: 500px) {
+    .img-container {
+      display: block;
+      width: 100%;
+    }
+    .welcome-banner {
+      text-align: center;
+    }
+    .register-left h1 {
+      text-align: center;
+      width: 100%;
+    }
