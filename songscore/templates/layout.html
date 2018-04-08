@@ -13,10 +13,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
 
 		<script type="text/javascript" src="/static/jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="/static/bootstrap.min.js"></script>
 	</head>
 	<body>
 		{% include 'includes/_navbar.html' %}
-		<div id="container">
+		<div class="container">
 		{% include 'includes/_messages.html'%}
 		{% block body %}{% endblock body %}
 		</div>

@@ -1,4 +1,70 @@
-<nav class="navBar shadow-1">
+<div class="navigation">
+  <div class="nav-container container">
+    <div class="brand">
+      <a href="/profile">SongScore</a>
+      <a href="/"><img class="logo" src="/static/images/logo.png"></img></a>
+    </div>
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="#!">Home</a>
+        </li>
+        <li>
+          <a href="#!">Notifications</a>
+        </li>
+        {% if session.logged_in %}
+        <li>
+          <a href="#!">Profile</a>
+          <ul class="nav-dropdown">
+            <li>
+              <a href="#!">Drop it</a>
+            </li>
+            <li>
+              <a href="#!">Like it's</a>
+            </li>
+            <li>
+              <a href="#!">Hot</a>
+            </li>
+          </ul>
+        </li>
+        {% else %}
+        <li>
+          <a href="/register">Sign up</a>
+        </li>
+        <li>
+          <a href="/login">Log in</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<script>
+(function($) { // start jquery
+  $(function() {
+    // If a link has a dropdown...
+    $('nav ul li a:not(:only-child)').click(function(e) {//add toggle
+      $(this).siblings('.nav-dropdown').toggle();
+      $('.nav-dropdown').not($(this).siblings()).hide();//if a drop down already open, close it
+      e.stopPropagation();
+    });
+    $('html').click(function() {
+      $('.nav-dropdown').hide();// Clicking away from dropdown removes dropdown class
+    });
+    $('#nav-toggle').click(function() {
+      $('nav ul').slideToggle();
+    });
+    $('#nav-toggle').on('click', function() {
+      this.classList.toggle('active');
+    });
+  });
+})(jQuery); // end jQuery
+</script>
+
+
+<!--<nav class="navBar shadow-1">
   <nav class="nav-wrapper">
     <input type="checkbox" id="menu-toggle">
     </input>
@@ -21,4 +87,4 @@
     {% endif %}
     <label for="menu-toggle" class="label-toggle"></label>
   </nav>
-</nav>
+</nav>!-->
