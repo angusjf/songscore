@@ -1,0 +1,13 @@
+<div>
+	<div class="top-group">
+		<a href='/user/{{ comment["user_username"] }}'>
+			<div class='Name'>{{ comment["user_name"] }}</div>
+			<img class='userPicture' src='{{ comment["user_picture"] }}'>
+			<div class='userName'>{{ comment["user_username"] }}</div>
+		</a>
+	</div>
+	<div class="text-group">
+		<div class='text'>{{ comment["text"] }}</div>
+		<div class='date'>{{ comment["date"] }}</div>
+	</div>
+</div>

@@ -126,6 +126,9 @@ def submit_vote():
 
 @app.route('/comment', methods=['POST'])
 def submit_comment():
+    print("user id :", session['user_id'])
+    print("reivew id :", request.form['review_id'])
+    print("text :", request.form['text'])
     query_db("INSERT INTO comments (user_id, review_id, text) VALUES (%s, %s, %s)",
         (session['user_id'], request.form['review_id'], request.form['text']))
     return redirect(url_for("index"))
@@ -152,7 +155,7 @@ def get_reviews_from_following(amount=100):
         SELECT
         subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
         users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
-        reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
+        reviews.id AS id, reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
         FROM reviews
         JOIN users ON reviews.user_id = users.id
         JOIN subjects ON reviews.subject_id = subjects.id
@@ -162,6 +165,17 @@ def get_reviews_from_following(amount=100):
         """,
         (session['user_id'], amount)
     )
+    for review in data:
+        print(review['id'], "<<<<")
+        data['comments'] = query_db("""
+            SELECT
+            comments.user_id, comments.text
+            FROM comments
+            WHERE comments.review_id = ?
+            --ORDER BY comments.date DESC
+            """,
+            (review['id'],)
+        )
     return data
 
 def get_reviews_from_user(id, amount=100):
