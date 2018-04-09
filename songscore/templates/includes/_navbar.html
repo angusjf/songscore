@@ -1,8 +1,8 @@
 <div class="navigation">
   <div class="nav-container container">
     <div class="brand">
-      <a href="/feed">SongScore</a>
       <a href="/feed"><img class="logo" src="/static/images/logo.png"></img></a>
+      <a href="/feed">SongScore Alpha</a>
     </div>
     <nav>
       <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
@@ -15,10 +15,10 @@
         </li>
         {% if session.logged_in %}
         <li>
-          <a href="#!">Profile</a>
+          <a href="#!" class="img-dropdown"><img class="logo circle" src="/static/images/profile.png"></img></a>
           <ul class="nav-dropdown">
             <li>
-              <a href="/logout">Log out</a>
+              <a href="/logout" class="">Log out</a>
             </li>
           </ul>
         </li>

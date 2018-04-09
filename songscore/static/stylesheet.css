@@ -232,6 +232,18 @@ nav ul li ul li a {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
 }
 
+.img-dropdown {
+}
+.img-dropdown img {
+  vertical-align: middle;
+}
+
+.img-dropdown::after {
+  content: none;
+  content: ''!important;
+  padding: 0 0;
+}
+
 /* Mobile navigation */
 .nav-mobile {
   display: none;
