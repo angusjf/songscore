@@ -232,6 +232,18 @@ nav ul li ul li a {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
 }
 
+.img-dropdown {
+}
+.img-dropdown img {
+  vertical-align: middle;
+}
+
+.img-dropdown::after {
+  content: none;
+  content: ''!important;
+  padding: 0 0;
+}
+
 /* Mobile navigation */
 .nav-mobile {
   display: none;
@@ -243,7 +255,7 @@ nav ul li ul li a {
   width: 70px;
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 650px) {
   .nav-mobile {
     display: block;
   }
@@ -270,7 +282,7 @@ nav ul li ul li a {
     position: static;
   }
 }
-@media screen and (min-width: 801px) {
+@media screen and (min-width: 651px) {
   .nav-list {
     display: block !important;
   }
