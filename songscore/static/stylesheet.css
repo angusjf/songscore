@@ -62,7 +62,7 @@ min-height: 100vh;
   font-size: 1.5em;
 }
 
-.section li::before {
+.register-left ul li::before {
   content: '';
   position: absolute;
   width: 3em;
