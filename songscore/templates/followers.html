@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+	these users follow {{ username }}:
+
+	{% for user in followers %}
+
+		{% include 'includes/_user.html' %}
+
+	{% endfor %}
+
+{% endblock %}

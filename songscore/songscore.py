@@ -91,9 +91,7 @@ def logout():
 @app.route('/profile')
 @is_logged_in #makes it so they must be logged in to view it.
 def profile():
-    data = query_db("SELECT * FROM users WHERE id = %s", (session['user_id'],), one=True)
-    return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'],
-        picture=data['picture'], reviews=get_reviews_from_user(data['id']))
+    return redirect(user_page(session['username']))
 
 @app.route('/user/<username>')
 def user_page(username):
@@ -108,11 +106,29 @@ def user_page(username):
 def user_following(username):
     data = query_db("""
         SELECT
-        users_followers.username, users_following.*
+        users_following.*
         FROM follows
         INNER JOIN users AS users_following ON users_following.id = follows.following_id
         INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
         WHERE users_followers.username = %s
+        """,
+        (username,)
+    )
+    print(data)
+    if data != None:
+        return render_template('following.html', username=username, following=data)
+    else:
+        return "user does not exist"
+
+@app.route('/user/<username>/followers')
+def user_followers(username):
+    data = query_db("""
+        SELECT
+        users_followers.*
+        FROM follows
+        INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
+        INNER JOIN users AS users_following ON users_following.id = follows.following_id
+        WHERE users_following.username = %s
         """,
         (username,)
     )
