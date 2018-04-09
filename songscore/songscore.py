@@ -118,9 +118,9 @@ def feed_following():
 #################
 
 @app.route('/profile')
-@is_logged_in #makes it so they must be logged in to view it.
+@is_logged_in
 def profile():
-    return redirect(user_page(session['username']))
+    return redirect(url_for('user_page', username=session['username']))
 
 @app.route('/user/<username>')
 def user_page(username):
