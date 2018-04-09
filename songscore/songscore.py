@@ -38,16 +38,22 @@ def is_logged_in(f):
             return redirect(url_for('login')) #prompt them to log in
     return wrap
 
-##########
-# ROUTES #
-##########
+############
+#          #
+#  ROUTES  #
+#          #
+############
 
 @app.route('/')
 def index():
     if session.get('logged_in', False):
-        return render_template('feed.html', reviews=get_reviews_from_following())
+        return redirect(url_for('feed'))
     else:
         return redirect(url_for('register'))
+
+###########################
+# LOG IN / OUT / REGISTER #
+###########################
 
 @app.route('/register', methods=['GET', 'POST']) # needs to accept posts to collect data from the form
 def register():
@@ -87,6 +93,29 @@ def logout():
     session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
+
+########
+# FEED #
+########
+
+@app.route('/feed')
+@is_logged_in
+def feed():
+    return redirect(url_for('feed_all'))
+
+@app.route('/feed/all')
+@is_logged_in
+def feed_all():
+    return render_template('feed.html', reviews=get_reviews_from_all())
+
+@app.route('/feed/following')
+@is_logged_in
+def feed_following():
+    return render_template('feed.html', reviews=get_reviews_from_following())
+
+#################
+# USER PROFILES #
+#################
 
 @app.route('/profile')
 @is_logged_in #makes it so they must be logged in to view it.
@@ -138,6 +167,28 @@ def user_followers(username):
     else:
         return "user does not exist"
 
+@app.route('/user/<username>/likes') # TODO
+def user_likes(username):
+    data = query_db("""
+        SELECT
+        reviews.*
+        FROM likes
+        INNER JOIN users ON users.id = votes.follower_id
+        INNER JOIN users AS users_following ON users_following.id = follows.following_id
+        WHERE users.username = %s
+        """,
+        (username,)
+    )
+    print(data)
+    if data != None:
+        return render_template('following.html', username=username, following=data)
+    else:
+        return "user does not exist"
+
+###########
+# ACTIONS #
+###########
+
 @app.route('/follow')
 def follow():
     query_db("INSERT INTO follows(follower_id, following_id) VALUES(%s, %s)", (session['user_id'], request.args.get('user_id')))
@@ -187,9 +238,27 @@ def get_reviews():
         return "{}" # no user with that name
     return jsonify(get_reviews_from_user(user_id, number_of_reviews))
 
-##############
-# NOT ROUTES #
-##############
+################
+#              #
+#  NOT ROUTES  #
+#              #
+################
+
+def get_reviews_from_all(amount=100):
+    data = query_db("""
+        SELECT
+        subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
+        users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
+        reviews.id AS id, reviews.text AS review_text, reviews.date AS review_date, reviews.score AS reivew_score
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        JOIN subjects ON reviews.subject_id = subjects.id
+        ORDER BY review_date DESC
+        LIMIT %s
+        """,
+        (amount,)
+    )
+    return data
 
 def get_reviews_from_following(amount=100):
     data = query_db("""
@@ -200,7 +269,7 @@ def get_reviews_from_following(amount=100):
         FROM reviews
         JOIN users ON reviews.user_id = users.id
         JOIN subjects ON reviews.subject_id = subjects.id
-        --WHERE reviews.user_id IN (SELECT following_id FROM follows WHERE follower_id = %s) TODO
+        WHERE reviews.user_id IN (SELECT following_id FROM follows WHERE follower_id = %s)
         ORDER BY review_date DESC
         LIMIT %s
         """,
