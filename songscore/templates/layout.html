@@ -13,12 +13,14 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
 
 		<script type="text/javascript" src="/static/jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="/static/bootstrap.min.js"></script>
 	</head>
 	<body>
 		{% include 'includes/_navbar.html' %}
-		<div id="container">
-			{% include 'includes/_messages.html'%}
-			{% block body %}{% endblock body %}
+		<div class="container">
+		{% include 'includes/_messages.html'%}
+		{% block body %}
+		{% endblock body %}
 		</div>
 		<div id="footer" style="margin: 100px 0 50px 0; text-align: center;">
 			<div><a href="mailto:angus.findlay.mb@gmail.com">Support</a></div>
