@@ -26,6 +26,9 @@
 	<button>upvote</button>
 	<button>downvote</button>
 	<div>
+	{% for comment in review["comments"] %}
+	{% include 'includes/_comment.html' %}
+	{% endfor %}
 	</div>
 	<form class="inline-form" id="" action="/comment" method="post">
 		<input name="review_id" hidden value="{{ review["id"] }}">

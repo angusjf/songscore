@@ -4,6 +4,7 @@ from passlib.hash import sha256_crypt
 import psycopg2, psycopg2.extras
 from functools import wraps
 import os
+import datetime
 
 app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
@@ -245,7 +246,7 @@ def get_reviews():
 ################
 
 def get_reviews_from_all(amount=100):
-    data = query_db("""
+    reviews = query_db("""
         SELECT
         subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
         users.name AS user_name, users.username AS user_username, users.picture AS user_picture,
@@ -258,7 +259,16 @@ def get_reviews_from_all(amount=100):
         """,
         (amount,)
     )
-    return data
+    comments = query_db("SELECT * FROM reviews JOIN comments ON comments.review_id = reviews.id")
+    for review in reviews:
+        review['comments'] = []
+        for comment in comments:
+            if review['id'] == comment['review_id']:
+                review['comments'].append(comment)
+    import pprint
+    pprint.pprint(reviews)
+    pprint.pprint(comments)
+    return reviews
 
 def get_reviews_from_following(amount=100):
     data = query_db("""
