@@ -16,7 +16,14 @@ class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
     username = StringField('Username', [validators.Length(min=4, max=25)]) #they must input a username between 4 and 25 characters
     email = StringField('Email', [validators.Length(min=6, max=50)]) #they must input a username between 4 and 25 characters
-    password = PasswordField ('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='The passwords need to match yo')])
+    password = PasswordField (
+        'Password',
+        [
+            validators.DataRequired(),
+            validators.EqualTo('confirm', message='The passwords need to match yo'),
+            validators.Length(min=8, max=100, message='password should be at least 8 characters')
+        ]
+    )
     confirm = PasswordField('Confirm Password')
 
 # Check if user logged in so they can't access pages they shouldn't.
@@ -165,17 +172,6 @@ def get_reviews_from_following(amount=100):
         """,
         (session['user_id'], amount)
     )
-    for review in data:
-        print(review['id'], "<<<<")
-        data['comments'] = query_db("""
-            SELECT
-            comments.user_id, comments.text
-            FROM comments
-            WHERE comments.review_id = ?
-            --ORDER BY comments.date DESC
-            """,
-            (review['id'],)
-        )
     return data
 
 def get_reviews_from_user(id, amount=100):
