@@ -104,6 +104,24 @@ def user_page(username):
     else:
         return "user does not exist"
 
+@app.route('/user/<username>/following')
+def user_following(username):
+    data = query_db("""
+        SELECT
+        users_followers.username, users_following.*
+        FROM follows
+        INNER JOIN users AS users_following ON users_following.id = follows.following_id
+        INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
+        WHERE users_followers.username = %s
+        """,
+        (username,)
+    )
+    print(data)
+    if data != None:
+        return render_template('following.html', username=username, following=data)
+    else:
+        return "user does not exist"
+
 @app.route('/follow')
 def follow():
     query_db("INSERT INTO follows(follower_id, following_id) VALUES(%s, %s)", (session['user_id'], request.args.get('user_id')))
@@ -206,7 +224,7 @@ def close_db(exception):
         g.db.close()
 
 def query_db(query, args=(), one=False):
-    cursor = get_db().cursor(cursor_factory=psycopg2.extras.DictCursor) # return dict instead of list
+    cursor = get_db().cursor(cursor_factory=psycopg2.extras.RealDictCursor) # return dict instead of list
     cursor.execute(query, args)
     get_db().commit()
     if cursor.description != None:
