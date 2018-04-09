@@ -1,9 +1,9 @@
 <div>
 	<div class="top-group">
-		<a href='/user/{{ comment["user_username"] }}'>
+		<a href='/user/{{ comment["username"] }}'>
+			<div class='userName'>{{ comment["username"] }}</div>
 			<div class='Name'>{{ comment["username"] }}</div>
-			<img class='userPicture' src='{{ comment["user_picture"] }}'>
-			<div class='userName'>{{ comment["user_username"] }}</div>
+			<img class='userPicture' src='{{ comment["picture"] }}'>
 		</a>
 	</div>
 	<div class="text-group">

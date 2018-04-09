@@ -259,15 +259,16 @@ def get_reviews_from_all(amount=100):
         """,
         (amount,)
     )
-    comments = query_db("SELECT * FROM reviews JOIN comments ON comments.review_id = reviews.id")
+    comments = query_db("""SELECT * FROM reviews
+        JOIN comments ON comments.review_id = reviews.id JOIN users ON comments.user_id = users.id""")
     for review in reviews:
+        # comments
         review['comments'] = []
         for comment in comments:
             if review['id'] == comment['review_id']:
                 review['comments'].append(comment)
-    import pprint
-    pprint.pprint(reviews)
-    pprint.pprint(comments)
+                print(comment)
+        # dates
     return reviews
 
 def get_reviews_from_following(amount=100):
