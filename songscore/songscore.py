@@ -61,9 +61,8 @@ def index():
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate(): # need to make sure the request is post, and that it matches the validation
-        picture = "https://www.gravatar.com/avatar/" + md5(form.email.data.encode('utf-8')).hexdigest()
         query_db("INSERT INTO users(name, email, username, password, picture) VALUES(%s, %s, %s, %s, %s)",
-            (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)), picture))
+            (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)), get_user_picture(form.email.data)))
         flash('You are now registered and can log in', 'success') # format this for a good message
         return redirect(url_for('login'))
     else:
@@ -303,6 +302,10 @@ def get_reviews_from_user(id, amount=100):
         (id, amount)
     )
     return data
+
+def get_user_picture(email):
+    return "https://www.gravatar.com/avatar/%s?d=https://songscore.herokuapp.com/static/images/profile.png" % md5(email.encode('utf-8')).hexdigest()
+
 
 ############
 # DATABASE #
