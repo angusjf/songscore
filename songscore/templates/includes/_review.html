@@ -23,8 +23,16 @@
 			</div>
 		</div>
 	</div>
-	<button>upvote</button>
-	<button>downvote</button>
+	{% if review["user_id"] != session["user_id"] %}
+	<form action="/like" method="post">
+		<input type="hidden" name="review_id" value="{{review["id"]}}" />
+		<input type="submit" value="like" />
+	</form>
+	<form action="/dislike" method="post">
+		<input type="hidden" name="review_id" value="{{review["id"]}}" />
+		<input type="submit" value="dislike" />
+	</form>
+	{% endif %}
 	<div>
 	{% for comment in review["comments"] %}
 	{% include 'includes/_comment.html' %}
