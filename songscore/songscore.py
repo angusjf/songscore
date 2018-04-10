@@ -67,7 +67,7 @@ def register():
         db.session.add(User(
             username=form.username.data,
             email=form.email.data,
-            name=form.user.data,
+            name=form.name.data,
             password=sha256_crypt.encrypt(str(form.password.data)),
             picture="https://www.gravatar.com/avatar/%s?d=https://songscore.herokuapp.com/static/images/profile.png" % md5(form.email.data.encode('utf-8')).hexdigest()
         ))
@@ -114,11 +114,11 @@ def logout():
 @is_logged_in
 def notifications():
     notifications = {}
-    notifications['likes'] = [] # query_db(""" SELECT users.username, subjects.name AS subject_name FROM likes JOIN users ON users.id = likes.user_id JOIN reviews ON reviews.id = likes.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND likes.seen = false """, (session['user_id'],))
+    notifications['likes'] = [] # query_db(" SELECT users.username, subjects.name AS subject_name FROM likes JOIN users ON users.id = likes.user_id JOIN reviews ON reviews.id = likes.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND likes.seen = false ", (session['user_id'],))
     notifications['likes'] = [] # Likes.query.filter_by(
-    notifications['dislikes'] = [] # query_db(""" SELECT users.username, subjects.name AS subject_name FROM dislikes JOIN users ON users.id = dislikes.user_id JOIN reviews ON reviews.id = dislikes.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND dislikes.seen = false """, (session['user_id'],))
-    notifications['comments'] = [] # query_db(""" SELECT users.username, subjects.name AS subject_name, comments.text FROM comments JOIN users ON users.id = comments.user_id JOIN reviews ON reviews.id = comments.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND comments.seen = false """, (session['user_id'],))
-    notifications['follows'] = [] # query_db(""" SELECT users.username FROM follows JOIN users ON users.id = follows.follower_id WHERE following_id = %s AND seen = false """, (session['user_id'],))
+    notifications['dislikes'] = [] # query_db(" SELECT users.username, subjects.name AS subject_name FROM dislikes JOIN users ON users.id = dislikes.user_id JOIN reviews ON reviews.id = dislikes.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND dislikes.seen = false ", (session['user_id'],))
+    notifications['comments'] = [] # query_db(" SELECT users.username, subjects.name AS subject_name, comments.text FROM comments JOIN users ON users.id = comments.user_id JOIN reviews ON reviews.id = comments.review_id JOIN subjects ON subjects.id = reviews.subject_id WHERE reviews.user_id = %s AND comments.seen = false ", (session['user_id'],))
+    notifications['follows'] = [] # query_db(" SELECT users.username FROM follows JOIN users ON users.id = follows.follower_id WHERE following_id = %s AND seen = false ", (session['user_id'],))
     notifications['review_mentions'] = [] #query_db("SELECT * FROM review_mentions WHERE mentioned_id = %s AND seen = false", (session['user_id'],))
     notifications['comment_mentions'] = [] #query_db("SELECT * FROM comment_mentions WHERE mentioned_id = %s AND seen = false", (session['user_id'],))
     return render_template('notifications.html', notifications=notifications)
@@ -239,7 +239,7 @@ def submit_comment():
 ###############
 
 class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
     text = db.Column(db.Text, nullable=False)
@@ -252,13 +252,13 @@ dislikes = db.Table('dislikes',
 )
 
 follows = db.Table('follows',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('following_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('following_id', db.Integer, db.ForeignKey('user.id'))
 )
 
 likes = db.Table('likes',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('review_id', db.Integer, db.ForeignKey('review.id'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('review_id', db.Integer, db.ForeignKey('review.id'))
 )
 
 class Review(db.Model):
@@ -276,25 +276,29 @@ class Review(db.Model):
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(5), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    artist_name = db.Column(db.String(100), nullable=False)
-    art = db.Column(db.String(100), nullable=False) #DEFAULT '/static/images/subject.png'::character varying NOT NULL,
+    type = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    artist_name = db.Column(db.String, nullable=False)
+    art = db.Column(db.String, nullable=False) #DEFAULT '/static/images/subject.png'::character varying NOT NULL,
     # CONSTRAINT subjects_type_check CHECK (((type = 'album'::text) OR (type = 'song'::text)))
     # reviews = db.relationship
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    picture = db.Column(db.String(100), nullable=False) # (DEFAULT '/static/images/profile.png'::text NOT NULL
+    name = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    picture = db.Column(db.String, nullable=False) # (DEFAULT '/static/images/profile.png'::text NOT NULL
     # register_date timestamp without time zone DEFAULT now() NOT NULL,
     reviews = db.relationship('Review', backref='user')
     comments = db.relationship('Comment', backref='user')
     likes = db.relationship('Review', secondary='likes')
     dislikes = db.relationship('Review', secondary='dislikes')
-    followers = db.relationship('User', secondary='follows')
-    following = db.relationship('User', secondary='follows')
-
+    following = db.relationship(
+        'User', secondary=follows,
+        primaryjoin=(follows.c.follower_id == id),
+        secondaryjoin=(follows.c.following_id == id),
+        backref=db.backref('followers', lazy='dynamic'),
+        lazy='dynamic'
+    )
