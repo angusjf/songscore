@@ -250,13 +250,16 @@ def submit_review():
         (session['user_id'], request.form['rating'], subject['id'], request.form['text']))
     return redirect(url_for("index"))
 
-@app.route('/vote', methods=['POST'])
-def submit_vote():
-    if request['type'] == "upvote":
-        upvote = "TRUE"
-    elif request.form['type'] == "downvote":
-        upvote = "FALSE"
-    query_db("INSERT INTO votes (user_id, review_id, upvote) VALUES (%s, %s, %s)", (session['user_id'], request.form['review_id'], upvote))
+@app.route('/like', methods=['POST'])
+def like():
+    query_db("INSERT INTO likes (user_id, review_id) VALUES (%s, %s)",
+        (session['user_id'], request.form['review_id']))
+    return redirect(url_for("index"))
+
+@app.route('/dislike', methods=['POST'])
+def dislike():
+    query_db("INSERT INTO dislikes (user_id, review_id) VALUES (%s, %s)",
+        (session['user_id'], request.form['review_id']))
     return redirect(url_for("index"))
 
 @app.route('/comment', methods=['POST'])
