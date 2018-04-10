@@ -82,13 +82,13 @@ def register():
 def login():
     # Not using WTForms cos there's no point
     if request.method == 'POST': # if they submit some data, catch it from the form
-        data = User.query.filter_by(username = request.form['username']).first()
+        user = User.query.filter_by(username = request.form['username']).first()
 
-        if data != None: # user exists
-            if sha256_crypt.verify(request.form['password'], data['password']): # pass the password entered and the actual password found into sha256
+        if user != None: # user exists
+            if sha256_crypt.verify(request.form['password'], user.password): # pass the password entered and the actual password found into sha256
                 session['logged_in'] = True
-                session['user_id'] = data['id']
-                session['username'] = data['username']
+                session['user_id'] = user.id
+                session['username'] = user.username
                 flash('You will hopefully now be logged in (no promises lol)', 'success')
                 return redirect(url_for('index'))
             else:
@@ -135,7 +135,7 @@ def feed():
 @app.route('/feed/all')
 @is_logged_in
 def feed_all():
-    return render_template('feed.html', reviews=Review.query.all)
+    return render_template('feed.html', reviews=Review.query.all())
 
 @app.route('/feed/following')
 @is_logged_in
@@ -187,8 +187,8 @@ def user_comments(username):
 
 @app.route('/follow')
 def follow():
-    db.add(Follow(follower_id=session['user_id'], following_id=request.args.get('user_id')))
-    db.commit()
+    db.session.add(Follow(follower_id=session['user_id'], following_id=request.args.get('user_id')))
+    db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/submit', methods=['POST'])
@@ -200,11 +200,11 @@ def submit_review():
     ).first()
 
     if subject == None: # not yet in the database
-        db.context.add(Subject(
+        db.session.add(Subject(
                 name=request.form['subject_name'],
                 artist_name=request.form['subject_artist_name'],
                 type=request.form['subject_type'],
-                image= request.form['subject_image']
+                art=request.form['subject_image']
         ))
         subject = Subject.query.filter_by(
             name=request.form['subject_name'],
@@ -281,7 +281,7 @@ class Subject(db.Model):
     artist_name = db.Column(db.String, nullable=False)
     art = db.Column(db.String, nullable=False) #DEFAULT '/static/images/subject.png'::character varying NOT NULL,
     # CONSTRAINT subjects_type_check CHECK (((type = 'album'::text) OR (type = 'song'::text)))
-    # reviews = db.relationship
+    reviews = db.relationship('Review', backref='subject')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

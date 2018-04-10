@@ -1,8 +1,8 @@
 {% extends 'userpage.html' %}
 
 {% block contents %}
-	these users follow {{ username }}:
-	{% for user in followers %}
+	these users follow {{ user.username }}:
+	{% for user in user.followers %}
 		{% include 'includes/_user.html' %}
 	{% endfor %}
 {% endblock %}

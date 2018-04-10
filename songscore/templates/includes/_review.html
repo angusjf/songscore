@@ -2,44 +2,44 @@
 	<div class="section-content review-content">
 		<div class='subject-group'>
 			<div class="subjectPictureDiv">
-				<img class='subjectPicture' src='{{ review["subject_image"]}}'>
+				<img class='subjectPicture' src='{{ review.subject_image}}'>
 			</div>
-			<div class='subjectName'>{{ review["subject_name"]}}</div>
-			<div class='subjectName'>{{ review["subject_artist_name"]}}</div>
+			<div class='subjectName'>{{ review.subject.name}}</div>
+			<div class='subjectName'>{{ review.subject.artist_name}}</div>
 		</div>
 
 		<div class="review-right">
 			<div class="top-group">
-				<a href='/user/{{ review["user_username"] }}'>
-					<div class='Name'>{{ review["user_name"] }}</div>
-					<img class='userPicture' src='{{ review["user_picture"] }}'>
-					<div class='userName'>{{ review["user_username"] }}</div>
+				<a href='/user/{{ review.user.username }}'>
+					<div class='Name'>{{ review.user.name }}</div>
+					<img class='userPicture' src='{{ review.user.picture }}'>
+					<div class='userName'>{{ review.user.username }}</div>
 				</a>
-				<div class='rating'>{{ review["review_score"] }}</div>
+				<div class='rating'>{{ review.score }}</div>
 			</div>
 			<div class="text-group">
-				<div class='text'>{{ review["review_text"] }}</div>
-				<div class='date'>{{ review["review_date"] }}</div>
+				<div class='text'>{{ review.text }}</div>
+				<div class='date'>{{ review.date }}</div>
 			</div>
 		</div>
 	</div>
-	{% if review["user_id"] != session["user_id"] %}
+	{% if review.user_id != session["user_id"] %}
 	<form action="/like" method="post">
-		<input type="hidden" name="review_id" value="{{review["id"]}}" />
+		<input type="hidden" name="review_id" value="{{review.id}}" />
 		<input type="submit" value="like" />
 	</form>
 	<form action="/dislike" method="post">
-		<input type="hidden" name="review_id" value="{{review["id"]}}" />
+		<input type="hidden" name="review_id" value="{{review.id}}" />
 		<input type="submit" value="dislike" />
 	</form>
 	{% endif %}
 	<div>
-	{% for comment in review["comments"] %}
+	{% for comment in review.comments %}
 	{% include 'includes/_comment.html' %}
 	{% endfor %}
 	</div>
 	<form class="inline-form" id="" action="/comment" method="post">
-		<input name="review_id" hidden value="{{ review["id"] }}">
+		<input name="review_id" hidden value="{{ review.id }}">
 		<input name="text" type="text" placeholder="leave a comment">
 		<input type="submit" value="comment">
 	</form>
