@@ -173,14 +173,11 @@ def user_page(username):
 @app.route('/user/<username>/following')
 def user_following(username):
     data = query_db("""
-        SELECT
-        users_following.*
-        FROM follows
+        SELECT users_following.* FROM follows
         INNER JOIN users AS users_following ON users_following.id = follows.following_id
         INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
         WHERE users_followers.username = %s
-        """,
-        (username,)
+        """, (username,)
     )
     user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
     return render_template('following.html', user=user, following=data)
@@ -188,29 +185,30 @@ def user_following(username):
 @app.route('/user/<username>/followers')
 def user_followers(username):
     data = query_db("""
-        SELECT
-        users_followers.*
-        FROM follows
+        SELECT users_followers.* FROM follows
         INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
         INNER JOIN users AS users_following ON users_following.id = follows.following_id
         WHERE users_following.username = %s
-        """,
-        (username,)
+        """, (username,)
     )
     user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
     return render_template('followers.html', user=user, followers=data)
 
 @app.route('/user/<username>/likes')
 def user_likes(username):
-    data = query_db("""
-        SELECT reviews.* FROM likes
+    liked_reviews = query_db("""
+        SELECT
+        subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
+        users.name AS user_name, users.username AS user_username, users.picture AS user_picture
+        FROM likes
         INNER JOIN reviews ON reviews.id = likes.review_id
+        INNER JOIN users ON reviews.user_id = users.id
+        INNER JOIN subjects ON reviews.subject_id = subjects.id
         WHERE likes.user_id = (SELECT id FROM users WHERE username = %s)
-        """,
-        (username,)
+        """, (username,)
     )
     user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
-    return render_template('likes.html', user=user, likes=data)
+    return render_template('likes.html', user=user, likes=liked_reviews)
 
 @app.route('/user/<username>/dislikes')
 def user_dislikes(username):
@@ -218,8 +216,7 @@ def user_dislikes(username):
         SELECT reviews.* FROM dislikes
         INNER JOIN reviews ON reviews.id = dislikes.review_id
         WHERE dislikes.user_id = (SELECT id FROM users WHERE username = %s)
-        """,
-        (username,)
+        """, (username,)
     )
     user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
     return render_template('dislikes.html', user=username, dislikes=data)
@@ -230,8 +227,7 @@ def user_comments(username):
         SELECT reviews.* FROM comments
         INNER JOIN reviews ON reviews.id = comments.review_id
         WHERE comments.user_id = (SELECT id FROM users WHERE username = %s)
-        """,
-        (username,)
+        """, (username,)
     )
     user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
     return render_template('comments.html', user=user, comments=data)
@@ -317,8 +313,6 @@ def get_reviews_from_all(amount=100):
         for comment in comments:
             if review['id'] == comment['review_id']:
                 review['comments'].append(comment)
-                print(comment)
-        # dates
     return reviews
 
 def get_reviews_from_following(amount=100):
