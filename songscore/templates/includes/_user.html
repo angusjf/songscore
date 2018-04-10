@@ -3,6 +3,9 @@
         <h2 class="capital">{{ user['name'] }}</h2>
         <h2 class="capital">{{ user['username'] }}</h2>
         <img src="{{ user['picture'] }}"/>
-	<!--<button id="follow">follow</button> TODO -->
+        <form action="/follow" method="post">
+    	       <input type="hidden" value="{{ user['id'] }}"/>
+    	       <input type="submit" value="follow"/>
+        </form>
     </div>
 </div>

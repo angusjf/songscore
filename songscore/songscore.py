@@ -167,66 +167,70 @@ def profile():
 
 @app.route('/user/<username>')
 def user_page(username):
-    data = query_db("SELECT * FROM users WHERE username = %s", (username,), one=True)
-    if data != None:
-        return render_template('profile.html', id=data['id'], name=data['name'], username=data['username'],
-            picture=data['picture'], reviews=get_reviews_from_user(data['id']))
-    else:
-        return "user does not exist"
+    user = query_db("SELECT * FROM users WHERE username = %s", (username,), one=True)
+    return render_template('userpage.html', user=user, reviews=get_reviews_from_user(user['id']))
 
 @app.route('/user/<username>/following')
 def user_following(username):
     data = query_db("""
-        SELECT
-        users_following.*
-        FROM follows
+        SELECT users_following.* FROM follows
         INNER JOIN users AS users_following ON users_following.id = follows.following_id
         INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
         WHERE users_followers.username = %s
-        """,
-        (username,)
+        """, (username,)
     )
-    print(data)
-    if data != None:
-        return render_template('following.html', username=username, following=data)
-    else:
-        return "user does not exist"
+    user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
+    return render_template('following.html', user=user, following=data)
 
 @app.route('/user/<username>/followers')
 def user_followers(username):
     data = query_db("""
-        SELECT
-        users_followers.*
-        FROM follows
+        SELECT users_followers.* FROM follows
         INNER JOIN users AS users_followers ON users_followers.id = follows.follower_id
         INNER JOIN users AS users_following ON users_following.id = follows.following_id
         WHERE users_following.username = %s
-        """,
-        (username,)
+        """, (username,)
     )
-    print(data)
-    if data != None:
-        return render_template('following.html', username=username, following=data)
-    else:
-        return "user does not exist"
+    user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
+    return render_template('followers.html', user=user, followers=data)
 
-@app.route('/user/<username>/likes') # TODO
+@app.route('/user/<username>/likes')
 def user_likes(username):
-    data = query_db("""
+    liked_reviews = query_db("""
         SELECT
-        reviews.*
+        subjects.name AS subject_name, subjects.artist_name AS subject_artist_name, subjects.image AS subject_image,
+        users.name AS user_name, users.username AS user_username, users.picture AS user_picture
         FROM likes
-        INNER JOIN users ON users.id = votes.follower_id
-        INNER JOIN users AS users_following ON users_following.id = follows.following_id
-        WHERE users.username = %s
-        """,
-        (username,)
+        INNER JOIN reviews ON reviews.id = likes.review_id
+        INNER JOIN users ON reviews.user_id = users.id
+        INNER JOIN subjects ON reviews.subject_id = subjects.id
+        WHERE likes.user_id = (SELECT id FROM users WHERE username = %s)
+        """, (username,)
     )
-    print(data)
-    if data != None:
-        return render_template('following.html', username=username, following=data)
-    else:
-        return "user does not exist"
+    user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
+    return render_template('likes.html', user=user, likes=liked_reviews)
+
+@app.route('/user/<username>/dislikes')
+def user_dislikes(username):
+    data = query_db("""
+        SELECT reviews.* FROM dislikes
+        INNER JOIN reviews ON reviews.id = dislikes.review_id
+        WHERE dislikes.user_id = (SELECT id FROM users WHERE username = %s)
+        """, (username,)
+    )
+    user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
+    return render_template('dislikes.html', user=username, dislikes=data)
+
+@app.route('/user/<username>/comments')
+def user_comments(username):
+    data = query_db("""
+        SELECT reviews.* FROM comments
+        INNER JOIN reviews ON reviews.id = comments.review_id
+        WHERE comments.user_id = (SELECT id FROM users WHERE username = %s)
+        """, (username,)
+    )
+    user = {'id': 3, 'name': 'test', 'username': 'test', 'picture': '/static/images/profile.png'}
+    return render_template('comments.html', user=user, comments=data)
 
 ###########
 # ACTIONS #
@@ -309,8 +313,6 @@ def get_reviews_from_all(amount=100):
         for comment in comments:
             if review['id'] == comment['review_id']:
                 review['comments'].append(comment)
-                print(comment)
-        # dates
     return reviews
 
 def get_reviews_from_following(amount=100):
