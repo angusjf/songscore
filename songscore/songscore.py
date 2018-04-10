@@ -5,6 +5,7 @@ import psycopg2, psycopg2.extras
 from functools import wraps
 import os
 import datetime
+from hashlib import md5
 
 app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
@@ -60,8 +61,9 @@ def index():
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate(): # need to make sure the request is post, and that it matches the validation
-        query_db("INSERT INTO users(name, email, username, password) VALUES(%s, %s, %s, %s)",
-            (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data))))
+        picture = "https://www.gravatar.com/avatar/" + md5(form.email.data.encode('utf-8')).hexdigest()
+        query_db("INSERT INTO users(name, email, username, password, picture) VALUES(%s, %s, %s, %s, %s)",
+            (form.name.data, form.email.data, form.username.data, sha256_crypt.encrypt(str(form.password.data)), picture))
         flash('You are now registered and can log in', 'success') # format this for a good message
         return redirect(url_for('login'))
     else:
