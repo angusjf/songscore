@@ -212,13 +212,12 @@ nav ul li a:visited:hover {
   background: #b73234;
   color: #ffffff;
 }
-nav ul li a:not(:only-child):after,
-nav ul li a:visited:not(:only-child):after {
+.nav-dropdown-link:after {
   padding-left: 4px;
   content: ' ▾';
 }
 nav ul li ul li {
-  min-width: 190px;
+  /*min-width: 190px;*/
 }
 nav ul li ul li a {
   padding: 15px;
