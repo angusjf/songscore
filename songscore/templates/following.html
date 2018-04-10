@@ -1,13 +1,8 @@
-{% extends 'layout.html' %}
+{% extends 'userpage.html' %}
 
-{% block body %}
-
+{% block contents %}
 	{{ username }} is following:
-
 	{% for user in following %}
-
 		{% include 'includes/_user.html' %}
-
 	{% endfor %}
-
 {% endblock %}
