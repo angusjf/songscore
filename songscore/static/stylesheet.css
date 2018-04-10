@@ -94,6 +94,10 @@ min-height: 100vh;
   display: flex;
 }
 
+.register-content-outer .form-group {
+  margin: 30px 0;
+}
+
 .register-content-inner {
   position: absolute;
   width: 90%;
@@ -243,7 +247,7 @@ nav ul li ul li a {
   padding: 0 0;
 }
 
-/* Mobile navigation */
+/* Mobile nav */
 .nav-mobile {
   display: none;
   position: absolute;
@@ -281,6 +285,9 @@ nav ul li ul li a {
     position: static;
   }
 }
+.nav-container {
+  width: 100% !important;
+}
 @media screen and (min-width: 651px) {
   .nav-list {
     display: block !important;
@@ -291,36 +298,47 @@ nav ul li ul li a {
   left: 18px;
   top: 22px;
   cursor: pointer;
-  padding: 10px 35px 16px 0px;
+  padding: 7px 35px 16px 0px;
 }
 #nav-toggle span,
 #nav-toggle span:before,
 #nav-toggle span:after {
   cursor: pointer;
   border-radius: 1px;
-  height: 5px;
+  height: 2px;
   width: 35px;
   background: #ffffff;
   position: absolute;
   display: block;
   content: '';
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+#nav-toggle span {
+
 }
 #nav-toggle span:before {
-  top: -10px;
+  top: -7px;
 }
 #nav-toggle span:after {
-  bottom: -10px;
+  bottom: -7px;
 }
 #nav-toggle.active span {
   background-color: transparent;
 }
-#nav-toggle.active span:before, #nav-toggle.active span:after {
-  top: 0;
+#nav-toggle.active span:before {
+  -webkit-transform: translateY(7px) rotate(45deg);
+  -ms-transform: translateY(7px) rotate(45deg);
+  -o-transform: translateY(7px) rotate(45deg);
+  transform: translateY(7px) rotate(45deg);
 }
-.nav-container {
-  width: 100% !important;
+#nav-toggle.active span:after {
+  -webkit-transform: translateY(-7px) rotate(-45deg);
+  -ms-transform: translateY(-7px) rotate(-45deg);
+  -o-transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-7px) rotate(-45deg);
 }
-
 
 /*END NAV CSS*/
 
@@ -329,7 +347,7 @@ nav ul li ul li a {
   margin: 5px 25px 5px 0;
   color: #fff;
   border-radius: 500px;
-  padding: 10px 20px;
+  padding: 7px 20px;
   overflow: hidden;
 }
 
@@ -409,19 +427,18 @@ img {
 }
 
 .form-group { /* each text entry is in a group */
-  margin: 15px 15px;
+  margin: 15px 0px;
   position: relative;
   display: inline-block;
 }
 
 .text-group { /* each text entry is in a group */
   width:90%;
-  margin-top: 40px;
 }
 
 .text-input	{ /* actual text box*/
   font-size: 1em;
-  padding-bottom: 10px;
+  padding-bottom: 7px;
   border:none;
   border-bottom:1px solid #757575;
   width: 100%;
@@ -494,7 +511,7 @@ input:focus ~ .highlight {
 /*BEGIN STAR RATING CSS*/
 .rating {
   width: 150px;
-  float: right;
+  /*float: right; removed 10/04/18. an't remember why this is here. messes with CSS. hope it isn't important*/
 }
 
 /* :not(:checked) is a filter, so that browsers that don’t support :checked don’t
@@ -591,10 +608,12 @@ input:focus ~ .highlight {
 }
 
 .submit-right {
-  width: 150px;
+  width:200px;
   display: block;
   flex-grow: 1;
-  padding-left: 40px;
+}
+
+.submit-right input {
 }
 
 .submit-left {
@@ -610,7 +629,7 @@ input:focus ~ .highlight {
 
 .subjectname {
   font-weight: 400;
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 .top-group .rating {
@@ -618,21 +637,27 @@ input:focus ~ .highlight {
   float: none;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
   .inline-form {
     display: block;
   }
   .submit-right {
     display: inline;
-    width: 100%;
+    /*width: 100%;*/
     margin: 0 auto;
     padding-left: 0;
+  }
+  .submit-right input {
+    float: right;
+    width: 50%;
   }
   .rating {
     float: none;
   }
   .submit {
-    float: right;
+  }
+  .text-group {
+    width: 100%;
   }
 }
 
@@ -681,6 +706,21 @@ input:focus ~ .highlight {
     padding-left: 3em;
 }
   @media screen and (max-width: 500px) {
+
+    .submit-right {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    .submit-right input {
+      float: none;
+      width: 100%;
+    }
+    .submit-right .form-group {
+      margin: 5px 0px;
+    }
+    .rating {
+    }
     .img-container {
       display: block;
       width: 100%;
