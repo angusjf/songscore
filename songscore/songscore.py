@@ -4,7 +4,6 @@ from passlib.hash import sha256_crypt
 import psycopg2, psycopg2.extras
 from functools import wraps
 import os
-import datetime
 from hashlib import md5
 
 app = Flask(__name__) # creates an instance of flask
@@ -95,6 +94,48 @@ def logout():
     session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
+
+#################
+# NOTIFICATIONS #
+#################
+
+@app.route('/notifications')
+@is_logged_in
+def notifications():
+    notifications = {}
+    notifications['likes'] = query_db("""
+        SELECT users.username, subjects.name AS subject_name FROM likes
+        JOIN users ON users.id = likes.user_id
+        JOIN reviews ON reviews.id = likes.review_id
+        JOIN subjects ON subjects.id = reviews.subject_id
+        WHERE reviews.user_id = %s AND likes.seen = false
+        """, (session['user_id'],)
+    )
+    notifications['dislikes'] = query_db("""
+        SELECT users.username, subjects.name AS subject_name FROM dislikes
+        JOIN users ON users.id = dislikes.user_id
+        JOIN reviews ON reviews.id = dislikes.review_id
+        JOIN subjects ON subjects.id = reviews.subject_id
+        WHERE reviews.user_id = %s AND dislikes.seen = false
+        """, (session['user_id'],)
+    )
+    notifications['comments'] = query_db("""
+        SELECT users.username, subjects.name AS subject_name, comments.text FROM comments
+        JOIN users ON users.id = comments.user_id
+        JOIN reviews ON reviews.id = comments.review_id
+        JOIN subjects ON subjects.id = reviews.subject_id
+        WHERE reviews.user_id = %s AND comments.seen = false
+        """, (session['user_id'],)
+    )
+    notifications['follows'] = query_db("""
+        SELECT users.username FROM follows
+        JOIN users ON users.id = follows.follower_id
+        WHERE following_id = %s AND seen = false
+        """, (session['user_id'],)
+    )
+    notifications['review_mentions'] = [] #query_db("SELECT * FROM review_mentions WHERE mentioned_id = %s AND seen = false", (session['user_id'],))
+    notifications['comment_mentions'] = [] #query_db("SELECT * FROM comment_mentions WHERE mentioned_id = %s AND seen = false", (session['user_id'],))
+    return render_template('notifications.html', notifications=notifications)
 
 ########
 # FEED #

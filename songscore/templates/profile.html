@@ -1,29 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<script src='/static/reviewbox.js'></script>
-<script>
-/*
-    $(document).ready(function () {
-        $('#follow').click(function () {
-            console.log("eeee");
-            $.ajax({
-                method : "GET",
-                url : "/follow",
-                data : { user_id : '{{id}}' }
-            });
-        })
-
-        $.ajax({
-            method : "GET",
-            url : "/getreviews",
-            data : { user_id : '{{id}}', n : 30 }
-        }).done(
-            data => data.forEach(review => $('#posts').append(generateReviewBox(review)))
-        );
-    });
-*/
-</script>
 <div class="section shadow-1">
     <div class="section-content">
         <h2 class="capital">{{ name }}</h2>
