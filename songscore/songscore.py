@@ -243,7 +243,7 @@ class ReviewComment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     review_id = db.Column(db.Integer, db.ForeignKey('review.id', ondelete='CASCADE'), nullable=False)
     text = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+    datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     seen = db.Column(db.Boolean, default=False, nullable=False)
 
 dislikes = db.Table('dislikes',
@@ -272,7 +272,7 @@ class Review(db.Model):
     # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
     stars = db.Column(db.Integer, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    comments = db.relationship('ReviewComment', backref='review')
+    comments = db.relationship('ReviewComment', backref='review', order_by='ReviewComment.datetime')
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -281,7 +281,7 @@ class Subject(db.Model):
     name = db.Column(db.String, nullable=False)
     artist_name = db.Column(db.String, nullable=False)
     art = db.Column(db.String, nullable=False, default='/static/images/subject.png')
-    reviews = db.relationship('Review', backref='subject')
+    reviews = db.relationship('Review', backref='subject', order_by='Review.datetime')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -291,14 +291,15 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     picture = db.Column(db.String, nullable=False, default="'https://www.gravatar.com/avatar/' || md5(email) || '?d=https://songscore.herokuapp.com/static/images/profile.png'")
     register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    reviews = db.relationship('Review', backref='user')
-    comments = db.relationship('ReviewComment', backref='user')
-    likes = db.relationship('Review', secondary='likes')
-    dislikes = db.relationship('Review', secondary='dislikes')
+    reviews = db.relationship('Review', backref='user', order_by='Review.datetime')
+    comments = db.relationship('ReviewComment', backref='user', order_by='ReviewComment.datetime')
+    likes = db.relationship('Review', secondary='likes', order_by='Review.datetime')
+    dislikes = db.relationship('Review', secondary='dislikes', order_by='User.register_datetime')
     following = db.relationship(
         'User', secondary=follows,
         primaryjoin=(follows.c.follower_id == id),
         secondaryjoin=(follows.c.following_id == id),
         backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic'
+        lazy='dynamic',
+        order_by='User.register_datetime'
     )
