@@ -272,8 +272,6 @@ class Review(db.Model):
     # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
     stars = db.Column(db.Integer, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    likes = db.relationship('Review', secondary='likes')
-    dislikes = db.relationship('Review', secondary='dislikes')
     comments = db.relationship('ReviewComment', backref='review')
 
 class Subject(db.Model):

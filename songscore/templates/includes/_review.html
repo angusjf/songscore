@@ -2,7 +2,7 @@
 	<div class="section-content review-content">
 		<div class='subject-group'>
 			<div class="subjectPictureDiv">
-				<img class='subjectPicture' src='{{ review.subject_image}}'>
+				<img class='subjectPicture' src='{{ review.subject.art}}'>
 			</div>
 			<div class='subjectName'>{{ review.subject.name}}</div>
 			<div class='subjectName'>{{ review.subject.artist_name}}</div>
@@ -15,7 +15,7 @@
 					<img class='userPicture' src='{{ review.user.picture }}'>
 					<div class='userName'>{{ review.user.username }}</div>
 				</a>
-				<div class='rating'>{{ review.score }}</div>
+				<div class='rating'>{{ review.stars }}</div>
 			</div>
 			<div class="text-group">
 				<div class='text'>{{ review.text }}</div>
