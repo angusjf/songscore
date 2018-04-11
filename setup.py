@@ -8,6 +8,7 @@ setup(
         'flask',
         'wtforms',
         'passlib',
-        'psycopg2-binary'
+        'psycopg2-binary',
+        'flask_sqlalchemy'
     ],
  )
