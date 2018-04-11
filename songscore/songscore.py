@@ -10,7 +10,8 @@ app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
 app.config.update({
     'SECRET_KEY' : os.environ['SECRET_KEY'],
-    'SQLALCHEMY_DATABASE_URI' : os.environ['DATABASE_URL']
+    'SQLALCHEMY_DATABASE_URI' : os.environ['DATABASE_URL'],
+    'SQLALCHEMY_TRACK_MODIFICATIONS' : 'false'
 })
 
 db = SQLAlchemy(app)
@@ -69,7 +70,6 @@ def register():
             email=form.email.data,
             name=form.name.data,
             password=sha256_crypt.encrypt(str(form.password.data)),
-            picture="https://www.gravatar.com/avatar/%s?d=https://songscore.herokuapp.com/static/images/profile.png" % md5(form.email.data.encode('utf-8')).hexdigest()
         ))
         db.session.commit()
 
@@ -212,7 +212,7 @@ def submit_review():
             type=request.form['subject_type']
         ).first()
 
-    db.session.add(Review(user_id=session['user_id'],score=request.form['rating'],subject_id=subject.id,text=request.form['text']))
+    db.session.add(Review(user_id=session['user_id'],stars=request.form['rating'],subject_id=subject.id,text=request.form['text']))
     db.session.commit()
     return redirect(url_for("index"))
 
@@ -230,7 +230,7 @@ def dislike():
 
 @app.route('/comment', methods=['POST'])
 def submit_comment():
-    db.session.add(Comment(user_id=session['user_id'], review_id=request.form['review_id'], text=request.form['text']))
+    db.session.add(ReviewComment(user_id=session['user_id'], review_id=request.form['review_id'], text=request.form['text']))
     db.session.commit()
     return redirect(url_for("index"))
 
@@ -238,49 +238,51 @@ def submit_comment():
 # SQL ALCHEMY #
 ###############
 
-class Comment(db.Model):
+class ReviewComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id', ondelete='CASCADE'), nullable=False)
     text = db.Column(db.Text, nullable=False)
-    # date = db.Column(db.timestamp without time zone DEFAULT now() NOT NULL,
-    # CONSTRAINT comments_text_check CHECK ((length(text) > 0))
+    date = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+    seen = db.Column(db.Boolean, default=False, nullable=False)
 
 dislikes = db.Table('dislikes',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('review_id', db.Integer, db.ForeignKey('review.id'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
+    db.Column('review_id', db.Integer, db.ForeignKey('review.id', ondelete='CASCADE')),
+    db.Column('seen', db.Boolean, default=False, nullable=False)
 )
 
 follows = db.Table('follows',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('following_id', db.Integer, db.ForeignKey('user.id'))
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
+    db.Column('following_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
+    db.Column('seen', db.Boolean, default=False, nullable=False)
 )
 
 likes = db.Table('likes',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('review_id', db.Integer, db.ForeignKey('review.id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
+    db.Column('review_id', db.Integer, db.ForeignKey('review.id', ondelete='CASCADE')),
+    db.Column('seen', db.Boolean, default=False, nullable=False)
 )
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     text = db.Column(db.Text)
-    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
-    score = db.Column(db.Integer, nullable=True)
-    # date timestamp without time zone DEFAULT now() NOT NULL,
-    # CONSTRAINT reviews_score_check CHECK (((score >= 0) AND (score <= 5)))
-
+    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id', ondelete='CASCADE'), nullable=False)
+    # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
+    stars = db.Column(db.Integer, nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     likes = db.relationship('Review', secondary='likes')
     dislikes = db.relationship('Review', secondary='dislikes')
-    comments = db.relationship('Comment', backref='review')
+    comments = db.relationship('ReviewComment', backref='review')
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String, nullable=False)
+    # type = db.Column(db.String, db.Constraint("(type = 'album') OR (type ='song')"), nullable=False)
     name = db.Column(db.String, nullable=False)
     artist_name = db.Column(db.String, nullable=False)
-    art = db.Column(db.String, nullable=False) #DEFAULT '/static/images/subject.png'::character varying NOT NULL,
-    # CONSTRAINT subjects_type_check CHECK (((type = 'album'::text) OR (type = 'song'::text)))
+    art = db.Column(db.String, nullable=False, default='/static/images/subject.png')
     reviews = db.relationship('Review', backref='subject')
 
 class User(db.Model):
@@ -289,10 +291,10 @@ class User(db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    picture = db.Column(db.String, nullable=False) # (DEFAULT '/static/images/profile.png'::text NOT NULL
-    # register_date timestamp without time zone DEFAULT now() NOT NULL,
+    picture = db.Column(db.String, nullable=False, default="'https://www.gravatar.com/avatar/' || md5(email) || '?d=https://songscore.herokuapp.com/static/images/profile.png'")
+    register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     reviews = db.relationship('Review', backref='user')
-    comments = db.relationship('Comment', backref='user')
+    comments = db.relationship('ReviewComment', backref='user')
     likes = db.relationship('Review', secondary='likes')
     dislikes = db.relationship('Review', secondary='dislikes')
     following = db.relationship(
