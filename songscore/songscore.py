@@ -1,10 +1,10 @@
 from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response, jsonify, abort
+from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+from hashlib import md5
 from functools import wraps
 import os
-from hashlib import md5
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
@@ -17,24 +17,9 @@ app.config.update({
 db = SQLAlchemy(app)
 
 #########
-# FORMS #
+# WRAPS #
 #########
 
-class RegisterForm(Form):
-    name = StringField('Name', [validators.Length(min=1, max=50)]) #they must input a name between 1 and 50 characters
-    username = StringField('Username', [validators.Length(min=4, max=25)]) #they must input a username between 4 and 25 characters
-    email = StringField('Email', [validators.Length(min=6, max=50)]) #they must input a username between 4 and 25 characters
-    password = PasswordField (
-        'Password',
-        [
-            validators.DataRequired(),
-            validators.EqualTo('confirm', message='The passwords need to match yo'),
-            validators.Length(min=8, max=100, message='password should be at least 8 characters')
-        ]
-    )
-    confirm = PasswordField('Confirm Password')
-
-# Check if user logged in so they can't access pages they shouldn't.
 # Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
 def is_logged_in(f):
     @wraps(f) #pass in 'f'
@@ -284,11 +269,16 @@ def page_not_found(e):
 
 class ReviewComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     review_id = db.Column(db.Integer, db.ForeignKey('review.id', ondelete='CASCADE'), nullable=False)
+
     text = db.Column(db.Text, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     seen = db.Column(db.Boolean, default=False, nullable=False)
+
+    user = db.relationship("User", back_populates="comments") # ~
+    review = db.relationship("Review", back_populates="comments")  # done
 
 dislikes = db.Table('dislikes',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
@@ -310,40 +300,73 @@ likes = db.Table('likes',
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
-    text = db.Column(db.Text)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id', ondelete='CASCADE'), nullable=False)
-    # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
-    stars = db.Column(db.Integer, nullable=False)
+
+    text = db.Column(db.Text)
+    stars = db.Column(db.Integer, nullable=False) # db.Constraint("(stars >= 1) AND (stars <= 5)") TODO
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    comments = db.relationship('ReviewComment', backref='review', cascade="all, delete-orphan")
+
+    user = db.relationship('User', back_populates='reviews')
+    subject = db.relationship('Subject', back_populates='reviews')
+
+    comments = db.relationship('ReviewComment', back_populates='review') #, cascade="all, delete-orphan", single-parent=True)
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String, nullable=False)
-    # type = db.Column(db.String, db.Constraint("(type = 'album') OR (type ='song')"), nullable=False)
+    type = db.Column(db.String, nullable=False) # db.Constraint("(type = 'album') OR (type ='song')" TODO
+
     name = db.Column(db.String, nullable=False)
     artist_name = db.Column(db.String, nullable=False)
     art = db.Column(db.String, nullable=False, default='/static/images/subject.png')
-    reviews = db.relationship('Review', backref='subject', cascade="all, delete-orphan")
+
+    reviews = db.relationship('Review', back_populates='subject') #, cascade="all, delete-orphan")#, single-parent=True)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     picture = db.Column(db.String, nullable=False)
     register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    reviews = db.relationship('Review', backref='user', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
-    comments = db.relationship('ReviewComment', backref='user', order_by='desc(ReviewComment.datetime)', cascade="all, delete-orphan")
-    likes = db.relationship('Review', secondary='likes', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
-    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
+
+    reviews = db.relationship('Review', back_populates='user', order_by='desc(Review.datetime)') #, cascade="all, delete-orphan", single-parent=True)
+    comments = db.relationship('ReviewComment', back_populates='user', order_by='desc(ReviewComment.datetime)') #, cascade="all, delete-orphan") #, single-parent=True)
+    likes = db.relationship('Review', secondary='likes', order_by='desc(Review.datetime)') #, cascade="all, delete-orphan", single-parent=True)
+    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(Review.datetime)') #, cascade="all, delete-orphan", single-parent=True)
     following = db.relationship(
         'User', secondary=follows,
         primaryjoin=(follows.c.follower_id == id),
         secondaryjoin=(follows.c.following_id == id),
         backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic',
-        cascade="all, delete-orphan"
+        lazy='dynamic') #, cascade="all, delete-orphan")
+
+#########
+# FORMS #
+#########
+
+class RegisterForm(Form):
+    usernames = [ user.username for user in User.query.all() ]
+    name = StringField(
+        'Name',
+        [ validators.DataRequired(), validators.Length(min=1, max=50) ]
     )
+    username = StringField(
+        'Username',
+        [ validators.DataRequired(), validators.Length(min=4, max=25), validators.NoneOf(usernames, message="username taken!") ]
+    )
+    email = StringField(
+        'Email', [ validators.DataRequired(), validators.Email(), validators.Length(min=6, max=100) ]
+    )
+    password = PasswordField (
+        'Password',
+        [
+            validators.DataRequired(),
+            validators.EqualTo('confirm', message='The passwords need to match yo'),
+            validators.Length(min=8, max=100)
+        ]
+    )
+    confirm = PasswordField('Confirm Password')
