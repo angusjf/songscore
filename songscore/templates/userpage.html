@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block pagename %}user.username{% endblock %}
+{% block pagename %}{{user.username}}{% endblock %}
 
 {% block body %}
     {% include 'includes/_user.html' %}
