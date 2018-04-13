@@ -140,7 +140,7 @@ def profile():
 
 @app.route('/user/<username>')
 def user_page(username):
-    if User.query.filter_by(username=username).exists():
+    if User.query.filter_by(username=username).one_or_none():
         return redirect(url_for('user_reviews', username=username))
     else:
         abort(404)
