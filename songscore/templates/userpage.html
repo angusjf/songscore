@@ -1,7 +1,17 @@
 {% extends 'layout.html' %}
 
+{% block pagename %}user.username{% endblock %}
+
 {% block body %}
     {% include 'includes/_user.html' %}
+
+    <a href="/user/{{ user.username }}/reviews">reviews</a>
+    <a href="/user/{{ user.username }}/likes">likes</a>
+    <a href="/user/{{ user.username }}/dislikes">dislikes</a>
+    <a href="/user/{{ user.username }}/followers">followers</a>
+    <a href="/user/{{ user.username }}/following">following</a>
+
+
     {% block contents %}
     {% endblock %}
 {% endblock %}

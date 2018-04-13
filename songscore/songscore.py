@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response, jsonify
+from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response, jsonify, abort
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
@@ -70,6 +70,7 @@ def register():
             email=form.email.data,
             name=form.name.data,
             password=sha256_crypt.encrypt(str(form.password.data)),
+            picture = "https://www.gravatar.com/avatar/%s?d=https://songscore.herokuapp.com/static/images/profile.png" % md5(form.email.data.encode('utf-8')).hexdigest()
         ))
         db.session.commit()
 
@@ -135,7 +136,8 @@ def feed():
 @app.route('/feed/all')
 @is_logged_in
 def feed_all():
-    return render_template('feed.html', reviews=Review.query.all())
+    reviews = Review.query.order_by(db.desc(Review.datetime)).all()
+    return render_template('feed.html', reviews=reviews)
 
 @app.route('/feed/following')
 @is_logged_in
@@ -153,6 +155,10 @@ def profile():
 
 @app.route('/user/<username>')
 def user_page(username):
+    return redirect(url_for('user_reviews', username=username))
+
+@app.route('/user/<username>/reviews')
+def user_reviews(username):
     user = User.query.filter_by(username=username).first()
     return render_template('reviews.html', user=user, reviews=user.reviews)
 
@@ -169,7 +175,7 @@ def user_followers(username):
 @app.route('/user/<username>/likes')
 def user_likes(username):
     user = User.query.filter_by(username=username).first()
-    return render_template('likes.html', user=user, dislikes=user.likes)
+    return render_template('likes.html', user=user, likes=user.likes)
 
 @app.route('/user/<username>/dislikes')
 def user_dislikes(username):
@@ -179,15 +185,19 @@ def user_dislikes(username):
 @app.route('/user/<username>/comments')
 def user_comments(username):
     user = User.query.filter_by(username=username).first()
-    return render_template('comments.html', user=user, comments=user.comments)
+    if user:
+        return render_template('comments.html', user=user, comments=user.comments)
+    else:
+        abort(404)
 
 ###########
 # ACTIONS #
 ###########
 
-@app.route('/follow')
+@app.route('/follow', methods=['POST'])
 def follow():
-    db.session.add(Follow(follower_id=session['user_id'], following_id=request.args.get('user_id')))
+    user = User.query.filter_by(id=session['user_id']).first()
+    user.following.append(User.query.filter_by(id=request.form['user_id']).first())
     db.session.commit()
     return redirect(url_for('index'))
 
@@ -216,15 +226,23 @@ def submit_review():
     db.session.commit()
     return redirect(url_for("index"))
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    db.session.delete(Review.query.filter_by(id=request.form['review_id']).first())
+    db.session.commit()
+    return redirect(url_for("index"))
+
 @app.route('/like', methods=['POST'])
 def like():
-    db.session.add(Like(user_id=session['user_id'],review_id=request.form['review_id']))
+    user = User.query.filter_by(id=session['user_id']).first()
+    user.likes.append(Review.query.filter_by(id=request.form['review_id']).first())
     db.session.commit()
     return redirect(url_for("index"))
 
 @app.route('/dislike', methods=['POST'])
 def dislike():
-    db.session.add(Dislike(user_id=session['user_id'],review_id=request.form['review_id']))
+    user = User.query.filter_by(id=session['user_id']).first()
+    user.dislikes.append(Review.query.filter_by(id=request.form['review_id']).first())
     db.session.commit()
     return redirect(url_for("index"))
 
@@ -233,6 +251,14 @@ def submit_comment():
     db.session.add(ReviewComment(user_id=session['user_id'], review_id=request.form['review_id'], text=request.form['text']))
     db.session.commit()
     return redirect(url_for("index"))
+
+##########
+# ERRORS #
+##########
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 ###############
 # SQL ALCHEMY #
@@ -272,7 +298,7 @@ class Review(db.Model):
     # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
     stars = db.Column(db.Integer, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    comments = db.relationship('ReviewComment', backref='review', order_by='desc(ReviewComment.datetime)')
+    comments = db.relationship('ReviewComment', backref='review')
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -281,7 +307,7 @@ class Subject(db.Model):
     name = db.Column(db.String, nullable=False)
     artist_name = db.Column(db.String, nullable=False)
     art = db.Column(db.String, nullable=False, default='/static/images/subject.png')
-    reviews = db.relationship('Review', backref='subject', order_by='desc(Review.datetime)')
+    reviews = db.relationship('Review', backref='subject')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -289,17 +315,16 @@ class User(db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    picture = db.Column(db.String, nullable=False, default="'https://www.gravatar.com/avatar/' || md5(email) || '?d=https://songscore.herokuapp.com/static/images/profile.png'")
+    picture = db.Column(db.String, nullable=False)
     register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    reviews = db.relationship('Review', backref='user', order_by='desc(Review.datetime)')
+    reviews = db.relationship('Review', backref='user')
     comments = db.relationship('ReviewComment', backref='user', order_by='desc(ReviewComment.datetime)')
     likes = db.relationship('Review', secondary='likes', order_by='desc(Review.datetime)')
-    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(User.register_datetime)')
+    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(Review.datetime)')
     following = db.relationship(
         'User', secondary=follows,
         primaryjoin=(follows.c.follower_id == id),
         secondaryjoin=(follows.c.following_id == id),
         backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic',
-        order_by='desc(User.register_datetime)'
+        lazy='dynamic'
     )
