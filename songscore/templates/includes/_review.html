@@ -15,7 +15,16 @@
 					<img class='userPicture' src='{{ review.user.picture }}'>
 					<div class='userName'>{{ review.user.username }}</div>
 				</a>
-				<div class='rating'>{{ review.stars }}</div>
+				<div class="static-rating form-group">
+            {% for i in range(5) %}
+							<script>console.log("Number of stars " + {{ review.stars }} + ", i=" + {{ i }});</script>
+              {% if i < review.stars %}
+								<label style="color:#cd3538"></label>
+              {% else %}
+							<label style="color:#ddd"></label>
+              {% endif %}
+            {% endfor %}
+        </div>
 			</div>
 			<div class="text-group">
 				<div class='text'>{{ review.text }}</div>

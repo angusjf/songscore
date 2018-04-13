@@ -518,12 +518,12 @@ input:focus ~ .highlight {
 /* :not(:checked) is a filter, so that browsers that don’t support :checked don’t
    follow these rules. Every browser that supports :checked also supports :not(), so
    it doesn’t make the test unnecessarily selective */
-.rating:not(:checked) > input {
+.rating:not(:checked) > input, .static-rating input {
     position: absolute;
     clip: rect(0,0,0,0);
 }
 
-.rating:not(:checked) > label {
+.rating:not(:checked) > label, .static-rating label {
     float: right;
     width: 1em;
     padding: 0 .1em;
@@ -534,8 +534,13 @@ input:focus ~ .highlight {
     line-height: 1.2;
     color: #ddd;
 }
+.static-rating label {
+  float: none;
+  font-size: 1.2em;
+  padding: 0 0;
+}
 
-.rating:not(:checked) > label:before {
+.rating:not(:checked) > label:before, .static-rating label:before {
     content: '★ ';
 }
 
