@@ -83,7 +83,7 @@ def register():
 def login():
     # Not using WTForms cos there's no point
     if request.method == 'POST': # if they submit some data, catch it from the form
-        user = User.query.filter_by(username = request.form['username']).first()
+        user = User.query.filter_by(username = request.form['username']).one_or_none()
 
         if user != None: # user exists
             if sha256_crypt.verify(request.form['password'], user.password): # pass the password entered and the actual password found into sha256
@@ -155,36 +155,54 @@ def profile():
 
 @app.route('/user/<username>')
 def user_page(username):
-    return redirect(url_for('user_reviews', username=username))
+    if User.query.filter_by(username=username).exists():
+        return redirect(url_for('user_reviews', username=username))
+    else:
+        abort(404)
 
 @app.route('/user/<username>/reviews')
 def user_reviews(username):
-    user = User.query.filter_by(username=username).first()
-    return render_template('reviews.html', user=user, reviews=user.reviews)
+    user = User.query.filter_by(username=username).one()
+    if user:
+        return render_template('reviews.html', user=user, reviews=user.reviews)
+    else:
+        abort(404)
 
 @app.route('/user/<username>/following')
 def user_following(username):
-    user = User.query.filter_by(username=username).first()
-    return render_template('following.html', user=user, following=user.following)
+    user = User.query.filter_by(username=username).one_or_none()
+    if user:
+        return render_template('following.html', user=user, following=user.following)
+    else:
+        abort(404)
 
 @app.route('/user/<username>/followers')
 def user_followers(username):
-    user = User.query.filter_by(username=username).first()
-    return render_template('followers.html', user=user, followers=user.followers)
+    user = User.query.filter_by(username=username).one()
+    if user:
+        return render_template('followers.html', user=user, followers=user.followers)
+    else:
+        abort(404)
 
 @app.route('/user/<username>/likes')
 def user_likes(username):
-    user = User.query.filter_by(username=username).first()
-    return render_template('likes.html', user=user, likes=user.likes)
+    user = User.query.filter_by(username=username).one_or_none()
+    if user:
+        return render_template('likes.html', user=user, likes=user.likes)
+    else:
+        abort(404)
 
 @app.route('/user/<username>/dislikes')
 def user_dislikes(username):
-    user = User.query.filter_by(username=username).first()
-    return render_template('dislikes.html', user=user, dislikes=user.dislikes)
+    user = User.query.filter_by(username=username).one_or_none()
+    if user:
+        return render_template('dislikes.html', user=user, dislikes=user.dislikes)
+    else:
+        abort(404)
 
 @app.route('/user/<username>/comments')
 def user_comments(username):
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(username=username).one()
     if user:
         return render_template('comments.html', user=user, comments=user.comments)
     else:
@@ -196,8 +214,8 @@ def user_comments(username):
 
 @app.route('/follow', methods=['POST'])
 def follow():
-    user = User.query.filter_by(id=session['user_id']).first()
-    user.following.append(User.query.filter_by(id=request.form['user_id']).first())
+    user = User.query.filter_by(id=session['user_id']).one()
+    user.following.append(User.query.filter_by(id=request.form['user_id']).one())
     db.session.commit()
     return redirect(url_for('index'))
 
@@ -228,21 +246,21 @@ def submit_review():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    db.session.delete(Review.query.filter_by(id=request.form['review_id']).first())
+    db.session.delete(Review.query.filter_by(id=request.form['review_id']).one())
     db.session.commit()
     return redirect(url_for("index"))
 
 @app.route('/like', methods=['POST'])
 def like():
-    user = User.query.filter_by(id=session['user_id']).first()
-    user.likes.append(Review.query.filter_by(id=request.form['review_id']).first())
+    user = User.query.filter_by(id=session['user_id']).one()
+    user.likes.append(Review.query.filter_by(id=request.form['review_id']).one())
     db.session.commit()
     return redirect(url_for("index"))
 
 @app.route('/dislike', methods=['POST'])
 def dislike():
-    user = User.query.filter_by(id=session['user_id']).first()
-    user.dislikes.append(Review.query.filter_by(id=request.form['review_id']).first())
+    user = User.query.filter_by(id=session['user_id']).one()
+    user.dislikes.append(Review.query.filter_by(id=request.form['review_id']).one())
     db.session.commit()
     return redirect(url_for("index"))
 
@@ -298,7 +316,7 @@ class Review(db.Model):
     # stars = db.Column(db.Integer, db.Constraint("(stars >= 1) AND (stars <= 5)"), nullable=False)
     stars = db.Column(db.Integer, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    comments = db.relationship('ReviewComment', backref='review')
+    comments = db.relationship('ReviewComment', backref='review', cascade="all, delete-orphan")
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -307,7 +325,7 @@ class Subject(db.Model):
     name = db.Column(db.String, nullable=False)
     artist_name = db.Column(db.String, nullable=False)
     art = db.Column(db.String, nullable=False, default='/static/images/subject.png')
-    reviews = db.relationship('Review', backref='subject')
+    reviews = db.relationship('Review', backref='subject', cascade="all, delete-orphan")
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -317,14 +335,15 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     picture = db.Column(db.String, nullable=False)
     register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    reviews = db.relationship('Review', backref='user')
-    comments = db.relationship('ReviewComment', backref='user', order_by='desc(ReviewComment.datetime)')
-    likes = db.relationship('Review', secondary='likes', order_by='desc(Review.datetime)')
-    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(Review.datetime)')
+    reviews = db.relationship('Review', backref='user', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
+    comments = db.relationship('ReviewComment', backref='user', order_by='desc(ReviewComment.datetime)', cascade="all, delete-orphan")
+    likes = db.relationship('Review', secondary='likes', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
+    dislikes = db.relationship('Review', secondary='dislikes', order_by='desc(Review.datetime)', cascade="all, delete-orphan")
     following = db.relationship(
         'User', secondary=follows,
         primaryjoin=(follows.c.follower_id == id),
         secondaryjoin=(follows.c.following_id == id),
         backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic'
+        lazy='dynamic',
+        cascade="all, delete-orphan"
     )
