@@ -786,7 +786,6 @@ input:focus ~ .highlight {
     padding-left: 3em;
 }
   @media screen and (max-width: 500px) {
-
     .submit-right {
       display: block;
       width: 100%;
@@ -813,8 +812,8 @@ input:focus ~ .highlight {
       width: 100%;
     }
     .selector ul li a {
-      width: auto;
-      font-size: 1em;
+      width: 100px;
+      font-size: 1.2em;
     }
 
     @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
