@@ -705,8 +705,19 @@ input:focus ~ .highlight {
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
-
+@media screen and (max-width: 1100px) {
+  .selector-many ul li a {
+    width: 100px;
+  }
+  @media screen and (max-width: 850px) {
+    .selector-many ul li a {
+      width: auto;
+    }
 @media screen and (max-width: 700px) {
+  .selector-many ul li a {
+    width: auto;
+    font-size: 1em;
+  }
   .inline-form {
     display: block;
   }
@@ -800,6 +811,10 @@ input:focus ~ .highlight {
     .register-left h1 {
       text-align: center;
       width: 100%;
+    }
+    .selector ul li a {
+      width: auto;
+      font-size: 1em;
     }
 
     @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
