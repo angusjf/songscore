@@ -5,10 +5,30 @@
 {% block body %}
 
 {% if session.logged_in %}
-	<div class="section shadow-1">
+	<div class="review-form section shadow-1">
 		{% include 'includes/_newreviewform.html' %}
 	</div>
 	<div class="feed" id="feed">
+		<div class="section shadow-1 selector">
+	<div class="section-content">
+		<ul>
+			<li><a href="/feed/all" class="name">All</a></li>
+			<li><a href="/feed/following" class="name">Following</a></li>
+			<script>
+			$(function(){
+					var current = location.pathname;
+					$('.selector ul li a').each(function(){
+							var $this = $(this);
+							// if the current path is like 'this' link, add the active class
+							if($this.attr('href').indexOf(current) !== -1){
+									$this.addClass('link-active');
+							}
+					})
+			})
+			</script>
+		</ul>
+	</div>
+</div>
 		{% for review in reviews %}
 			{% include 'includes/_review.html' %}
 		{% endfor %}

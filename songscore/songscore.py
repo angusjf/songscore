@@ -127,7 +127,17 @@ def feed_all():
 @app.route('/feed/following')
 @is_logged_in
 def feed_following():
-    return render_template('feed.html', reviews=User.query.filter_by(username=session['username']).following.reviews)
+    ###############
+    # BROKEN CODE #
+    ###############
+    #user = User.query.filter_by(id=session['user_id']).one()
+    #reviews = []
+    #holdreviews = []
+    #for x in user.following:
+    #holdreviews.append(x.reviews)
+    #return render_template('feed.html', reviews=holdreviews)
+    reviews = Review.query.order_by(db.desc(Review.datetime)).all()
+    return render_template('feed.html', reviews=reviews)
 
 #################
 # USER PROFILES #

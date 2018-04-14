@@ -51,6 +51,14 @@ min-height: 100vh;
   display: flex;
 }
 
+.no-margin {
+  margin: 0 0 0 0;
+}
+
+.review-form {
+  margin: 0px 0 50px 0;
+}
+
 .register-left ul {
   list-style-type: none;
 }
@@ -193,6 +201,7 @@ width: 100%;
 
 nav {
   float: right;
+  padding-bottom: 30px;
 }
 nav ul {
   list-style: none;
@@ -266,7 +275,7 @@ nav ul li ul li a {
 
   nav {
     width: 100%;
-    padding: 70px 0 15px;
+    padding: 70px 0 30px;
   }
   nav ul {
     display: none;
@@ -642,6 +651,60 @@ input:focus ~ .highlight {
   display: inline-block;
   float: none;
 }
+
+/*BEGIN SELECTOR CSS*/
+.selector {
+   margin: 50px 0 15px 0;
+}
+.selector .section-content {
+  padding: 4px 40px 0px 40px;
+  margin-bottom: -1px;
+}
+.selector ul {
+  text-align: center;
+}
+.selector ul li {
+  display: inline-block;
+  text-align: center;
+  list-style: none;
+  vertical-align: middle;
+}
+.selector ul li a {/* Also has the name class */
+  width: 150px;
+  position: relative;
+  display: block;
+  padding: 18px 0;
+  text-decoration: none;
+  font-size: 1.5em;
+  margin: 0 0.5em;
+}
+.selector ul li a::before, .selector ul li a::after {
+  content: '';
+  height: 4px;
+  width: 0;
+  bottom: 1px;
+  position: absolute;
+  background: #cd3538;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+.selector ul li a::before {
+  left: 50%;
+}
+.selector ul li a::after {
+  right: 50%;
+}
+.selector ul li a:hover:before, .selector ul li a:hover:after  {
+  width: 50%;
+}
+.link-active::before, .link-active::after  {
+  width: 50% !important;
+}
+
+/* MEDIA QUERIES */
+/* MEDIA QUERIES */
+/* MEDIA QUERIES */
 
 @media screen and (max-width: 700px) {
   .inline-form {

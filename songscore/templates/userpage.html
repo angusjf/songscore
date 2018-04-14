@@ -5,11 +5,29 @@
 {% block body %}
     {% include 'includes/_user.html' %}
 
-    <a href="/user/{{ user.username }}/reviews">reviews</a>
-    <a href="/user/{{ user.username }}/likes">likes</a>
-    <a href="/user/{{ user.username }}/dislikes">dislikes</a>
-    <a href="/user/{{ user.username }}/followers">followers</a>
-    <a href="/user/{{ user.username }}/following">following</a>
+  <div class="section shadow-1 selector">
+	<div class="section-content">
+		<ul>
+      <li><a href="/user/{{ user.username }}/reviews">Reviews</a></li>
+      <li><a href="/user/{{ user.username }}/likes">Likes</a></li>
+      <li><a href="/user/{{ user.username }}/dislikes">Dislikes</a></li>
+      <li><a href="/user/{{ user.username }}/followers">Followers</a></li>
+      <li><a href="/user/{{ user.username }}/following">Following</a></li>
+			<script>
+			$(function(){
+					var current = location.pathname;
+					$('.selector ul li a').each(function(){
+							var $this = $(this);
+							// if the current path is like 'this' link, add the active class
+							if($this.attr('href').indexOf(current) !== -1){
+									$this.addClass('link-active');
+							}
+					})
+			})
+			</script>
+		</ul>
+	</div>
+</div>
 
 
     {% block contents %}
