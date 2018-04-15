@@ -40,7 +40,7 @@ min-height: 100vh;
 
 .container {
 	width: 90%;
-	max-width: 1000px;
+	max-width: 800px;
 	margin: 0 auto;
 }
 
@@ -158,6 +158,9 @@ width: 100%;
   font-weight: 300;
   color: #6a6969;
 }
+.review-text {
+  font-size: 1.2em;
+}
 
 /*SHADOWS*/
 .shadow-1 { /*lowest shadow depth*/
@@ -195,7 +198,7 @@ width: 100%;
 }
 
 .nav-container {
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -376,12 +379,17 @@ nav ul li ul li a {
 
 .sub-text {
   color: #6a6969;
+  /*font-style: italic;*/
+}
+.register-right .sub-text {
+  color: #6a6969;
   text-decoration: none;
   cursor: pointer;
+  width: 90%;
   /*font-style: italic;*/
 }
 
-input[type=submit] {
+.register-right input[type=submit], .submit-right input[type=submit], .comment-form input[type=submit] {
   background-color: #cd3538;
   border: none;
   display: inline-block;
@@ -393,6 +401,13 @@ input[type=submit] {
   user-select: none;
   cursor: pointer;
   width: 100%;
+  margin: 15px 0px;
+}
+.comment-form input[type=submit] {
+  width: 200px;
+}
+.comment-form .text-group {
+  margin: 20px 30px 20px 0;
 }
 
 .circle {
@@ -400,7 +415,9 @@ input[type=submit] {
   border-radius: 50px;
 }
 
-
+.top-margin {
+  margin: 30px 0 10px 0 !important;
+}
 
 h2 {
   font-weight: 400;
@@ -549,6 +566,11 @@ input:focus ~ .highlight {
   padding: 0 0;
 }
 
+.static-rating {
+  position: relative;
+  display: inline-block;
+}
+
 .rating:not(:checked) > label:before, .static-rating label:before {
     content: '★ ';
 }
@@ -582,24 +604,56 @@ input:focus ~ .highlight {
 }
 
 .review-content {
-  flex-direction: row;
-  display: flex;
+  /*flex-direction: row;
+  display: flex;*/
   width: 100%;
 }
 
 .subject-group {
+  width: 28%;
   min-width: 60px;
-  max-width: 100px;
-  display: block;
+  max-width: 300px;
+  display: inline-block;
 }
 
 .subject-group > * {
   text-align: center;
 }
+.subjectpicturediv {
+  position: relative;
+}
+.subject-picture {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.0));
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position:center;
+  position: relative;
+  padding-top: 100%;
+  height: auto;
+}
+.subject-picture p:first-child {
+  bottom: 45px;
+  font-size: 1.3em;
+}
+.subject-picture p {
+  text-align: left;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  margin: 0;
+  font-size: 0.9em;
+}
 
 .review-right {
-  width: 100%;
-  padding-left: 40px;
+  vertical-align: top;
+  width: 61%;
+  display: inline-block;
+  padding-left: 5%;
+}
+
+.text-group, .interact {
+  margin: 20px 0;
 }
 
 .top-group a > * {
@@ -609,17 +663,11 @@ input:focus ~ .highlight {
 }
 
 .userpicture {
-  width: 23px;
+  width: 20px;
 }
 
-.subjectpicturediv {
-  position: relative;
-}
+.username {
 
-.subjectpicture {
-  width: 100%;
-  height: auto;
-  max-height: 75px;
 }
 
 .submit-right {
@@ -628,7 +676,50 @@ input:focus ~ .highlight {
   flex-grow: 1;
 }
 
-.submit-right input {
+.interact form{
+  display: inline-block;
+  border: none;
+}
+
+.interact input {
+  cursor: pointer;
+  border: none;
+  width: 20px;
+  height: 20px;
+  background-size: 20px;
+  margin-right: 10px;
+}
+
+.like-button { /*like button*/
+  background-image: url("images/heart.png");
+}
+.dislike-button { /*like button*/
+  background-image: url("images/heart-broken.png");
+}
+.delete-button { /*like button*/
+  background-image: url("images/delete.png");
+}
+.share-button { /*like button*/
+  background-image: url("images/share.png");
+}
+
+.comment:nth-child(1) {
+  margin-top: 50px;
+}
+.comment {
+  margin: 10px 0;
+}
+.comment * {
+  display: inline-block;
+}
+.comment .text-group {
+  width: auto;
+  margin: 0;
+  color:
+}
+.comment .name {
+  font-size: 1em;
+  font-weight: bold;
 }
 
 .submit-left {
@@ -713,7 +804,25 @@ input:focus ~ .highlight {
     .selector-many ul li a {
       width: auto;
     }
+    @media screen and (max-width: 800px) {
+      .subject-group {
+        width: 35%;
+      }
+      .review-right {
+        width: 59%;
+      }
+    }
 @media screen and (max-width: 700px) {
+  .subject-group {
+    width: 35%;
+  }
+  .review-right {
+    width: 59%;
+  }
+  .comment-form input[type=submit] {
+    width: 200px;
+    margin: 0;
+  }
   .selector-many ul li a {
     width: auto;
     font-size: 1em;
@@ -740,7 +849,46 @@ input:focus ~ .highlight {
     width: 100%;
   }
 }
-
+@media screen and (max-width: 630px) {
+  .subject-group {
+    width: 45%;
+  }
+  .review-right {
+    width: 49%;
+  }
+}
+@media screen and (max-width: 530px) {
+  .comment-form input[type=submit] {
+    width: 100%;
+    margin: 0;
+  }
+  .subject-group {
+    width: 160px;
+  }
+  .subject-group p:first-child {
+    font-size: 1.1em;
+  }
+  .review-right {
+    padding-left: 0;
+    padding-top: 10px;
+    width: 100%;
+  }
+  .review-right .text-group {
+    margin: 0 !important;
+  }
+  .interact {
+    margin: 10px 0 0 0;
+  }
+  .comment-form .text-group, .comment:nth-child(1) {
+    margin: 20px 0px 10px 0;
+  }
+  .section-content {
+    padding: 20px;
+  }
+  .container {
+    width: 95%;
+  }
+}
 @media screen and (max-width: 950px) {
   .register-content-inner {
     margin: 0 auto;
