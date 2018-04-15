@@ -246,7 +246,10 @@ def submit_review():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    db.session.delete(Review.query.filter_by(id=request.form['review_id']).one())
+    # TODO -> cascase songs
+    review = Review.query.filter_by(id=request.form['review_id']).one())
+    db.session.delete(review.comments)
+    db.session.delete(review)
     db.session.commit()
     return redirect(url_for("index"))
 
