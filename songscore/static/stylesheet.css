@@ -20,6 +20,10 @@ body {
 	margin: 0px;
 }
 
+a {
+  text-decoration: none;
+}
+
 .red-bg {
   display: flex;
 min-height: 100vh;
