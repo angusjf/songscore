@@ -566,8 +566,9 @@ input:focus ~ .highlight {
 }
 .static-rating label {
   float: none;
-  font-size: 1.2em;
+  font-size: 1em;
   padding: 0 0;
+  vertical-align: middle;
 }
 
 .static-rating {
@@ -604,7 +605,7 @@ input:focus ~ .highlight {
 
 .review {
   display: flex;
-  margin: 2px 0;
+  margin: 5px 0;
 }
 
 .review-content {
@@ -664,10 +665,12 @@ input:focus ~ .highlight {
   display: inline-block;
   text-decoration: none;
   margin-right: 8px;
+  vertical-align: middle;
 }
 
-.userpicture {
+.top-group .userpicture {
   width: 20px;
+  margin-right: 2px;
 }
 
 .username {
@@ -715,6 +718,7 @@ input:focus ~ .highlight {
 }
 .comment * {
   display: inline-block;
+  vertical-align: bottom;
 }
 .comment .text-group {
   width: auto;
