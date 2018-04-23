@@ -58,13 +58,13 @@
 		</div>
 		<form class="comment-form inline-form" id="" action="/comment" method="post">
 			<input name="review_id" hidden value="{{ review.id }}">
-			<div class="text-group form-group">
+			<div class="form-group text-group">
 				<input id="subject-input" class="light-text text-input" name="text" placeholder="Type your comment..." type="text"/>
 				<span class="highlight"></span>
 				<span class="bar"></span>
 				<div id="subject-results"></div>
 			</div>
-			<input class="submit button" type="submit"/>
+			<input class="submit button form-group" type="submit" value="Comment"/>
 		</form>
 	</div>
 </div>

@@ -24,6 +24,33 @@ a {
   text-decoration: none;
 }
 
+/* CUSTOM HIGHLIGHT COLOUR CSS */
+::selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* MOZILLA */
+::-moz-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* OPERA */
+::-o-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* DINOSAURS */
+::-ms-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* WEBKIT */
+::-webkit-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* END CUSTOM HIGHLIGHT COLOUR CSS */
+
 .red-bg {
   display: flex;
 min-height: 100vh;
@@ -364,7 +391,7 @@ nav ul li ul li a {
   margin: 5px 25px 5px 0;
   color: #fff;
   border-radius: 500px;
-  padding: 7px 20px;
+  padding: 5px 20px;
   overflow: hidden;
 }
 
@@ -393,12 +420,12 @@ nav ul li ul li a {
   /*font-style: italic;*/
 }
 
-.register-right input[type=submit], .submit-right input[type=submit], .comment-form input[type=submit] {
+input[type=submit], .register-right input[type=submit], .submit-right input[type=submit], .comment-form input[type=submit] {
   background-color: #cd3538;
   border: none;
   display: inline-block;
   position: relative;
-  font-size: 1em;
+  font-size: 0.9em;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -407,11 +434,18 @@ nav ul li ul li a {
   width: 100%;
   margin: 15px 0px;
 }
+.comment-form {
+  margin-top: 20px;
+}
 .comment-form input[type=submit] {
-  width: 200px;
+  width: 150px;
 }
 .comment-form .text-group {
-  margin: 20px 30px 20px 0;
+  margin-right: 30px !important;
+  /*margin: 20px 30px 20px 0;*/
+}
+.comment-form .form-group, .comment-form input[type=submit] {
+  margin: 0 0;
 }
 
 .circle {
@@ -689,6 +723,7 @@ input:focus ~ .highlight {
 }
 
 .interact input {
+  background-color: white;
   cursor: pointer;
   border: none;
   width: 20px;
@@ -723,7 +758,6 @@ input:focus ~ .highlight {
 .comment .text-group {
   width: auto;
   margin: 0;
-  color:
 }
 .comment .name {
   font-size: 1em;
@@ -800,26 +834,26 @@ input:focus ~ .highlight {
 .link-active::before, .link-active::after  {
   width: 50% !important;
 }
+.selector-many ul li a {
+  width: 100px;
+}
 
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
-@media screen and (max-width: 1100px) {
-  .selector-many ul li a {
-    width: 100px;
-  }
-  @media screen and (max-width: 850px) {
+@media screen and (max-width: 850px) {
     .selector-many ul li a {
       width: auto;
     }
-    @media screen and (max-width: 800px) {
-      .subject-group {
-        width: 35%;
-      }
-      .review-right {
-        width: 59%;
-      }
+  }
+@media screen and (max-width: 800px) {
+    .subject-group {
+      width: 35%;
     }
+    .review-right {
+      width: 59%;
+    }
+  }
 @media screen and (max-width: 700px) {
   .subject-group {
     width: 35%;
@@ -828,7 +862,7 @@ input:focus ~ .highlight {
     width: 59%;
   }
   .comment-form input[type=submit] {
-    width: 200px;
+    width: 150px;
     margin: 0;
   }
   .selector-many ul li a {
@@ -968,8 +1002,13 @@ input:focus ~ .highlight {
       width: 100%;
     }
     .selector ul li a {
-      width: 100px;
+      width: 80px;
       font-size: 1.2em;
+    }
+    .selector-many ul li a {
+      width: auto;
+      font-size: 0.8em;
+      margin: 0 0.5em;
     }
 
     @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
