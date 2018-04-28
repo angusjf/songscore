@@ -553,7 +553,7 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   width: 50%;
 }
 
-input:focus ~ label, input.used ~ label {
+input:focus ~ label, /*input.used ~ label,*/input:valid ~ label {
 	top: -20px;
 	font-size: 0.8em;
 	color: #cd3538;
