@@ -132,6 +132,7 @@ min-height: 100vh;
   position: relative;
   width: 100vw;
   display: flex;
+  overflow: auto;
 }
 
 .register-content-outer .form-group {
