@@ -66,11 +66,6 @@ function updateResultsBoxContents() {
 		*/
 	}
 
-	$(".result").hover(
-		function () { $(this).css("background-color", "red"); },
-		function () { $(this).css("background-color", "white"); }
-	);
-
 	$(".result").click(
 		function () {
 			var subject_name = results.albums[$(this).index()].name;

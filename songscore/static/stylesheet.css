@@ -432,7 +432,6 @@ input[type=submit], .register-right input[type=submit], .submit-right input[type
   user-select: none;
   cursor: pointer;
   width: 100%;
-  margin: 15px 0px;
 }
 .comment-form {
   margin-top: 20px;
@@ -492,7 +491,7 @@ img {
 }
 
 .form-group { /* each text entry is in a group */
-  margin: 15px 0px;
+  margin: 20px 0px;
   position: relative;
   display: inline-block;
 }
@@ -510,6 +509,17 @@ img {
   display: block;
 }
 input:focus 		{ outline:none; }
+
+.text-group label {
+  font-size: 1.1em;
+	position: absolute;
+	pointer-events: none;
+  left: 0px;
+	top: -2px;
+	transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
 
 
 /* BOTTOM BAR */
@@ -542,6 +552,12 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   width: 50%;
 }
 
+input:focus ~ label, input.used ~ label {
+	top: -20px;
+	font-size: 0.8em;
+	color: #cd3538;
+}
+
 .highlight {
   position: absolute;
   height: 100%;
@@ -554,9 +570,9 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 
 /* active state */
 input:focus ~ .highlight {
-  -webkit-animation: inputHighlighter 0.3s ease;
-  -moz-animation: inputHighlighter 0.3s ease;
-  animation: inputHighlighter 0.3s ease;
+  -webkit-animation: inputHighlighter 0.2s ease;
+  -moz-animation: inputHighlighter 0.2s ease;
+  animation: inputHighlighter 0.2s ease;
 }
 
 /* ANIMATIONS FOR ALL BROWSERS*/
@@ -599,6 +615,7 @@ input:focus ~ .highlight {
     color: #ddd;
 }
 .static-rating label {
+  cursor: auto;
   float: none;
   font-size: 1em;
   padding: 0 0;
@@ -678,9 +695,8 @@ input:focus ~ .highlight {
   text-align: left;
   position: absolute;
   bottom: 20px;
-  left: 20px;
   color: white;
-  margin: 0;
+  margin: 0px 20px;
   font-size: 0.9em;
 }
 
@@ -691,8 +707,8 @@ input:focus ~ .highlight {
   padding-left: 5%;
 }
 
-.text-group, .interact {
-  margin: 20px 0;
+.interact {
+  margin-top: 20px;
 }
 
 .top-group a > * {
@@ -717,6 +733,32 @@ input:focus ~ .highlight {
   flex-grow: 1;
 }
 
+.result:hover {
+  background-color: #cd3538;
+}
+
+#subject-results {
+  width: 90%;
+}
+
+.result {
+  margin-bottom: 10px;
+}
+
+.result:hover span {
+  color: white;
+}
+
+.result img {
+  width: 150px;
+  vertical-align: middle;
+  padding-right: 20px;
+}
+
+.result span {
+  vertical-align: middle;
+}
+
 .interact form{
   display: inline-block;
   border: none;
@@ -730,6 +772,7 @@ input:focus ~ .highlight {
   height: 20px;
   background-size: 20px;
   margin-right: 10px;
+  margin-top: 10px;
 }
 
 .like-button { /*like button*/
@@ -746,7 +789,7 @@ input:focus ~ .highlight {
 }
 
 .comment:nth-child(1) {
-  margin-top: 50px;
+  margin-top: 25px;
 }
 .comment {
   margin: 10px 0;
@@ -763,7 +806,9 @@ input:focus ~ .highlight {
   font-size: 1em;
   font-weight: bold;
 }
-
+.login-form .text-group {
+  width: 100%;
+}
 .submit-left {
   width: 100%;
   min-width: 200px;
@@ -837,6 +882,10 @@ input:focus ~ .highlight {
 .selector-many ul li a {
   width: 100px;
 }
+.review-right .text-group {
+  margin-top: 10px;
+  width: 100%;
+}
 
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
@@ -855,15 +904,22 @@ input:focus ~ .highlight {
     }
   }
 @media screen and (max-width: 700px) {
+  .submit-right *{
+    margin: 5px 0;
+  }
+
   .subject-group {
     width: 35%;
   }
   .review-right {
     width: 59%;
   }
+  .comment-form {
+    margin-top: 30px;
+  }
   .comment-form input[type=submit] {
     width: 150px;
-    margin: 0;
+    margin-top: 15px;
   }
   .selector-many ul li a {
     width: auto;
@@ -887,11 +943,16 @@ input:focus ~ .highlight {
   }
   .submit {
   }
-  .text-group {
+  .text-group, #subject-results {
     width: 100%;
   }
+
 }
 @media screen and (max-width: 630px) {
+  .result img {
+    width: 100px;
+  }
+
   .subject-group {
     width: 45%;
   }
@@ -899,7 +960,47 @@ input:focus ~ .highlight {
     width: 49%;
   }
 }
-@media screen and (max-width: 530px) {
+@media screen and (max-width: 530px) { /*super narrow*/
+  .submit-right {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .submit-right input {
+    float: none;
+    width: 100%;
+  }
+  .submit-right .form-group {
+    margin: 5px 0px;
+  }
+  .rating {
+  }
+  .img-container {
+    display: block;
+    width: 100%;
+  }
+  .welcome-banner {
+    text-align: center;
+  }
+  .register-left h1 {
+    text-align: center;
+    width: 100%;
+  }
+  .selector ul li a {
+    width: 80px;
+    font-size: 1.2em;
+  }
+  .selector-many ul li a {
+    width: auto;
+    font-size: 0.8em;
+    margin: 0 0.5em;
+  }
+  .interact input {
+    margin-top: 2px;
+  }
+  .comment-form {
+    margin-top: 5px;
+  }
   .comment-form input[type=submit] {
     width: 100%;
     margin: 0;
@@ -919,7 +1020,7 @@ input:focus ~ .highlight {
     margin: 0 !important;
   }
   .interact {
-    margin: 10px 0 0 0;
+    margin: 5px 0 0 0;
   }
   .comment-form .text-group, .comment:nth-child(1) {
     margin: 20px 0px 10px 0;
@@ -929,6 +1030,9 @@ input:focus ~ .highlight {
   }
   .container {
     width: 95%;
+  }
+  .review-text {
+    margin: 10px 0;
   }
 }
 @media screen and (max-width: 950px) {
@@ -969,47 +1073,13 @@ input:focus ~ .highlight {
     left: auto;
   }
   .text-group {
-      margin-top: 20px;
   }
   .register-left li {
     font-size: 1.3em;
     padding-left: 3em;
 }
   @media screen and (max-width: 500px) {
-    .submit-right {
-      display: block;
-      width: 100%;
-      text-align: center;
-    }
-    .submit-right input {
-      float: none;
-      width: 100%;
-    }
-    .submit-right .form-group {
-      margin: 5px 0px;
-    }
-    .rating {
-    }
-    .img-container {
-      display: block;
-      width: 100%;
-    }
-    .welcome-banner {
-      text-align: center;
-    }
-    .register-left h1 {
-      text-align: center;
-      width: 100%;
-    }
-    .selector ul li a {
-      width: 80px;
-      font-size: 1.2em;
-    }
-    .selector-many ul li a {
-      width: auto;
-      font-size: 0.8em;
-      margin: 0 0.5em;
-    }
+}
 
     @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
       .logo {
