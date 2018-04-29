@@ -1,4 +1,4 @@
-<div class="navigation">
+<div class="navigation shadow-1">
   <div class="nav-container container">
     <div class="brand">
       <a href="/feed"><img class="logo" src="/static/images/logo.png"></img></a>
@@ -8,10 +8,10 @@
       <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
       <ul class="nav-list">
         <li>
-          <a href="#!">Home</a>
+          <a href="/feed/all" class="line">Home</a>
         </li>
         <li>
-          <a href="#!">Notifications</a>
+          <a href="#!" class="line">Notifications</a>
         </li>
         {% if session.logged_in %}
         <li>
@@ -23,7 +23,7 @@
             </li>
           </ul>
         </li>
-        <!--DON'T DELETE. FOLLOWING IS HOW YOU ADD A NORMAL, NON IMAGE DROPDOWN
+        <!--DON'T DELETE. THE FOLLOWING CODE IS HOW YOU ADD A NORMAL, NON IMAGE DROPDOWN
         <li>
           <a href="#!" class="nav-dropdown-link">Test dropdown</a>
           <ul class="nav-dropdown">

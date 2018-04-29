@@ -252,13 +252,12 @@ nav ul li a:visited {
   display: block;
   padding: 0 20px;
   line-height: 70px;
-  background: #cd3538;
   color: #ffffff;
   text-decoration: none;
+  background: #cd3538;
 }
 nav ul li a:hover,
 nav ul li a:visited:hover {
-  background: #b73234;
   color: #ffffff;
 }
 .nav-dropdown-link:after {
@@ -307,7 +306,14 @@ nav ul li ul li a {
   .nav-mobile {
     display: block;
   }
+  .nav-list .line::before, .nav-list .line::after {
+    content: none;
+  }
 
+  nav ul li a,
+  nav ul li a:visited {
+    background: #cd3538;
+  }
   nav {
     width: 100%;
     padding: 70px 0 30px;
@@ -330,6 +336,7 @@ nav ul li ul li a {
     position: static;
   }
 }
+
 .nav-container {
   width: 100% !important;
 }
@@ -831,7 +838,40 @@ input:focus ~ .highlight {
   float: none;
 }
 
-/*BEGIN SELECTOR CSS*/
+/*BEGIN ACTIVE LINK UNDERLINE CSS*/
+.line::before, .line::after {
+  content: '';
+  height: 4px;
+  width: 0;
+  bottom: 0px;
+  position: absolute;
+  background: #fff;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+.line {
+  position: relative;
+}
+.line::before {
+  left: 50%;
+}
+.line::after {
+  right: 50%;
+}
+.line:hover:before, .line:hover:after  {
+  width: 50%;
+}
+.link-active::before, .link-active::after  { /*LINKS TO LINK-ACTIVE.JS*/
+  width: 50% !important;
+}
+/*END ACTIVE LINK UNDERLINE CSS*/
+
+/*BEGIN SELECTOR CSS (ALSO HAS ACTIVE LINK UNDERLINE CSS)*/
+.selector .line:before, .selector .line:after {
+  background: #cd3538; /*changes underline colour to be red */
+}
+
 .selector {
    margin: 50px 0 15px 0;
 }
@@ -848,7 +888,7 @@ input:focus ~ .highlight {
   list-style: none;
   vertical-align: middle;
 }
-.selector ul li a {/* Also has the name class */
+.selector ul li a {/* Also has the name and line classes */
   width: 150px;
   position: relative;
   display: block;
@@ -857,32 +897,11 @@ input:focus ~ .highlight {
   font-size: 1.5em;
   margin: 0 0.5em;
 }
-.selector ul li a::before, .selector ul li a::after {
-  content: '';
-  height: 4px;
-  width: 0;
-  bottom: 1px;
-  position: absolute;
-  background: #cd3538;
-  transition: 0.2s ease all;
-  -moz-transition: 0.2s ease all;
-  -webkit-transition: 0.2s ease all;
-}
-.selector ul li a::before {
-  left: 50%;
-}
-.selector ul li a::after {
-  right: 50%;
-}
-.selector ul li a:hover:before, .selector ul li a:hover:after  {
-  width: 50%;
-}
-.link-active::before, .link-active::after  {
-  width: 50% !important;
-}
 .selector-many ul li a {
   width: 100px;
 }
+/*END SELECTOR CSS (ALSO HAS ACTIVE LINK UNDERLINE CSS)*/
+
 .review-right .text-group {
   margin-top: 10px;
   width: 100%;
@@ -892,18 +911,18 @@ input:focus ~ .highlight {
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
 @media screen and (max-width: 850px) {
-    .selector-many ul li a {
-      width: auto;
-    }
+  .selector-many ul li a {
+    width: auto;
   }
+}
 @media screen and (max-width: 800px) {
-    .subject-group {
-      width: 35%;
-    }
-    .review-right {
-      width: 59%;
-    }
+  .subject-group {
+    width: 35%;
   }
+  .review-right {
+    width: 59%;
+  }
+}
 @media screen and (max-width: 700px) {
   .submit-right *{
     margin: 5px 0;
@@ -976,7 +995,7 @@ input:focus ~ .highlight {
   }
   .rating {
   }
-  .img-container {
+  .welcome-banner .img-container {
     display: block;
     width: 100%;
   }
@@ -985,7 +1004,7 @@ input:focus ~ .highlight {
   }
   .register-left h1 {
     text-align: center;
-    width: 100%;
+    width: 100% !important;
   }
   .selector ul li a {
     width: 80px;
@@ -1079,15 +1098,13 @@ input:focus ~ .highlight {
     font-size: 1.3em;
     padding-left: 3em;
 }
-  @media screen and (max-width: 500px) {
-}
 
-    @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
-      .logo {
-        height: 66px;
-        width: 66px;
-      }
-      .brand a:nth-child(2) {
-        display: none;
-      }
+@media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
+  .logo {
+    height: 66px;
+    width: 66px;
   }
+  .brand a:nth-child(2) {
+    display: none;
+  }
+}
