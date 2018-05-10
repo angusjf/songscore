@@ -12,7 +12,7 @@
 				<a href='/user/{{ review.user.username }}'>
 					<div class='Name'>{{ review.user.name }}</div>
 					<img class='userPicture' src='{{ review.user.picture }}' style="">
-					<div class='light-text userName'>{{ review.user.username }}</div>
+					<div class='light-text userName'>{{ "@" + review.user.username }}</div>
 				</a>
 				<div class="static-rating">
             {% for i in range(5) %}

@@ -873,7 +873,7 @@ input:focus ~ .highlight {
 }
 
 .selector {
-   margin: 50px 0 15px 0;
+  margin: 50px 0 5px 0;
 }
 .selector .section-content {
   padding: 4px 40px 0px 40px;
