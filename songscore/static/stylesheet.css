@@ -150,6 +150,23 @@ min-height: 100vh;
  flex-direction: row;
 }
 
+/* ERROR PAGE BUILT ON REGISTER CSS, MODIFICATIONS BELOW */
+.error-page {
+  max-width: 1200px;
+}
+.error-page .register-left {
+  max-width: 1200px;
+  text-align: center;
+}
+.error-page * {
+  text-align: center !important;
+}
+.error-page h2 {
+  font-size: 2em;
+  top: -2.25em;
+}
+/* END ERROR PAGE MODIFICATIONS*/
+
 .register-left {
   position: relative;
   width: 100%;
@@ -907,6 +924,86 @@ input:focus ~ .highlight {
   width: 100%;
 }
 
+/* START REUSABLE ANIMATION CSS*/
+.fade-up {
+  -webkit-animation-name: fade-up;
+  -moz-animation-name: fade-up;
+  -o-animation-name: fade-up;
+  animation-name: fade-up;
+  -webkit-animation-duration: 1000ms;
+  -moz-animation-duration: 1000ms;
+  -ms-animation-duration: 1000ms;
+  -o-animation-duration: 1000ms;
+  animation-duration: 1000ms;
+}
+.fade-up.fast {
+  -webkit-animation-duration: 800ms;
+  -moz-animation-duration: 800ms;
+  -ms-animation-duration: 800ms;
+  -o-animation-duration: 800ms;
+  animation-duration: 800ms;
+}
+
+.fade-up.slow {
+  -webkit-animation-duration: 1200ms;
+  -moz-animation-duration: 1200ms;
+  -ms-animation-duration: 1200ms;
+  -o-animation-duration: 1200ms;
+  animation-duration: 1200ms;
+}
+.fade-up.super-slow {
+  -webkit-animation-duration: 1400ms;
+  -moz-animation-duration: 1400ms;
+  -ms-animation-duration: 1400ms;
+  -o-animation-duration: 1400ms;
+  animation-duration: 1400ms;
+}
+
+
+@-webkit-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@-moz-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -moz-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -moz-transform: translateY(0);
+  }
+}
+
+@-o-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -o-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -o-transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
@@ -1065,12 +1162,21 @@ input:focus ~ .highlight {
     top: auto;
     left: auto;
   }
+  .error-page {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+  }
   .img-container {
     width: 39%;
   }
   .register-left h1 {
     width: 59%;
     font-size: 2.5em;
+  }
+  .error-page h1 {
+    width: 100%;
   }
   .welcome-banner {
     width: 100%;

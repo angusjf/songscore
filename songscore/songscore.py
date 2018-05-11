@@ -75,7 +75,7 @@ def login():
                 session['logged_in'] = True
                 session['user_id'] = user.id
                 session['username'] = user.username
-                flash('You will hopefully now be logged in (no promises lol)', 'success')
+                #flash('You will hopefully now be logged in (no promises lol)', 'success')
                 return redirect(url_for('index'))
             else:
                 error = 'Password is incorrect'
