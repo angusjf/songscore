@@ -546,6 +546,16 @@ input:focus 		{ outline:none; }
   -webkit-transition: 0.2s ease all;
 }
 
+/*FORM VALIDATION STYLE*/
+.wrong-entry {
+  animation-name: wrong-entry;
+  animation-delay: 200ms;
+  animation-duration: 500ms;
+}
+.help-inline {
+  display: inline-block;
+  color: #cd3538;
+}
 
 /* BOTTOM BAR */
 .bar 	{
@@ -612,6 +622,23 @@ input:focus ~ .highlight {
 @keyframes inputHighlighter {
 	from { background: #cd3538; }
   to 	{ width: 0; background: transparent; }
+}
+
+
+@keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
+}
+@-webkit-keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
+}
+@-moz-keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
 }
 
 /*BEGIN STAR RATING CSS*/
