@@ -384,9 +384,6 @@ nav ul li ul li a {
   -o-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
-#nav-toggle span {
-
-}
 #nav-toggle span:before {
   top: -10px;
 }
@@ -549,7 +546,7 @@ input:focus 		{ outline:none; }
 /*FORM VALIDATION STYLE*/
 .wrong-entry {
   animation-name: wrong-entry;
-  animation-delay: 200ms;
+  animation-delay: 1000ms; /*This delay is only here because of the fade-up*/
   animation-duration: 500ms;
 }
 .help-inline {
