@@ -5,6 +5,7 @@
 {% block body %}
 
 {% if session.logged_in %}
+<p>{{ time }}</p>
 	<div class="review-form section shadow-1">
 		{% include 'includes/_newreviewform.html' %}
 	</div>

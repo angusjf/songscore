@@ -25,9 +25,12 @@
             {% endfor %}
         </div>
 			</div>
+			{% set timesince = currenttime - review.datetime %}
 			<div class="text-group">
 				<div class="review-text light-text">{{ review.text }}</div>
-				<div class="date">{{ review.date }}</div>
+				<div class="date">Current time: {{ currenttime }}</div>
+				<div class="date">Time submitted: {{ review.datetime }}</div>
+				<div class="date">Submitted {{ timesince }} days ago</div>
 			</div>
 			<div class="interact">
 			{% if review.user_id != session["user_id"] %}

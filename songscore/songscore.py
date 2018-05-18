@@ -5,6 +5,8 @@ from passlib.hash import sha256_crypt
 from hashlib import md5
 from functools import wraps
 import os
+import datetime as dt
+from datetime import datetime, date, time
 
 app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
@@ -13,12 +15,13 @@ app.config.update({
     'SQLALCHEMY_DATABASE_URI' : os.environ['DATABASE_URL'],
     'SQLALCHEMY_TRACK_MODIFICATIONS' : 'false'
 })
-
 db = SQLAlchemy(app)
 
 #########
 # WRAPS #
 #########
+#create_jinja_environment()
+
 
 # Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
 def is_logged_in(f):
@@ -41,6 +44,10 @@ def index():
         return redirect(url_for('feed'))
     else:
         return redirect(url_for('register'))
+
+@app.route('/includes/_review')
+def _review():
+    return render_template('includes/_review.html', currenttime=datetime.datetime.now())
 
 ###########################
 # LOG IN / OUT / REGISTER #
@@ -122,7 +129,8 @@ def feed():
 @is_logged_in
 def feed_all():
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
-    return render_template('feed.html', reviews=reviews)
+    return render_template('feed.html', reviews=reviews, currenttime=datetime.now()
+)
 
 @app.route('/feed/following')
 @is_logged_in
