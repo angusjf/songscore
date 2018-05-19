@@ -5,8 +5,6 @@ from passlib.hash import sha256_crypt
 from hashlib import md5
 from functools import wraps
 import os
-import datetime as dt
-from datetime import datetime, date, time
 
 app = Flask(__name__) # creates an instance of flask
 app.config.from_object(__name__) # load config from this file (songscore.py)
@@ -20,8 +18,6 @@ db = SQLAlchemy(app)
 #########
 # WRAPS #
 #########
-#create_jinja_environment()
-
 
 # Make a page so you need to be logged in by adding "@is_logged_in" after the @app.route
 def is_logged_in(f):
