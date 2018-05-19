@@ -46,7 +46,7 @@
 						<p class="light-text date">Submitted {{ timesince | round | int}} minute ago</p>
 						{% endif %}
 					{% else %}
-						<div class="light-text">Submitted {{ timesince | round | int}} seconds ago</div>
+						<div class="light-text date">Submitted {{ timesince | round | int}} seconds ago</div>
 					{% endif %}
 				{% else %}
 				<p class="light-text date">Submitted {{ timesince.days }} days ago</p>
