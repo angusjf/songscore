@@ -40,7 +40,11 @@
 						{% endif %}
 					{% elif timesince > 60 %}
 						{% set timesince = timesince / 60 %}
+						{% if timesince | round | int > 1 %}
 						<p class="light-text date">Submitted {{ timesince | round | int}} minutes ago</p>
+						{% else %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} minute ago</p>
+						{% endif %}
 					{% else %}
 						<div class="light-text">Submitted {{ timesince | round | int}} seconds ago</div>
 					{% endif %}
