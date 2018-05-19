@@ -45,10 +45,6 @@ def index():
     else:
         return redirect(url_for('register'))
 
-@app.route('/includes/_review')
-def _review():
-    return render_template('includes/_review.html', currenttime=datetime.datetime.now())
-
 ###########################
 # LOG IN / OUT / REGISTER #
 ###########################
@@ -129,7 +125,8 @@ def feed():
 @is_logged_in
 def feed_all():
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
-    return render_template('feed.html', reviews=reviews, currenttime=datetime.now()
+    from datetime import datetime
+    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now()
 )
 
 @app.route('/feed/following')

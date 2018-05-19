@@ -10,9 +10,9 @@
 		<div class="review-right">
 			<div class="top-group">
 				<a href='/user/{{ review.user.username }}'>
-					<div class='Name'>{{ review.user.name }}</div>
+					<p class='Name'>{{ review.user.name }}</p>
 					<img class='userPicture' src='{{ review.user.picture }}' style="">
-					<div class='light-text userName'>{{ "@" + review.user.username }}</div>
+					<p class='light-text userName'>{{ "@" + review.user.username }}</p>
 				</a>
 				<div class="static-rating">
             {% for i in range(5) %}
@@ -27,10 +27,27 @@
 			</div>
 			{% set timesince = currenttime - review.datetime %}
 			<div class="text-group">
-				<div class="review-text light-text">{{ review.text }}</div>
-				<div class="date">Current time: {{ currenttime }}</div>
-				<div class="date">Time submitted: {{ review.datetime }}</div>
-				<div class="date">Submitted {{ timesince }} days ago</div>
+				<p class="review-text light-text">{{ review.text }}</p>
+
+				{% if timesince.days == 0 %}
+					{% set timesince = timesince.seconds %}
+					{% if timesince > 3600 %}
+						{% set timesince = timesince / 3600 %}
+						{% if timesince | round | int > 1 %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} hours ago</p>
+						{% else %}
+						<p class="light-text date">Submitted an hour ago</p>
+						{% endif %}
+					{% elif timesince > 60 %}
+						{% set timesince = timesince / 60 %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} minutes ago</p>
+					{% else %}
+						<div class="light-text">Submitted {{ timesince | round | int}} seconds ago</div>
+					{% endif %}
+				{% else %}
+				<p class="light-text date">Submitted {{ timesince.days }} days ago</p>
+				{% endif %}
+
 			</div>
 			<div class="interact">
 			{% if review.user_id != session["user_id"] %}
