@@ -207,6 +207,9 @@ width: 100%;
   font-weight: 300;
   color: #6a6969;
 }
+.date {
+  margin-top: 1rem;
+}
 .review-text {
   font-size: 1.2em;
 }
