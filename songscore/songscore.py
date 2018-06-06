@@ -122,8 +122,7 @@ def feed():
 def feed_all():
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
     from datetime import datetime
-    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now()
-)
+    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now())
 
 @app.route('/feed/following')
 @is_logged_in
@@ -138,7 +137,8 @@ def feed_following():
     #holdreviews.append(x.reviews)
     #return render_template('feed.html', reviews=holdreviews)
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
-    return render_template('feed.html', reviews=reviews)
+    from datetime import datetime
+    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now())
 
 #################
 # USER PROFILES #
@@ -160,7 +160,8 @@ def user_page(username):
 def user_reviews(username):
     user = User.query.filter_by(username=username).one()
     if user:
-        return render_template('reviews.html', user=user, reviews=user.reviews)
+        from datetime import datetime
+        return render_template('reviews.html', user=user, reviews=user.reviews, datetime=datetime, currenttime=datetime.now())
     else:
         abort(404)
 

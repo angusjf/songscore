@@ -270,7 +270,8 @@ nav ul li {
 nav ul li a,
 nav ul li a:visited {
   display: block;
-  padding: 0 20px;
+  padding: 0 15px;
+  margin: 0 5px;
   line-height: 70px;
   color: #ffffff;
   text-decoration: none;
@@ -775,8 +776,22 @@ input:focus ~ .highlight {
   margin-right: 2px;
 }
 
-.username {
+.profile-info {
+  display: inline-block;
+  vertical-align: top;
+  padding-top: 20px;
+}
 
+.profile-info .subject-group {
+  margin-right: 3rem;
+}
+
+.profile-username {
+  font-size: 1.2rem
+}
+
+.profile-image {
+  margin-right: 3rem;
 }
 
 .submit-right {
