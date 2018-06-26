@@ -1,4 +1,4 @@
-<div class="navigation">
+<div class="navigation shadow-1">
   <div class="nav-container container">
     <div class="brand">
       <a href="/feed"><img class="logo" src="/static/images/logo.png"></img></a>
@@ -8,10 +8,10 @@
       <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
       <ul class="nav-list">
         <li>
-          <a href="#!">Home</a>
+          <a href="/feed/all" class="line">Home</a>
         </li>
         <li>
-          <a href="#!">Notifications</a>
+          <a href="#!" class="line">Notifications</a>
         </li>
         {% if session.logged_in %}
         <li>
@@ -23,7 +23,7 @@
             </li>
           </ul>
         </li>
-        <!--DON'T DELETE. FOLLOWING IS HOW YOU ADD A NORMAL, NON IMAGE DROPDOWN
+        <!--DON'T DELETE. THE FOLLOWING CODE IS HOW YOU ADD A NORMAL, NON IMAGE DROPDOWN
         <li>
           <a href="#!" class="nav-dropdown-link">Test dropdown</a>
           <ul class="nav-dropdown">
@@ -67,29 +67,3 @@
   });
 })(jQuery); // end jQuery
 </script>
-
-
-<!--<nav class="navBar shadow-1">
-  <nav class="nav-wrapper">
-    <input type="checkbox" id="menu-toggle">
-    </input>
-    <ul>
-      <li><a href="/"><i class="material-icons">home</i></a></li>
-      <li><a href="#"><i class="material-icons">notifications</i></a></li>
-    </ul>
-    <a href="/"><img class="logo" src="/static/images/logo.png"></img></a>
-
-    {% if session.logged_in %}
-    <ul>
-      <a href="/profile"><img class="logo circle" src="/static/images/profile.png"></img></a>
-      <li><a href="/logout">LOG OUT</a></li>
-    </ul>
-    {% else %}
-    <ul>
-      <li><a href="/register">REGISTER</a></li>
-      <li><a href="/login">LOG IN</a></li>
-    </ul>
-    {% endif %}
-    <label for="menu-toggle" class="label-toggle"></label>
-  </nav>
-</nav>!-->

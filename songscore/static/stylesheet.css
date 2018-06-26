@@ -20,6 +20,37 @@ body {
 	margin: 0px;
 }
 
+a {
+  text-decoration: none;
+}
+
+/* CUSTOM HIGHLIGHT COLOUR CSS */
+::selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* MOZILLA */
+::-moz-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* OPERA */
+::-o-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* DINOSAURS */
+::-ms-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* WEBKIT */
+::-webkit-selection {
+    background-color: #ebb0b2;
+    color: #6a6969;
+}
+/* END CUSTOM HIGHLIGHT COLOUR CSS */
+
 .red-bg {
   display: flex;
 min-height: 100vh;
@@ -74,11 +105,11 @@ min-height: 100vh;
 .register-left ul li::before {
   content: '';
   position: absolute;
-  width: 3em;
+  width: 2.5em;
   height: 100%;
   top: 0;
   left: 0;
-  background-size: 3em 3em;
+  background-size: 2.5em 2.5em;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -101,6 +132,7 @@ min-height: 100vh;
   position: relative;
   width: 100vw;
   display: flex;
+  overflow: auto;
 }
 
 .register-content-outer .form-group {
@@ -117,6 +149,23 @@ min-height: 100vh;
  display: flex;
  flex-direction: row;
 }
+
+/* ERROR PAGE BUILT ON REGISTER CSS, MODIFICATIONS BELOW */
+.error-page {
+  max-width: 1200px;
+}
+.error-page .register-left {
+  max-width: 1200px;
+  text-align: center;
+}
+.error-page * {
+  text-align: center !important;
+}
+.error-page h2 {
+  font-size: 2em;
+  top: -2.25em;
+}
+/* END ERROR PAGE MODIFICATIONS*/
 
 .register-left {
   position: relative;
@@ -157,6 +206,9 @@ width: 100%;
 .light-text {
   font-weight: 300;
   color: #6a6969;
+}
+.date {
+  margin-top: 1rem;
 }
 .review-text {
   font-size: 1.2em;
@@ -218,15 +270,15 @@ nav ul li {
 nav ul li a,
 nav ul li a:visited {
   display: block;
-  padding: 0 20px;
+  padding: 0 15px;
+  margin: 0 5px;
   line-height: 70px;
-  background: #cd3538;
   color: #ffffff;
   text-decoration: none;
+  background: #cd3538;
 }
 nav ul li a:hover,
 nav ul li a:visited:hover {
-  background: #b73234;
   color: #ffffff;
 }
 .nav-dropdown-link:after {
@@ -275,7 +327,14 @@ nav ul li ul li a {
   .nav-mobile {
     display: block;
   }
+  .nav-list .line::before, .nav-list .line::after {
+    content: none;
+  }
 
+  nav ul li a,
+  nav ul li a:visited {
+    background: #cd3538;
+  }
   nav {
     width: 100%;
     padding: 70px 0 30px;
@@ -298,6 +357,7 @@ nav ul li ul li a {
     position: static;
   }
 }
+
 .nav-container {
   width: 100% !important;
 }
@@ -328,9 +388,6 @@ nav ul li ul li a {
   -o-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
-#nav-toggle span {
-
-}
 #nav-toggle span:before {
   top: -10px;
 }
@@ -360,7 +417,7 @@ nav ul li ul li a {
   margin: 5px 25px 5px 0;
   color: #fff;
   border-radius: 500px;
-  padding: 7px 20px;
+  padding: 5px 20px;
   overflow: hidden;
 }
 
@@ -385,29 +442,35 @@ nav ul li ul li a {
   color: #6a6969;
   text-decoration: none;
   cursor: pointer;
-  width: 90%;
+  width: 100%;
   /*font-style: italic;*/
 }
 
-.register-right input[type=submit], .submit-right input[type=submit], .comment-form input[type=submit] {
+input[type=submit], .register-right input[type=submit], .submit-right input[type=submit], .comment-form input[type=submit] {
   background-color: #cd3538;
   border: none;
   display: inline-block;
   position: relative;
-  font-size: 1em;
+  font-size: 0.9em;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
   cursor: pointer;
   width: 100%;
-  margin: 15px 0px;
+}
+.comment-form {
+  margin-top: 20px;
 }
 .comment-form input[type=submit] {
-  width: 200px;
+  width: 150px;
 }
 .comment-form .text-group {
-  margin: 20px 30px 20px 0;
+  margin-right: 30px !important;
+  /*margin: 20px 30px 20px 0;*/
+}
+.comment-form .form-group, .comment-form input[type=submit] {
+  margin: 0 0;
 }
 
 .circle {
@@ -454,7 +517,7 @@ img {
 }
 
 .form-group { /* each text entry is in a group */
-  margin: 15px 0px;
+  margin: 20px 0px;
   position: relative;
   display: inline-block;
 }
@@ -473,6 +536,27 @@ img {
 }
 input:focus 		{ outline:none; }
 
+.text-group label {
+  font-size: 1.1em;
+	position: absolute;
+	pointer-events: none;
+  left: 0px;
+	top: -2px;
+	transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+
+/*FORM VALIDATION STYLE*/
+.wrong-entry {
+  animation-name: wrong-entry;
+  animation-delay: 1000ms; /*This delay is only here because of the fade-up*/
+  animation-duration: 500ms;
+}
+.help-inline {
+  display: inline-block;
+  color: #cd3538;
+}
 
 /* BOTTOM BAR */
 .bar 	{
@@ -504,6 +588,12 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   width: 50%;
 }
 
+input:focus ~ label, /*input.used ~ label,*/input:valid ~ label {
+	top: -20px;
+	font-size: 0.8em;
+	color: #cd3538;
+}
+
 .highlight {
   position: absolute;
   height: 100%;
@@ -516,9 +606,9 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 
 /* active state */
 input:focus ~ .highlight {
-  -webkit-animation: inputHighlighter 0.3s ease;
-  -moz-animation: inputHighlighter 0.3s ease;
-  animation: inputHighlighter 0.3s ease;
+  -webkit-animation: inputHighlighter 0.2s ease;
+  -moz-animation: inputHighlighter 0.2s ease;
+  animation: inputHighlighter 0.2s ease;
 }
 
 /* ANIMATIONS FOR ALL BROWSERS*/
@@ -533,6 +623,23 @@ input:focus ~ .highlight {
 @keyframes inputHighlighter {
 	from { background: #cd3538; }
   to 	{ width: 0; background: transparent; }
+}
+
+
+@keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
+}
+@-webkit-keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
+}
+@-moz-keyframes wrong-entry {
+  0%,100% { left: 0px;}
+  20%,60% {left: 15px;}
+  40%,80% {left: -15px;}
 }
 
 /*BEGIN STAR RATING CSS*/
@@ -561,9 +668,11 @@ input:focus ~ .highlight {
     color: #ddd;
 }
 .static-rating label {
+  cursor: auto;
   float: none;
-  font-size: 1.2em;
+  font-size: 1em;
   padding: 0 0;
+  vertical-align: middle;
 }
 
 .static-rating {
@@ -600,7 +709,7 @@ input:focus ~ .highlight {
 
 .review {
   display: flex;
-  margin: 2px 0;
+  margin: 5px 0;
 }
 
 .review-content {
@@ -639,9 +748,8 @@ input:focus ~ .highlight {
   text-align: left;
   position: absolute;
   bottom: 20px;
-  left: 20px;
   color: white;
-  margin: 0;
+  margin: 0px 20px;
   font-size: 0.9em;
 }
 
@@ -652,22 +760,38 @@ input:focus ~ .highlight {
   padding-left: 5%;
 }
 
-.text-group, .interact {
-  margin: 20px 0;
+.interact {
+  margin-top: 20px;
 }
 
 .top-group a > * {
   display: inline-block;
   text-decoration: none;
   margin-right: 8px;
+  vertical-align: middle;
 }
 
-.userpicture {
+.top-group .userpicture {
   width: 20px;
+  margin-right: 2px;
 }
 
-.username {
+.profile-info {
+  display: inline-block;
+  vertical-align: top;
+  padding-top: 20px;
+}
 
+.profile-info .subject-group {
+  margin-right: 3rem;
+}
+
+.profile-username {
+  font-size: 1.2rem
+}
+
+.profile-image {
+  margin-right: 3rem;
 }
 
 .submit-right {
@@ -676,18 +800,46 @@ input:focus ~ .highlight {
   flex-grow: 1;
 }
 
+.result:hover {
+  background-color: #cd3538;
+}
+
+#subject-results {
+  width: 90%;
+}
+
+.result {
+  margin-bottom: 10px;
+}
+
+.result:hover span {
+  color: white;
+}
+
+.result img {
+  width: 150px;
+  vertical-align: middle;
+  padding-right: 20px;
+}
+
+.result span {
+  vertical-align: middle;
+}
+
 .interact form{
   display: inline-block;
   border: none;
 }
 
 .interact input {
+  background-color: white;
   cursor: pointer;
   border: none;
   width: 20px;
   height: 20px;
   background-size: 20px;
   margin-right: 10px;
+  margin-top: 10px;
 }
 
 .like-button { /*like button*/
@@ -704,24 +856,26 @@ input:focus ~ .highlight {
 }
 
 .comment:nth-child(1) {
-  margin-top: 50px;
+  margin-top: 25px;
 }
 .comment {
   margin: 10px 0;
 }
 .comment * {
   display: inline-block;
+  vertical-align: bottom;
 }
 .comment .text-group {
   width: auto;
   margin: 0;
-  color:
 }
 .comment .name {
   font-size: 1em;
   font-weight: bold;
 }
-
+.login-form .text-group, .register-right .text-group {
+  width: 100%;
+}
 .submit-left {
   width: 100%;
   min-width: 200px;
@@ -743,9 +897,42 @@ input:focus ~ .highlight {
   float: none;
 }
 
-/*BEGIN SELECTOR CSS*/
+/*BEGIN ACTIVE LINK UNDERLINE CSS*/
+.line::before, .line::after {
+  content: '';
+  height: 4px;
+  width: 0;
+  bottom: 0px;
+  position: absolute;
+  background: #fff;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+.line {
+  position: relative;
+}
+.line::before {
+  left: 50%;
+}
+.line::after {
+  right: 50%;
+}
+.line:hover:before, .line:hover:after  {
+  width: 50%;
+}
+.link-active::before, .link-active::after  { /*LINKS TO LINK-ACTIVE.JS*/
+  width: 50% !important;
+}
+/*END ACTIVE LINK UNDERLINE CSS*/
+
+/*BEGIN SELECTOR CSS (ALSO HAS ACTIVE LINK UNDERLINE CSS)*/
+.selector .line:before, .selector .line:after {
+  background: #cd3538; /*changes underline colour to be red */
+}
+
 .selector {
-   margin: 50px 0 15px 0;
+  margin: 50px 0 5px 0;
 }
 .selector .section-content {
   padding: 4px 40px 0px 40px;
@@ -760,7 +947,7 @@ input:focus ~ .highlight {
   list-style: none;
   vertical-align: middle;
 }
-.selector ul li a {/* Also has the name class */
+.selector ul li a {/* Also has the name and line classes */
   width: 150px;
   position: relative;
   display: block;
@@ -769,59 +956,129 @@ input:focus ~ .highlight {
   font-size: 1.5em;
   margin: 0 0.5em;
 }
-.selector ul li a::before, .selector ul li a::after {
-  content: '';
-  height: 4px;
-  width: 0;
-  bottom: 1px;
-  position: absolute;
-  background: #cd3538;
-  transition: 0.2s ease all;
-  -moz-transition: 0.2s ease all;
-  -webkit-transition: 0.2s ease all;
+.selector-many ul li a {
+  width: 100px;
 }
-.selector ul li a::before {
-  left: 50%;
+/*END SELECTOR CSS (ALSO HAS ACTIVE LINK UNDERLINE CSS)*/
+
+.review-right .text-group {
+  margin-top: 10px;
+  width: 100%;
 }
-.selector ul li a::after {
-  right: 50%;
+
+/* START REUSABLE ANIMATION CSS*/
+.fade-up {
+  -webkit-animation-name: fade-up;
+  -moz-animation-name: fade-up;
+  -o-animation-name: fade-up;
+  animation-name: fade-up;
+  -webkit-animation-duration: 1000ms;
+  -moz-animation-duration: 1000ms;
+  -ms-animation-duration: 1000ms;
+  -o-animation-duration: 1000ms;
+  animation-duration: 1000ms;
 }
-.selector ul li a:hover:before, .selector ul li a:hover:after  {
-  width: 50%;
+.fade-up.fast {
+  -webkit-animation-duration: 800ms;
+  -moz-animation-duration: 800ms;
+  -ms-animation-duration: 800ms;
+  -o-animation-duration: 800ms;
+  animation-duration: 800ms;
 }
-.link-active::before, .link-active::after  {
-  width: 50% !important;
+
+.fade-up.slow {
+  -webkit-animation-duration: 1200ms;
+  -moz-animation-duration: 1200ms;
+  -ms-animation-duration: 1200ms;
+  -o-animation-duration: 1200ms;
+  animation-duration: 1200ms;
+}
+.fade-up.super-slow {
+  -webkit-animation-duration: 1400ms;
+  -moz-animation-duration: 1400ms;
+  -ms-animation-duration: 1400ms;
+  -o-animation-duration: 1400ms;
+  animation-duration: 1400ms;
+}
+
+
+@-webkit-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@-moz-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -moz-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -moz-transform: translateY(0);
+  }
+}
+
+@-o-keyframes fade-up {
+  0% {
+    opacity: 0;
+    -o-transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    -o-transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
 /* MEDIA QUERIES */
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 850px) {
   .selector-many ul li a {
-    width: 100px;
+    width: auto;
   }
-  @media screen and (max-width: 850px) {
-    .selector-many ul li a {
-      width: auto;
-    }
-    @media screen and (max-width: 800px) {
-      .subject-group {
-        width: 35%;
-      }
-      .review-right {
-        width: 59%;
-      }
-    }
-@media screen and (max-width: 700px) {
+}
+@media screen and (max-width: 800px) {
   .subject-group {
     width: 35%;
   }
   .review-right {
     width: 59%;
   }
+}
+@media screen and (max-width: 700px) {
+  .submit-right *{
+    margin: 5px 0;
+  }
+
+  .subject-group {
+    width: 35%;
+  }
+  .review-right {
+    width: 59%;
+  }
+  .comment-form {
+    margin-top: 30px;
+  }
   .comment-form input[type=submit] {
-    width: 200px;
-    margin: 0;
+    width: 150px;
+    margin-top: 15px;
   }
   .selector-many ul li a {
     width: auto;
@@ -845,11 +1102,16 @@ input:focus ~ .highlight {
   }
   .submit {
   }
-  .text-group {
+  .text-group, #subject-results {
     width: 100%;
   }
+
 }
 @media screen and (max-width: 630px) {
+  .result img {
+    width: 100px;
+  }
+
   .subject-group {
     width: 45%;
   }
@@ -857,7 +1119,47 @@ input:focus ~ .highlight {
     width: 49%;
   }
 }
-@media screen and (max-width: 530px) {
+@media screen and (max-width: 530px) { /*super narrow*/
+  .submit-right {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .submit-right input {
+    float: none;
+    width: 100%;
+  }
+  .submit-right .form-group {
+    margin: 5px 0px;
+  }
+  .rating {
+  }
+  .welcome-banner .img-container {
+    display: block;
+    width: 100%;
+  }
+  .welcome-banner {
+    text-align: center;
+  }
+  .register-left h1 {
+    text-align: center;
+    width: 100% !important;
+  }
+  .selector ul li a {
+    width: 80px;
+    font-size: 1.2em;
+  }
+  .selector-many ul li a {
+    width: auto;
+    font-size: 0.8em;
+    margin: 0 0.5em;
+  }
+  .interact input {
+    margin-top: 2px;
+  }
+  .comment-form {
+    margin-top: 5px;
+  }
   .comment-form input[type=submit] {
     width: 100%;
     margin: 0;
@@ -877,7 +1179,7 @@ input:focus ~ .highlight {
     margin: 0 !important;
   }
   .interact {
-    margin: 10px 0 0 0;
+    margin: 5px 0 0 0;
   }
   .comment-form .text-group, .comment:nth-child(1) {
     margin: 20px 0px 10px 0;
@@ -887,6 +1189,9 @@ input:focus ~ .highlight {
   }
   .container {
     width: 95%;
+  }
+  .review-text {
+    margin: 10px 0;
   }
 }
 @media screen and (max-width: 950px) {
@@ -899,12 +1204,21 @@ input:focus ~ .highlight {
     top: auto;
     left: auto;
   }
+  .error-page {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+  }
   .img-container {
     width: 39%;
   }
   .register-left h1 {
     width: 59%;
     font-size: 2.5em;
+  }
+  .error-page h1 {
+    width: 100%;
   }
   .welcome-banner {
     width: 100%;
@@ -927,49 +1241,18 @@ input:focus ~ .highlight {
     left: auto;
   }
   .text-group {
-      margin-top: 20px;
   }
   .register-left li {
     font-size: 1.3em;
     padding-left: 3em;
 }
-  @media screen and (max-width: 500px) {
-    .submit-right {
-      display: block;
-      width: 100%;
-      text-align: center;
-    }
-    .submit-right input {
-      float: none;
-      width: 100%;
-    }
-    .submit-right .form-group {
-      margin: 5px 0px;
-    }
-    .rating {
-    }
-    .img-container {
-      display: block;
-      width: 100%;
-    }
-    .welcome-banner {
-      text-align: center;
-    }
-    .register-left h1 {
-      text-align: center;
-      width: 100%;
-    }
-    .selector ul li a {
-      width: 100px;
-      font-size: 1.2em;
-    }
 
-    @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
-      .logo {
-        height: 66px;
-        width: 66px;
-      }
-      .brand a:nth-child(2) {
-        display: none;
-      }
+@media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
+  .logo {
+    height: 66px;
+    width: 66px;
   }
+  .brand a:nth-child(2) {
+    display: none;
+  }
+}

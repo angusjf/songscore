@@ -13,7 +13,6 @@ app.config.update({
     'SQLALCHEMY_DATABASE_URI' : os.environ['DATABASE_URL'],
     'SQLALCHEMY_TRACK_MODIFICATIONS' : 'false'
 })
-
 db = SQLAlchemy(app)
 
 #########
@@ -75,7 +74,7 @@ def login():
                 session['logged_in'] = True
                 session['user_id'] = user.id
                 session['username'] = user.username
-                flash('You will hopefully now be logged in (no promises lol)', 'success')
+                # flash('You will hopefully now be logged in (no promises lol)', 'success')
                 return redirect(url_for('index'))
             else:
                 error = 'Password is incorrect'
@@ -122,7 +121,8 @@ def feed():
 @is_logged_in
 def feed_all():
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
-    return render_template('feed.html', reviews=reviews)
+    from datetime import datetime
+    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now())
 
 @app.route('/feed/following')
 @is_logged_in
@@ -137,7 +137,8 @@ def feed_following():
     #holdreviews.append(x.reviews)
     #return render_template('feed.html', reviews=holdreviews)
     reviews = Review.query.order_by(db.desc(Review.datetime)).all()
-    return render_template('feed.html', reviews=reviews)
+    from datetime import datetime
+    return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now())
 
 #################
 # USER PROFILES #
@@ -159,7 +160,8 @@ def user_page(username):
 def user_reviews(username):
     user = User.query.filter_by(username=username).one()
     if user:
-        return render_template('reviews.html', user=user, reviews=user.reviews)
+        from datetime import datetime
+        return render_template('reviews.html', user=user, reviews=user.reviews, datetime=datetime, currenttime=datetime.now())
     else:
         abort(404)
 

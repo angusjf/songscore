@@ -1,7 +1,7 @@
 <div class='review section shadow-1'>
 	<div class="section-content review-content">
 		<div class='subject-group'>
-				<div class='subject-picture' style="background-image: linear-gradient(rgb(0, 0, 0, 0.1),rgb(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url({{ review.subject.art}});">
+				<div class='subject-picture' style="background-image: linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url({{ review.subject.art}});">
 					<p>{{ review.subject.name}}</p>
 					<p>{{ review.subject.artist_name}}</p>
 				</div>
@@ -10,9 +10,9 @@
 		<div class="review-right">
 			<div class="top-group">
 				<a href='/user/{{ review.user.username }}'>
-					<div class='Name'>{{ review.user.name }}</div>
+					<p class='Name'>{{ review.user.name }}</p>
 					<img class='userPicture' src='{{ review.user.picture }}' style="">
-					<div class='light-text userName'>{{ review.user.username }}</div>
+					<p class='light-text userName'>{{ "@" + review.user.username }}</p>
 				</a>
 				<div class="static-rating">
             {% for i in range(5) %}
@@ -25,9 +25,33 @@
             {% endfor %}
         </div>
 			</div>
+			{% set timesince = currenttime - review.datetime %}
 			<div class="text-group">
-				<div class="review-text light-text">{{ review.text }}</div>
-				<div class="date">{{ review.date }}</div>
+				<p class="review-text light-text">{{ review.text }}</p>
+
+				{% if timesince.days == 0 %}
+					{% set timesince = timesince.seconds %}
+					{% if timesince > 3600 %}
+						{% set timesince = timesince / 3600 %}
+						{% if timesince | round | int > 1 %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} hours ago</p>
+						{% else %}
+						<p class="light-text date">Submitted an hour ago</p>
+						{% endif %}
+					{% elif timesince > 60 %}
+						{% set timesince = timesince / 60 %}
+						{% if timesince | round | int > 1 %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} minutes ago</p>
+						{% else %}
+						<p class="light-text date">Submitted {{ timesince | round | int}} minute ago</p>
+						{% endif %}
+					{% else %}
+						<div class="light-text date">Submitted {{ timesince | round | int}} seconds ago</div>
+					{% endif %}
+				{% else %}
+				<p class="light-text date">Submitted {{ timesince.days }} days ago</p>
+				{% endif %}
+
 			</div>
 			<div class="interact">
 			{% if review.user_id != session["user_id"] %}
@@ -58,13 +82,13 @@
 		</div>
 		<form class="comment-form inline-form" id="" action="/comment" method="post">
 			<input name="review_id" hidden value="{{ review.id }}">
-			<div class="text-group form-group">
+			<div class="form-group text-group ">
 				<input id="subject-input" class="light-text text-input" name="text" placeholder="Type your comment..." type="text"/>
 				<span class="highlight"></span>
 				<span class="bar"></span>
 				<div id="subject-results"></div>
 			</div>
-			<input class="submit button" type="submit"/>
+			<input class="submit button form-group" type="submit" value="Comment"/>
 		</form>
 	</div>
 </div>

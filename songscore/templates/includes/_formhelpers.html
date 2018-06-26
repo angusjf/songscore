@@ -5,5 +5,10 @@
     {% for error in field.errors %}
       <span class="help-inline">{{ error }}</span>
     {% endfor %}
+    <script>
+      $(document).ready(function(){
+        $('.help-inline').parent().addClass('wrong-entry');
+      });
+    </script>
   {% endif %}
 {% endmacro %}
