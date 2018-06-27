@@ -25,14 +25,21 @@
 		</div>
 	</div>
 	<div class="social">
-		<form action="/like" method="post">
-			<input type="hidden" name="review_id" value="{{review.id}}"></input>
-			<button type='submit' class='like'><i class="fas fa-thumbs-up"></i> 4</button>
-		</form>
-		<form action="/dislike" method="post">
-			<input type="hidden" name="review_id" value="{{review.id}}"></input>
-			<button type='submit' class='dislike'><i class="fas fa-thumbs-down"></i></button>
-		</form>
+		{% if review.user_id != session["user_id"] %}
+			<form action="/like" method="post">
+				<input type="hidden" name="review_id" value="{{review.id}}"></input>
+				<button type='submit' class='like'><i class="fas fa-thumbs-up"></i></button>
+			</form>
+			<form action="/dislike" method="post">
+				<input type="hidden" name="review_id" value="{{review.id}}"></input>
+				<button type='submit' class='dislike'><i class="fas fa-thumbs-down"></i></button>
+			</form>
+		{% else %}
+			<form action="/delete" method="post">
+				<input type="hidden" name="review_id" value="{{review.id}}"></input>
+				<button type='submit' class='like'><i class="fas fa-trash-alt"></i> 4</button>
+			</form>
+		{% endif %}
 		<form class="new-comment" action="/comment" method="post">
 			<input name="review_id" hidden value="{{ review.id }}">
 			<input name="text" placeholder='Type a comment...'></input>
