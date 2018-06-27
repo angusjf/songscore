@@ -1,11 +1,9 @@
 <div class="comment">
-	<div class="top-group">
-		<a href='/user/{{ comment["username"] }}'>
-			<img class='userPicture' src='{{ comment.user.picture }}'>
-			<div class='name'>{{ comment.user.name }}</div>
+	<img src="{{ comment.user.picture }}"></img>
+	<div class="">
+		<a href='/user/{{ comment.user.username }}'>
+			<div class="name">{{ comment.user.name }}</div>
 		</a>
-	</div>
-	<div class="text-group">
-		<div class='light-text'>{{ comment.text }}</div>
+		<div class="text">{{ comment.text }}</div>
 	</div>
 </div>

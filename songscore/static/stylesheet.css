@@ -707,11 +707,6 @@ input:focus ~ .highlight {
     /*font-size: 220%; (example bad animation)*/
 }
 
-.review {
-  display: flex;
-  margin: 5px 0;
-}
-
 .review-content {
   /*flex-direction: row;
   display: flex;*/
@@ -855,24 +850,6 @@ input:focus ~ .highlight {
   background-image: url("images/share.png");
 }
 
-.comment:nth-child(1) {
-  margin-top: 25px;
-}
-.comment {
-  margin: 10px 0;
-}
-.comment * {
-  display: inline-block;
-  vertical-align: bottom;
-}
-.comment .text-group {
-  width: auto;
-  margin: 0;
-}
-.comment .name {
-  font-size: 1em;
-  font-weight: bold;
-}
 .login-form .text-group, .register-right .text-group {
   width: 100%;
 }
@@ -882,15 +859,6 @@ input:focus ~ .highlight {
   display: block;
 }
 
-.name {
-  font-size: 1.5em;
-  color: black;
-}
-
-.subjectname {
-  font-weight: 400;
-  margin-top: 7px;
-}
 
 .top-group .rating {
   display: inline-block;
@@ -1194,6 +1162,7 @@ input:focus ~ .highlight {
     margin: 10px 0;
   }
 }
+
 @media screen and (max-width: 950px) {
   .register-content-inner {
     margin: 0 auto;
@@ -1245,6 +1214,7 @@ input:focus ~ .highlight {
   .register-left li {
     font-size: 1.3em;
     padding-left: 3em;
+  }
 }
 
 @media screen and (max-width: 360px) { /*makes songscore alpha text disapear*/
@@ -1256,3 +1226,175 @@ input:focus ~ .highlight {
     display: none;
   }
 }
+
+/*
+ * 
+ * PASTING IN MY NEW CSS HERE
+ * 
+ */
+
+.card {
+	max-width: 800px; /*would have wanted 700px but rhys */
+	min-width: 630px;
+	box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+	background: white;
+	border-radius: 8px;
+	word-break: break-word; /* TODO */
+	margin-top: 24px;
+	margin-bottom: 24px;
+}
+
+/* CONTENT */
+
+.content {
+	display: flex;
+}
+	/* SUBJECT */
+
+	.subject {
+		color: white;
+		height: 180px;
+		width: 180px;
+		padding: 10px 10px;
+		background-size: cover;
+		border-radius: 8px 0px 0px 0px;
+		flex-shrink: 0;
+		font-weight: bold;
+		text-shadow: 0px 1px 5px rgba(0,0,0);
+		font-size: 24px;
+		background-color: rgba(0,0,0,0.15);
+	}
+	.subject .artist { font-size: 16px; font-style: italic; }
+
+	/* REVIEW */
+
+	.review {
+		padding: 24px;
+		flex-grow: 2;
+	}
+	.review .top {
+		display: flex;
+		border: 0px;
+		border-bottom: 1px solid rgba(0,0,0,0.15);
+		margin-bottom: 18px;
+		padding-bottom: 18px;
+	}
+	.review .top > img {
+		width: 46px;
+		height: 46px;
+		border-radius: 26px;
+		margin-right: 16px;
+	}
+	.review .names .name {
+		font-weight: bold;
+		font-size: 20px;
+	}
+	.review .names .username {
+		font-size: 14px;
+		color: rgba(0,0,0,0.7);
+	}
+	.stars {
+		margin: 0 10px;
+		margin-left: auto;
+		padding-top: 5px;
+	}
+	.stars label { height: 32px; width: 32px; font-size: 32px; }
+
+	.review .text {
+		font-size: 16px;
+		quotes: "\201C""\201D""\2018""\2019";
+		font-style: italic;
+	}
+	.review .text:before {
+		content: open-quote;
+		font-size: 46px;
+		line-height: 0.1em;
+		margin-right: 0.15em;
+		vertical-align: -0.4em;
+		color: rgba(0,0,0,0.2);
+	}
+	.review .text:after {
+		content: close-quote;
+		font-size: 46px;
+		line-height: 0.1em;
+		margin-right: 0.25em;
+		vertical-align: -0.4em;
+		color: rgba(0,0,0,0.2);
+	}
+
+/* SOCIAL */
+
+.social {
+	display: flex;
+	padding: 8px;
+	background-color: rgba(0,0,0,0.03);
+	border-top: 1px solid rgba(0,0,0,0.15);
+}
+	.social button {
+		font-family: inherit;
+		font-size: 18px;
+		color: rgba(0,0,0,0.3);
+		border: 0px;
+		margin-right: 4px;
+		padding: 8px 16px;
+		background-color: white;
+	}
+	.social > button {
+		border: 1px solid rgba(0,0,0,0.15);
+		color: rgba(0,0,0,0.3);
+		font-size: 14px;
+		padding: 0px 16px;
+		border-radius: 8px;
+	}
+	.social .new-comment {
+		flex-grow: 2;
+		display: flex;
+		border: 1px solid rgba(0,0,0,0.15);
+		border-radius: 8px;
+		background: white;
+	}
+	.new-comment input {
+		background: none;
+		border: 0px;
+		padding-left: 12px;
+		flex-grow: 2;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	.new-comment .comment {
+		flex-grow: 2;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	.bottom .social .new-comment button {
+		background: none;
+		margin-right: 0px;
+		padding-right: 12px;
+	}
+/* COMMENTS */
+
+.comment {
+	padding: 16px;
+	min-height: 46px;
+	border-top: 1px solid rgba(0,0,0,0.15);
+	display: flex;
+}
+.comment:first-child { border-top: 0px; }
+.comment img {
+	width: 46px;
+	height: 46px;
+	border-radius: 26px;
+	margin-right: 16px;
+	flex-grow: 0;
+}
+.comment .name {
+	flex-grow: 2;
+	font-weight: bold;
+	color: black;
+}
+
+/* 
+ * 
+ * END OF ANGUS'S REVIEW CARD CSS
+ * 
+ */

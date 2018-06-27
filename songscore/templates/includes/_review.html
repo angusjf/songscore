@@ -1,34 +1,42 @@
-<div class='review section shadow-1'>
-	<div class="section-content review-content">
-		<div class='subject-group'>
-				<div class='subject-picture' style="background-image: linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url({{ review.subject.art}});">
-					<p>{{ review.subject.name}}</p>
-					<p>{{ review.subject.artist_name}}</p>
-				</div>
+<div class="card">
+	<div class="content">
+		<div class="subject" style="background-image: url('{{ review.subject.art }}')">
+			<div>{{ review.subject.name }}</div>
+			<div class="artist">{{ review.subject.artist_name }}</div>
 		</div>
-
-		<div class="review-right">
-			<div class="top-group">
-				<a href='/user/{{ review.user.username }}'>
-					<p class='Name'>{{ review.user.name }}</p>
-					<img class='userPicture' src='{{ review.user.picture }}' style="">
-					<p class='light-text userName'>{{ "@" + review.user.username }}</p>
-				</a>
-				<div class="static-rating">
-            {% for i in range(5) %}
-							<script>console.log("Number of stars " + {{ review.stars }} + ", i=" + {{ i }});</script>
-              {% if i < review.stars %}
-								<label style="color:#cd3538"></label>
-              {% else %}
-							<label style="color:#ddd"></label>
-              {% endif %}
-            {% endfor %}
-        </div>
+		<div class="review">
+			<div class='top'>
+				<img src="{{ review.user.picture }})"></img>
+				<div class="names">
+					<div class="name">{{ review.user.name }}</div>
+					<div class="username">{{ "@" + review.user.username }} · Xd</div>
+				</div>
+				<div class="stars">
+				{% for i in range(5) %}
+					{% if i < review.stars %}
+						<label style="color:#cd3538"><i class="fas fa-star"></i></label> 
+					{% else %}
+						<label style="color:#ddd"><i class="fas fa-star"></i></label>
+					{% endif %}
+            			{% endfor %}
+				</div>
 			</div>
+			<div class="text">{{ review.text }}</div>
+		</div>
+	</div>
+	<div class="social">
+		<button class='like'><i class="fas fa-thumbs-up"></i> 4</button>
+		<button class='dislike'><i class="fas fa-thumbs-down"></i></button>
+		<div class="new-comment">
+			<input placeholder='Type a comment...'></input>
+			<button class='submit'><i class="fas fa-angle-right"></i></button>
+		</div>
+	</div>
+	{% for comment in review.comments %}
+		{% include 'includes/_comment.html' %}
+	{% endfor %}
+{#
 			{% set timesince = currenttime - review.datetime %}
-			<div class="text-group">
-				<p class="review-text light-text">{{ review.text }}</p>
-
 				{% if timesince.days == 0 %}
 					{% set timesince = timesince.seconds %}
 					{% if timesince > 3600 %}
@@ -51,44 +59,5 @@
 				{% else %}
 				<p class="light-text date">Submitted {{ timesince.days }} days ago</p>
 				{% endif %}
-
-			</div>
-			<div class="interact">
-			{% if review.user_id != session["user_id"] %}
-				<form action="/like" method="post">
-					<input type="hidden" name="review_id" value="{{review.id}}"></input>
-					<input class="like-button" type="submit" value=""></input>
-				</form>
-				<form action="/dislike" method="post">
-					<input type="hidden" name="review_id" value="{{review.id}}"></input>
-					<input class="dislike-button" type="submit" value=""></input>
-				</form>
-			{% else %}
-				<form action="/delete" method="post">
-					<input type="hidden" name="review_id" value="{{review.id}}"></input>
-					<input class="delete-button" type="submit" value=""></input>
-				</form>
-			{% endif %}
-			<form action="/share" method="post">
-				<input type="hidden" name="review_id" value="{{review.id}}"></input>
-				<input class="share-button" type="submit" value=""></input>
-			</form>
-			</div>
-		</div>
-		<div>
-		{% for comment in review.comments %}
-		{% include 'includes/_comment.html' %}
-		{% endfor %}
-		</div>
-		<form class="comment-form inline-form" id="" action="/comment" method="post">
-			<input name="review_id" hidden value="{{ review.id }}">
-			<div class="form-group text-group ">
-				<input id="subject-input" class="light-text text-input" name="text" placeholder="Type your comment..." type="text"/>
-				<span class="highlight"></span>
-				<span class="bar"></span>
-				<div id="subject-results"></div>
-			</div>
-			<input class="submit button form-group" type="submit" value="Comment"/>
-		</form>
-	</div>
+#}
 </div>
