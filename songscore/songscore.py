@@ -120,7 +120,7 @@ def feed():
 @app.route('/feed/all')
 @is_logged_in
 def feed_all():
-    reviews = Review.query.order_by(db.desc(Review.datetime)).all()[1:2]
+    reviews = Review.query.order_by(db.desc(Review.datetime)).all()[1:10]
     from datetime import datetime
     return render_template('feed.html', reviews=reviews, datetime=datetime, currenttime=datetime.now())
 

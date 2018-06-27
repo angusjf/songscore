@@ -37,7 +37,7 @@
 		{% else %}
 			<form action="/delete" method="post">
 				<input type="hidden" name="review_id" value="{{review.id}}"></input>
-				<button type='submit' class='like'><i class="fas fa-trash-alt"></i> 4</button>
+				<button type='submit' class='like'><i class="fas fa-trash-alt"></i></button>
 			</form>
 		{% endif %}
 		<form class="new-comment" action="/comment" method="post">
