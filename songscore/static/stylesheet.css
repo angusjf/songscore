@@ -1296,7 +1296,6 @@ input:focus ~ .highlight {
 	.stars {
 		margin: 0 10px;
 		margin-left: auto;
-		padding-top: 5px;
 	}
 	.stars label { height: 32px; width: 32px; font-size: 32px; }
 
@@ -1328,7 +1327,8 @@ input:focus ~ .highlight {
 	display: flex;
 	padding: 8px;
 	background-color: rgba(0,0,0,0.03);
-	border-top: 1px solid rgba(0,0,0,0.15);
+	border-top: 1px solid rgba(0,0,0,0.15);	
+	height: 36px;
 }
 	.social button {
 		font-family: inherit;
@@ -1338,13 +1338,11 @@ input:focus ~ .highlight {
 		margin-right: 4px;
 		padding: 8px 16px;
 		background-color: white;
-	}
-	.social > button {
 		border: 1px solid rgba(0,0,0,0.15);
-		color: rgba(0,0,0,0.3);
 		font-size: 14px;
 		padding: 0px 16px;
 		border-radius: 8px;
+		height: 100%;
 	}
 	.social .new-comment {
 		flex-grow: 2;
@@ -1366,10 +1364,11 @@ input:focus ~ .highlight {
 		font-family: inherit;
 		font-size: inherit;
 	}
-	.bottom .social .new-comment button {
+	.social .new-comment button {
 		background: none;
 		margin-right: 0px;
 		padding-right: 12px;
+		border: none;
 	}
 /* COMMENTS */
 
