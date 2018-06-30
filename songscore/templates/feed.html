@@ -4,29 +4,23 @@
 
 {% block body %}
 
-{% if session.logged_in %}
-	<div class="review-form section shadow-1">
-		{% include 'includes/_newreviewform.html' %}
-	</div>
-	<div class="feed" id="feed">
-		<div class="section shadow-1 selector">
-			<div class="section-content">
-				<ul>
-					<li><a href="/feed/all" class="name line">All</a></li>
-					<li><a href="/feed/following" class="name line">Following</a></li>
-				</ul>
-			</div>
-		</div>
-		{% for review in reviews %}
-			{% include 'includes/_review.html' %}
-		{% endfor %}
-	</div>
-{% else %}
-	<div class="section shadow-1">
+<div class="review-form section shadow-1">
+	{% include 'includes/_newreviewform.html' %}
+</div>
+<div class="feed" id="feed">
+	<div class="section shadow-1 selector">
 		<div class="section-content">
-			<h2 class="capital">Please register or log in to access SongScore</h2>
+			<ul>
+				<li><a href="/feed/all" class="name line">All</a></li>
+				<li><a href="/feed/following" class="name line">Following</a></li>
+			</ul>
 		</div>
 	</div>
-{% endif %}
+	{% for review in reviews %}
+		{% include 'includes/_review.html' %}
+	{% endfor %}
+</div>
+
+<button>Next Page</button>
 
 {% endblock %}

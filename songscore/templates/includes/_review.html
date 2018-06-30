@@ -6,18 +6,21 @@
 		</div>
 		<div class="review">
 			<div class='top'>
-				<img src="{{ review.user.picture }})"></img>
-				<div class="names">
-					<div class="name">{{ review.user.name }}</div>
-					<div class="username">{{ "@" + review.user.username }} · Xd</div>
-				</div>
+				<a href='/user/{{ review.user.username }}'>
+					<img class="picture" src="{{ review.user.picture }})"></img>
+				</a>
+				<a href='/user/{{ review.user.username }}'>
+					<div class="names">
+						<div class="name">{{ review.user.name }}</div>
+						<div class="username">{{ "@" + review.user.username }} · Xd</div>
+					</div>
+				</a>
 				<div class="stars">
-				{% for i in range(5) %}
-					{% if i < review.stars %}
-						<label style="color:#cd3538"> ★ </label> 
-					{% else %}
-						<label style="color:#ddd"> ★ </label>
-					{% endif %}
+				{% for _ in range(review.stars) %}
+					<label style="color:#cd3538"> ★ </label> 
+            			{% endfor %}
+				{% for _ in range(5 - review.stars) %}
+					<label style="color:#ddd"> ★ </label>
             			{% endfor %}
 				</div>
 			</div>

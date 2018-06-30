@@ -1,3 +1,5 @@
+a { color: inherit; }
+
 *,body,html {
   margin: 0;
   padding: 0;
@@ -1279,7 +1281,7 @@ input:focus ~ .highlight {
 		margin-bottom: 18px;
 		padding-bottom: 18px;
 	}
-	.review .top > img {
+	.review .top .picture {
 		width: 46px;
 		height: 46px;
 		border-radius: 26px;
