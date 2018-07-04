@@ -11,7 +11,8 @@ app.config.from_object(__name__) # load config from this file (songscore.py)
 app.config.update({
     'SECRET_KEY' : os.environ['SECRET_KEY'],
     'SQLALCHEMY_DATABASE_URI' : os.environ['DATABASE_URL'],
-    'SQLALCHEMY_TRACK_MODIFICATIONS' : 'false'
+    'SQLALCHEMY_TRACK_MODIFICATIONS' : 'false',
+    'PREFERRED_URL_SCHEME' : 'https'
 })
 db = SQLAlchemy(app)
 
