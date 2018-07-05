@@ -94,7 +94,7 @@ function search () {
 	var query = $('#subject-input').val();
 	if ($('#subject-input').val().length > 0) {
 		jQuery.get(
-			"http://ws.audioscrobbler.com/2.0/",
+			"https://ws.audioscrobbler.com/2.0/",
 			{
 				'method' : "track.search",
 				'track' : query,
@@ -115,7 +115,7 @@ function search () {
 			}
 		);
 		jQuery.get(
-			"http://ws.audioscrobbler.com/2.0/",
+			"https://ws.audioscrobbler.com/2.0/",
 			{
 				'method' : "album.search",
 				'album' : query,
