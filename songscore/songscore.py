@@ -8,7 +8,6 @@ from functools import wraps
 import os
 
 app = Flask(__name__) # creates an instance of flask
-sslify = SSLify(app)
 app.config.from_object(__name__) # load config from this file (songscore.py)
 app.config.update({
     'SECRET_KEY' : os.environ['SECRET_KEY'],
@@ -18,6 +17,8 @@ app.config.update({
 })
 db = SQLAlchemy(app)
 
+sslify = SSLify(app)
+app.debug = false
 #########
 # WRAPS #
 #########
