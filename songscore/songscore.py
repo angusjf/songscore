@@ -18,7 +18,7 @@ app.config.update({
 db = SQLAlchemy(app)
 
 sslify = SSLify(app)
-app.debug = False
+#app.debug = False
 #########
 # WRAPS #
 #########
