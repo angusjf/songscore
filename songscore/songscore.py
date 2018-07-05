@@ -1,5 +1,6 @@
 from flask import Flask, render_template, flash, redirect, url_for, request, session, logging, g, Response, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
+from flask_sslify import SSLify
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from hashlib import md5
@@ -7,6 +8,7 @@ from functools import wraps
 import os
 
 app = Flask(__name__) # creates an instance of flask
+sslify = SSLify(app)
 app.config.from_object(__name__) # load config from this file (songscore.py)
 app.config.update({
     'SECRET_KEY' : os.environ['SECRET_KEY'],
