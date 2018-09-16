@@ -1,14 +1,16 @@
 from setuptools import setup
 
 setup(
-    name='songscore',
-    packages=['songscore'],
+    name='Songscore API',
+    packages=['songscore_api'],
     include_package_data=True,
     install_requires=[
         'flask',
-        'wtforms',
-        'passlib',
+        'flask-sqlalchemy',
+        'flask-restful',
+        'flask-marshmallow',
+        'marshmallow-sqlalchemy',
         'psycopg2-binary',
-        'flask_sqlalchemy'
+        'passlib'
     ],
  )

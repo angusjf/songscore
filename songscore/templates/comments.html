@@ -1,7 +1,0 @@
-{% extends 'userpage.html' %}
-
-{% block contents %}
-    {% for review in user.comments %}
-        {% include 'includes/_review.html' %}
-    {% endfor %}
-{% endblock %}

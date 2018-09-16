@@ -1,1 +1,0 @@
-from .songscore import app

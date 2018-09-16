@@ -1,7 +1,0 @@
-{% extends 'userpage.html' %}
-
-{% block contents %}
-	{% for user in user.followers %}
-		{% include 'includes/_user.html' %}
-	{% endfor %}
-{% endblock %}
