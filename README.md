@@ -4,26 +4,27 @@ Learning Python/Flask by creating a website to rate songs. Currently hosted at [
 ## REST endpoints
 Most rest endpoints are plurals, e.g. users not user.
 The endpoints have a prefix of `/api/v1`.
+
 Example: `/api/v1/users/1/following/2`
 
 | Method | Endpoint | Meaning
 | --- | --- | ---
-| GET | /auth | get token
-| GET | /feeds/:id | get that user's feed
-| GET | /users/:id | get the user with that id
-| GET | /users?username=:name | get user with that username
-| POST | /users | add a new user
-| GET | /users/:id/reviews | get that user's reviews
-| GET | /reviews | get all the reviews
-| GET | /reviews/:id | get a the review with that id
-| DELETE | /reviews/:id | delete that review
-| POST | /reviews/:id/comments | add a comment to that review
-| POST | /reviews/:id/likes | like that review
-| POST | /reviews/:id/dislikes | dislike that review
-| GET | /users/:id/followers | all the people follow that user
-| GET | /users/:id/following | all the people that user is following
-| POST | /users/:id/following/:id | make id 1 follow id 2
-| DELETE | /users/:id/following/:id | make id 1 unfollow id 2
+| GET | `/auth` | Get token
+| GET | `/feeds/:id` | Get that user's feed
+| GET | `/users/:id` | Get the user with that id
+| GET | `/users?username=:name` | Get user with that username
+| POST | `/users` | Add a new user
+| GET | `/users/:id/reviews` | Get that user's reviews
+| GET | `/reviews` | Get all the reviews
+| GET | `/reviews/:id` | Get a the review with that id
+| DELETE | `/reviews/:id` | Delete that review
+| POST | `/reviews/:id/comments` | Add a comment to that review
+| POST | `/reviews/:id/likes` | Like that review
+| POST | `/reviews/:id/dislikes` | Dislike that review
+| GET | `/users/:id/followers` | All the people follow that user
+| GET | `/users/:id/following` | All the people that user is following
+| POST | `/users/:id/following/:id` | Make id 1 follow id 2
+| DELETE | `/users/:id/following/:id` | Make id 1 unfollow id 2
 
 ## Environment variables
 ```
