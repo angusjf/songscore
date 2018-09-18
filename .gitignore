@@ -1,5 +1,6 @@
 __pycache__
 database.db
+*.sh
 
 .DS_Store
 .env

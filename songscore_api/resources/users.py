@@ -1,11 +1,12 @@
 from flask_restful import Resource
 
-class Users(Resource):
+class User(Resource)
 	def get(self, user_id):
 		# get the user with that id
 		user = User.query.filter_by(id=user_id).one()
 		return user_schema.jsonify(user)
 
+class Users(Resource):
 	def get(self):
 		# get user with that username
 		query = "%TODO%"

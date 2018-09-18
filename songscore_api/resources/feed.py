@@ -11,7 +11,7 @@ class Feed(Resource):
 	def get(self, user_id):
 		# get that user's feed
 		user = User.query.filter_by(id=user_id).one()
-		if g.current_user != user:
+		if user != g.current_user:
 			return '', 401
 		# feed = user.following.reviews # TODO: FIX
 		feed = Review.query.all() # TODO: unimport
