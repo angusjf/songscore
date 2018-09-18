@@ -7,13 +7,13 @@ The endpoints have a prefix of `/api/v1`.
 
 Example: `/api/v1/users/1/following/2`
 
-| Method | Endpoint | Meaning
+| Method | Endpoint | Meaning | Request Body
 | --- | --- | ---
-| GET | `/auth` | Get token
+| POST | `/auth` | Get a new token | `{username, password}`
 | GET | `/feeds/:id` | Get that user's feed
 | GET | `/users/:id` | Get the user with that id
 | GET | `/users?username=:name` | Get user with that username
-| POST | `/users` | Add a new user
+| POST | `/users` | Add a new user | User Model 
 | GET | `/users/:id/reviews` | Get that user's reviews
 | GET | `/reviews` | Get all the reviews
 | GET | `/reviews/:id` | Get a the review with that id
