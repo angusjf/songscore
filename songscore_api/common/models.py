@@ -1,4 +1,7 @@
-from songscore_api.app import db
+import flask_sqlalchemy
+from songscore_api.app import app
+
+db = flask_sqlalchemy.SQLAlchemy(app, session_options={'autocommit': True})
 
 dislikes = db.Table('dislikes',
 	db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')),
@@ -65,6 +68,8 @@ class User(db.Model):
 	password = db.Column(db.String, nullable=False)
 	picture = db.Column(db.String, nullable=False)
 	register_datetime = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+	token = db.Column(db.String)
+	token_expiry_datetime = db.Column(db.DateTime)
 
 	reviews = db.relationship('Review', back_populates='user', order_by='desc(Review.datetime)') #, cascade="all, delete-orphan", single-parent=True)
 	comments = db.relationship('ReviewComment', back_populates='user', order_by='desc(ReviewComment.datetime)') #, cascade="all, delete-orphan") #, single-parent=True)
@@ -76,3 +81,5 @@ class User(db.Model):
 		secondaryjoin=(follows.c.following_id == id),
 		backref=db.backref('followers', lazy='dynamic'),
 		lazy='dynamic') #, cascade="all, delete-orphan")
+
+db.create_all()

@@ -11,6 +11,7 @@ setup(
         'flask-marshmallow',
         'marshmallow-sqlalchemy',
         'psycopg2-binary',
+        'flask-httpauth',
         'passlib'
     ],
  )
