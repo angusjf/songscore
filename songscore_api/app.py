@@ -14,13 +14,13 @@ import songscore_api.common.models
 import songscore_api.common.schema
 import songscore_api.common.auth
 
-from songscore_api.resources import Auth, Feed, User
+from songscore_api.resources import Auth, Feed, User, Users
 
 api.add_resource(Auth, '/auth')
 api.add_resource(Feed, '/feeds/<user_id>')
 api.add_resource(User, '/users/<user_id>')
-"""
 api.add_resource(Users, '/users')
+"""
 api.add_resource(UserReviews, '/users/:id/reviews')
 api.add_resource(Reviews, '/reviews')
 api.add_resource(Review, '/reviews/:id')
