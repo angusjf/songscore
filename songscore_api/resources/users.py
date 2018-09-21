@@ -1,11 +1,11 @@
 from flask_restful import Resource, reqparse
-from songscore_api.common.schema import User as UserSchema
-from songscore_api.common.models import User as UserModel
+import songscore_api.common.models as models
+import songscore_api.common.schemas as schemas
 from hashlib import md5
 from passlib.hash import sha256_crypt
 from songscore_api.common.models import db
 
-users_schema = UserSchema(many=True)
+users_schema = schemas.User(many=True)
 
 class Users(Resource):
 	def get(self):
@@ -15,7 +15,7 @@ class Users(Resource):
 		username = parser.parse_args()['username']
 		if username is not None:
 			query = '%'+username+'%'
-			users = UserModel.query.filter(UserModel.name.ilike(query))
+			users = models.User.query.filter(UserModel.name.ilike(query))
 			return users_schema.jsonify(users)
 		else:
 			return '', 200
@@ -28,7 +28,7 @@ class Users(Resource):
 		parser.add_argument('name')
 		parser.add_argument('password')
 		data = parser.parse_args()
-		new_user = UserModel(
+		new_user = models.User(
 			username=data['username'],
 			email=data['email'],
 			name=data['name'],

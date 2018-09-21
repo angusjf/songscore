@@ -1,32 +1,85 @@
 # SongScore API
 Learning Python/Flask by creating a website to rate songs. Currently hosted at [songscore.herokuapp.com](songscore.herokuapp.com)
 
-## REST endpoints
+# REST endpoints
 Most rest endpoints are plurals, e.g. users not user.
+
 The endpoints have a prefix of `/api/v1`.
 
-Example: `/api/v1/users/1/following/2`
+Example: `GET /api/v1/users/1/reviews`.
 
-| Method | Endpoint | Meaning | Request Body
+## Get a new token
+`POST /auth`
+#### Parameters
+| Name | Type | Description
 | --- | --- | ---
-| POST | `/auth` | Get a new token | `{username, password}`
-| GET | `/feeds/:id` | Get that user's feed
-| GET | `/users/:id` | Get the user with that id
-| GET | `/users?username=:name` | Get user with that username
-| POST | `/users` | Add a new user | User Model 
-| GET | `/users/:id/reviews` | Get that user's reviews
-| GET | `/reviews` | Get all the reviews
-| GET | `/reviews/:id` | Get a the review with that id
-| DELETE | `/reviews/:id` | Delete that review
-| POST | `/reviews/:id/comments` | Add a comment to that review
-| POST | `/reviews/:id/likes` | Like that review
-| POST | `/reviews/:id/dislikes` | Dislike that review
-| GET | `/users/:id/followers` | All the people follow that user
-| GET | `/users/:id/following` | All the people that user is following
-| POST | `/users/:id/following/:id` | Make id 1 follow id 2
-| DELETE | `/users/:id/following/:id` | Make id 1 unfollow id 2
+| `username` | `string` | Username
+| `password` | `string` | Password (unencypted)
 
-## Environment variables
+## Get that user's feed
+`GET /feeds/:id`
+
+## Get the user with that id
+`GET /users/:id`
+
+## Get user with that username
+`GET /users?username=:name`
+
+## Add a new user
+`POST /users`
+#### Parameters
+| Name | Type | Description
+| --- | --- | ---
+| `username` | `string` | Username
+| `password` | `string` | Password (unencypted)
+| `name` | `string` | Name
+| `email` | `string` | Email
+
+## Get that user's reviews
+`GET /users/:id/reviews`
+
+## Get all the reviews
+`GET /reviews`
+
+## Add a new review
+`POST /reviews`
+#### Parameters
+`Review` model
+
+## Get a the review with that id
+`GET /reviews/:id`
+
+## Delete that review
+`DELETE /reviews/:id`
+
+## All the people follow that user
+`GET /users/:id/followers`
+
+## All the people that user is following
+`GET /users/:id/following`
+
+## Make id 1 follow id 2
+`POST /users/:id/following/:id`
+
+## Make id 1 unfollow id 2
+`DELETE /users/:id/following/:id`
+
+## Make id add a comment to that review
+`POST /users/:id/comments`
+#### Parameters
+`ReviewComment` Model
+
+## Make id like that review
+`POST /users/:id/likes`
+#### Parameters
+`review_id`
+
+## Make id dislike that review
+`POST /users/:id/dislikes`
+#### Parameters
+`review_id`
+
+# Environment variables
 ```
 export DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<databasename>
 export FLASK_APP=songscore_api
@@ -34,5 +87,5 @@ export FLASK_DEBUG=true
 export SECRET_KEY='secret key here'
 ```
 
-## Import requirements
+# Import requirements
 see `requirements.txt`
