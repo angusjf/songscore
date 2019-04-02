@@ -1,4 +1,5 @@
 database.db
+dist
 *.sh
 .DS_Store
 *.o

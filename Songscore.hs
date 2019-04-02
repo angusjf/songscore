@@ -1,12 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Songscore (main) where
+
 import Web.Scotty (scotty, get, post, delete, notFound)
 import Actions
 import System.Environment
-import           Data.Maybe                           (fromMaybe)
-import           Control.Monad                        (join)
-import           Control.Applicative                  ((<$>))
-import           Text.Read                            (readMaybe)
+import Data.Maybe (fromMaybe)
+import Control.Monad (join)
+import Control.Applicative ((<$>))
+import Text.Read (readMaybe)
 
 main :: IO ()
 main = do

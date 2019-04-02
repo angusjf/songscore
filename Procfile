@@ -1,1 +1,1 @@
-web: runhaskell Songscore.hs
+web: cabal run
