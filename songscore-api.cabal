@@ -54,7 +54,7 @@ executable songscore-api
   main-is:             Main.hs
 
   -- Modules included in this executable, other than Main.
-  -- other-modules:
+  other-modules: Actions, Dao, Models, Songscore
 
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    OverloadedStrings, DeriveGeneric
