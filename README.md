@@ -82,5 +82,4 @@ Example: `GET /api/v1/users/1/reviews`.
 # Environment variables
 ```
 export DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<databasename>
-export PORT=8080
 ```

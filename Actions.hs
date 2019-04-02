@@ -1,17 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Controllers
-    ( authAction, feedAction, userAction, usersAction, userReviewsAction, reviewsAction, reviewAction
-    , userFollowingAction, userFollowersAction, userFollowerAction, reviewCommentsAction
-    , reviewLikesAction, reviewDislikesAction
-    ) where
+module Actions where
 
-import Web.Scotty (ScottyM, json, status, text, param)
+import Web.Scotty (ActionM, json, status, text, param)
 import Network.HTTP.Types (status204, notFound404)
 import Dao
 import Models
 
-type Action = ScottyM ()
+type Action = ActionM ()
 
 getAuthAction :: Action
 getAuthAction = (text "TOKEN")
@@ -56,4 +52,4 @@ getReviewDislikesAction :: Action
 getReviewDislikesAction = param "id" >>= (json . reviewDislikes . reviewById)
 
 notFoundAction :: Action
-notFoundAction = (status notFound404) >>= json Null
+notFoundAction = (status notFound404) -- >>= json Null
