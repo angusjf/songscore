@@ -1,1 +1,1 @@
-web: Songscore
+web: runhaskell Songscore.hs
