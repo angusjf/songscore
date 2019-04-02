@@ -1,5 +1,5 @@
 # SongScore API
-Learning Python/Flask by creating a website to rate songs. Currently hosted at [songscore.herokuapp.com](songscore.herokuapp.com)
+Learning Haskell by creating the api for a website to rate songs. Currently hosted at [songscore.herokuapp.com](songscore.herokuapp.com)
 
 # REST endpoints
 Most rest endpoints are plurals, e.g. users not user.
@@ -82,10 +82,5 @@ Example: `GET /api/v1/users/1/reviews`.
 # Environment variables
 ```
 export DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<databasename>
-export FLASK_APP=songscore_api
-export FLASK_DEBUG=true
-export SECRET_KEY='secret key here'
+export PORT=8080
 ```
-
-# Import requirements
-see `requirements.txt`
