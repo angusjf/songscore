@@ -1,6 +1,2 @@
-database.db
-dist
-*.sh
-.DS_Store
-*.o
-*.hi
+/target
+**/*.rs.bk
