@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+    "os"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -143,21 +143,29 @@ func onlyIfAuthorized(endpoint func(w http.ResponseWriter, r *http.Request)) htt
 	})
 }
 
+func getFrontend(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, "build/index.html")
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-    port = "8081"
+        port = "8081"
 	}
 
-	r := mux.NewRouter()
-	r.Handle("/reviews", onlyIfAuthorized(getReviews)).Methods("GET")
-	r.HandleFunc("/reviews/{id}", getReview).Methods("GET")
-	r.HandleFunc("/reviews", postReview).Methods("POST")
-	r.HandleFunc("/auth", postAuth).Methods("POST")
-	r.HandleFunc("/me", getMe).Methods("GET")
+	router := mux.NewRouter()
 
-	handler := cors.AllowAll().Handler(r)
+    api := router.PathPrefix("/api").Subrouter()
+	api.Handle("/reviews", onlyIfAuthorized(getReviews)).Methods("GET")
+	api.HandleFunc("/reviews/{id}", getReview).Methods("GET")
+	api.HandleFunc("/reviews", postReview).Methods("POST")
+	api.HandleFunc("/auth", postAuth).Methods("POST")
+	api.HandleFunc("/me", getMe).Methods("GET")
+
+    router.HandleFunc("/", getFrontend).Methods("GET")
+
+	handler := cors.AllowAll().Handler(router)
 
 	log.Fatal(http.ListenAndServe(":" + port, handler))
 }
