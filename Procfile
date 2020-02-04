@@ -1,1 +1,1 @@
-web: ./songscore
+web: ./bin/songscore
