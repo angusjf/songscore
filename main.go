@@ -74,8 +74,10 @@ var exampleReviews []Review = []Review{
 	exampleReview,
 }
 
+var reviews []Review = make([]Review, 0, 10)
+
 func getReviews(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(exampleReviews)
+	json.NewEncoder(w).Encode(reviews)
 }
 
 func getReview(w http.ResponseWriter, r *http.Request) {
@@ -87,8 +89,10 @@ func postReview(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&review)
 	if err != nil {
 		fmt.Fprintf(w, "couldn't decode review")
-	}
-	json.NewEncoder(w).Encode(review)
+	} else {
+        reviews = append(reviews, review)
+	    json.NewEncoder(w).Encode(review)
+    }
 }
 
 func postAuth(w http.ResponseWriter, r *http.Request) {
