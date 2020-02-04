@@ -6,32 +6,44 @@ import (
 	"log"
 	"net/http"
     "os"
+    "time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+    "github.com/jinzhu/gorm"
+    _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type Review struct {
-	Id      int     `json:"id"`
-	Text    string  `json:"text"`
-	Stars   int     `json:"stars"`
-	User    User    `json:"user"`
-	Subject Subject `json:"subject"`
+	ID      uint            `json:"id"`
+	Text    string          `json:"text"`
+	Stars   int             `json:"stars"`
+	User    User            `json:"user"`
+	Subject Subject         `json:"subject"`
+    CreatedAt time.Time     `json:"createdAt"`
+    UpdatedAt time.Time     `json:"updatedAt"`
+    DeletedAt *time.Time    `json:"deletedAt"`
 }
 
 type User struct {
-	Id       int    `json:"id"`
+	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Image    string `json:"image"`
+    CreatedAt time.Time     `json:"createdAt"`
+    UpdatedAt time.Time     `json:"updatedAt"`
+    DeletedAt *time.Time    `json:"deletedAt"`
 }
 
 type Subject struct {
-	Id     int         `json:"id"`
+	ID     int         `json:"id"`
 	Title  string      `json:"title"`
 	Artist string      `json:"artist"`
 	Image  string      `json:"image"`
 	Kind   SubjectKind `json:"kind"`
+    CreatedAt time.Time     `json:"createdAt"`
+    UpdatedAt time.Time     `json:"updatedAt"`
+    DeletedAt *time.Time    `json:"deletedAt"`
 }
 
 type SubjectKind int
@@ -48,40 +60,19 @@ type Credentials struct {
 
 var jwtSecretKey = []byte("toroymoi")
 
-var me User = User{
-	Id:       0,
-	Username: "angusjf",
-	Image:    "",
-}
-
-var you Subject = Subject{
-	Id:     0,
-	Title:  "You",
-	Artist: "The 1975",
-	Image:  "",
-	Kind:   Song,
-}
-
-var exampleReview Review = Review{
-	Id:      1,
-	Text:    "listened to it too much :(",
-	Stars:   3,
-	User:    me,
-	Subject: you,
-}
-
-var exampleReviews []Review = []Review{
-	exampleReview,
-}
-
-var reviews []Review = make([]Review, 0, 10)
+var db *gorm.DB
 
 func getReviews(w http.ResponseWriter, r *http.Request) {
+    var reviews []Review
+    db.Find(&reviews)
+    fmt.Printf("%s", reviews)
 	json.NewEncoder(w).Encode(reviews)
 }
 
 func getReview(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(exampleReview)
+    var review Review
+    db.Where("ID = ?").Find(&review)
+	json.NewEncoder(w).Encode(review)
 }
 
 func postReview(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +81,7 @@ func postReview(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "couldn't decode review")
 	} else {
-        reviews = append(reviews, review)
+        db.Create(&review)
 	    json.NewEncoder(w).Encode(review)
     }
 }
@@ -119,7 +110,7 @@ func postAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMe(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(me)
+	json.NewEncoder(w).Encode(User{ ID: 0, Username: "angusjf", Image: "" })
 }
 
 func onlyIfAuthorized(endpoint func(w http.ResponseWriter, r *http.Request)) http.Handler {
@@ -157,6 +148,24 @@ func main() {
 	if port == "" {
         port = "8081"
 	}
+
+    databaseUrl := os.Getenv("DATABASE_URL")
+    if databaseUrl == "" {
+        fmt.Errorf("no DATABASE_URL")
+        return
+    }
+
+    var err error
+    db, err = gorm.Open("postgres", databaseUrl)
+    if err != nil {
+        fmt.Errorf("ERROR!")
+        return
+    }
+    defer db.Close()
+
+    db.AutoMigrate(&Review{})
+    db.AutoMigrate(&User{})
+    db.AutoMigrate(&Subject{})
 
 	router := mux.NewRouter()
 
