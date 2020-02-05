@@ -4567,10 +4567,10 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
-var $author$project$Main$LinkClicked = function (a) {
+var $author$project$Types$LinkClicked = function (a) {
 	return {$: 'LinkClicked', a: a};
 };
-var $author$project$Main$UrlChanged = function (a) {
+var $author$project$Types$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
 var $elm$core$Basics$EQ = {$: 'EQ'};
@@ -5362,17 +5362,17 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$NewReviewBoxTextChanged = function (a) {
+var $author$project$Types$NewReviewBoxTextChanged = function (a) {
 	return {$: 'NewReviewBoxTextChanged', a: a};
 };
-var $author$project$Main$NewReviewFormStarsRadioChanged = function (a) {
+var $author$project$Types$NewReviewFormStarsRadioChanged = function (a) {
 	return {$: 'NewReviewFormStarsRadioChanged', a: a};
 };
-var $author$project$Main$NewReviewFormSubjectQueryChanged = function (a) {
+var $author$project$Types$NewReviewFormSubjectQueryChanged = function (a) {
 	return {$: 'NewReviewFormSubjectQueryChanged', a: a};
 };
-var $author$project$Main$NewReviewPostClicked = {$: 'NewReviewPostClicked'};
-var $author$project$Main$emptyNewReviewForm = {onChange: $author$project$Main$NewReviewBoxTextChanged, onPress: $author$project$Main$NewReviewPostClicked, onSubjectQueryChanged: $author$project$Main$NewReviewFormSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, starsRadioChanged: $author$project$Main$NewReviewFormStarsRadioChanged, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing};
+var $author$project$Types$NewReviewPostClicked = {$: 'NewReviewPostClicked'};
+var $author$project$Main$emptyNewReviewForm = {onChange: $author$project$Types$NewReviewBoxTextChanged, onPress: $author$project$Types$NewReviewPostClicked, onSubjectQueryChanged: $author$project$Types$NewReviewFormSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, starsRadioChanged: $author$project$Types$NewReviewFormStarsRadioChanged, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = F3(
@@ -5411,9 +5411,10 @@ var $author$project$NewReviewForm$convertToNewReview = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $author$project$Main$GotMe = function (a) {
+var $author$project$Types$GotMe = function (a) {
 	return {$: 'GotMe', a: a};
 };
+var $author$project$Main$apiRoot = 'https://songscore.herokuapp.com';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6265,11 +6266,11 @@ var $author$project$Main$getMe = function (token) {
 		$simonh1000$elm_jwt$Jwt$Http$get,
 		token,
 		{
-			expect: A2($elm$http$Http$expectJson, $author$project$Main$GotMe, $author$project$User$userDecoder),
-			url: '/api/me'
+			expect: A2($elm$http$Http$expectJson, $author$project$Types$GotMe, $author$project$User$userDecoder),
+			url: $author$project$Main$apiRoot + '/api/me'
 		});
 };
-var $author$project$Main$GotReviews = function (a) {
+var $author$project$Types$GotReviews = function (a) {
 	return {$: 'GotReviews', a: a};
 };
 var $elm$json$Json$Decode$list = _Json_decodeList;
@@ -6322,14 +6323,14 @@ var $author$project$Main$getReviews = function (token) {
 		{
 			expect: A2(
 				$elm$http$Http$expectJson,
-				$author$project$Main$GotReviews,
+				$author$project$Types$GotReviews,
 				$elm$json$Json$Decode$list($author$project$Review$reviewDecoder)),
-			url: '/api/reviews'
+			url: $author$project$Main$apiRoot + '/api/reviews'
 		});
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$core$Debug$log = _Debug_log;
-var $author$project$Main$GotToken = function (a) {
+var $author$project$Types$GotToken = function (a) {
 	return {$: 'GotToken', a: a};
 };
 var $elm$http$Http$expectString = function (toMsg) {
@@ -6378,11 +6379,11 @@ var $author$project$Main$postLogin = F2(
 		return $elm$http$Http$post(
 			{
 				body: body,
-				expect: $elm$http$Http$expectString($author$project$Main$GotToken),
-				url: '/api/auth'
+				expect: $elm$http$Http$expectString($author$project$Types$GotToken),
+				url: $author$project$Main$apiRoot + '/api/auth'
 			});
 	});
-var $author$project$Main$GotNewReview = function (a) {
+var $author$project$Types$GotNewReview = function (a) {
 	return {$: 'GotNewReview', a: a};
 };
 var $elm$json$Json$Encode$int = _Json_wrap;
@@ -6504,8 +6505,8 @@ var $author$project$Main$postReview = F2(
 			{
 				body: $elm$http$Http$jsonBody(
 					$author$project$Review$encodeReview(review)),
-				expect: A2($elm$http$Http$expectJson, $author$project$Main$GotNewReview, $author$project$Review$reviewDecoder),
-				url: '/api/reviews'
+				expect: A2($elm$http$Http$expectJson, $author$project$Types$GotNewReview, $author$project$Review$reviewDecoder),
+				url: $author$project$Main$apiRoot + '/api/reviews'
 			});
 	});
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
@@ -6729,6 +6730,7 @@ var $author$project$Main$update = F2(
 				}
 			default:
 				var url = msg.a;
+				var _v8 = url.path;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -12429,15 +12431,6 @@ var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
-var $author$project$Main$viewErrorPage = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$text('That page doesn\'t exist :(')
-			]));
-};
 var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
@@ -14245,11 +14238,11 @@ var $author$project$Main$viewFeedPage = function (model) {
 			}()
 			]));
 };
-var $author$project$Main$LogInPressed = {$: 'LogInPressed'};
-var $author$project$Main$OnPasswordChanged = function (a) {
+var $author$project$Types$LogInPressed = {$: 'LogInPressed'};
+var $author$project$Types$OnPasswordChanged = function (a) {
 	return {$: 'OnPasswordChanged', a: a};
 };
-var $author$project$Main$OnUsernameChanged = function (a) {
+var $author$project$Types$OnUsernameChanged = function (a) {
 	return {$: 'OnUsernameChanged', a: a};
 };
 var $mdgriffith$elm_ui$Element$Input$currentPassword = F2(
@@ -14285,7 +14278,7 @@ var $author$project$Main$viewLoginPage = function (model) {
 						$mdgriffith$elm_ui$Element$Input$labelAbove,
 						_List_Nil,
 						$mdgriffith$elm_ui$Element$text('Username')),
-					onChange: $author$project$Main$OnUsernameChanged,
+					onChange: $author$project$Types$OnUsernameChanged,
 					placeholder: $elm$core$Maybe$Just(
 						A2(
 							$mdgriffith$elm_ui$Element$Input$placeholder,
@@ -14301,7 +14294,7 @@ var $author$project$Main$viewLoginPage = function (model) {
 						$mdgriffith$elm_ui$Element$Input$labelAbove,
 						_List_Nil,
 						$mdgriffith$elm_ui$Element$text('Password')),
-					onChange: $author$project$Main$OnPasswordChanged,
+					onChange: $author$project$Types$OnPasswordChanged,
 					placeholder: $elm$core$Maybe$Just(
 						A2(
 							$mdgriffith$elm_ui$Element$Input$placeholder,
@@ -14315,35 +14308,29 @@ var $author$project$Main$viewLoginPage = function (model) {
 				_List_Nil,
 				{
 					label: $mdgriffith$elm_ui$Element$text('Log In'),
-					onPress: $elm$core$Maybe$Just($author$project$Main$LogInPressed)
+					onPress: $elm$core$Maybe$Just($author$project$Types$LogInPressed)
 				})
 			]));
 };
 var $author$project$Main$view = function (model) {
 	var rootTitle = 'SongScore: ';
-	var _v0 = model.url.path;
-	switch (_v0) {
-		case '/login':
-			return {
-				body: $author$project$Main$htmlify(
-					$author$project$Main$viewLoginPage(model)),
-				title: rootTitle + 'Login'
-			};
-		case '/feed':
-			return {
-				body: $author$project$Main$htmlify(
-					$author$project$Main$viewFeedPage(model)),
-				title: rootTitle + 'Feed'
-			};
-		default:
-			return {
-				body: $author$project$Main$htmlify(
-					$author$project$Main$viewErrorPage(model)),
-				title: rootTitle + 'Error'
-			};
+	var _v0 = model.user;
+	if (_v0.$ === 'Just') {
+		var user = _v0.a;
+		return {
+			body: $author$project$Main$htmlify(
+				$author$project$Main$viewFeedPage(model)),
+			title: rootTitle + 'Feed'
+		};
+	} else {
+		return {
+			body: $author$project$Main$htmlify(
+				$author$project$Main$viewLoginPage(model)),
+			title: rootTitle + 'Login'
+		};
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{init: $author$project$Main$init, onUrlChange: $author$project$Main$UrlChanged, onUrlRequest: $author$project$Main$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+	{init: $author$project$Main$init, onUrlChange: $author$project$Types$UrlChanged, onUrlRequest: $author$project$Types$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
