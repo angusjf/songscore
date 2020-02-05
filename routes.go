@@ -4,10 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	jwt "github.com/dgrijalva/jwt-go"
     _ "github.com/jinzhu/gorm/dialects/postgres"
 )
+
+type spaHandler struct {
+    staticPath string
+    indexPath  string
+}
 
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
@@ -16,7 +23,8 @@ func (s *server) routes() {
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
 	api.HandleFunc("/me", s.handleUserGet()).Methods("GET")
-    s.router.HandleFunc("/", s.handlerFrontendGet()).Methods("GET")
+
+    s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
 }
 
 func (s *server) handleReviewsGet() http.HandlerFunc {
@@ -109,12 +117,35 @@ func (s *server) onlyIfAuthorized(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *server) handlerFrontendGet() http.HandlerFunc {
+func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "build/index.html")
+        // get the absolute path to prevent directory traversal
+        path, err := filepath.Abs(r.URL.Path)
+        if err != nil {
+            // if we failed to get the absolute path respond with a 400 bad request
+            // and stop
+            http.Error(w, err.Error(), http.StatusBadRequest)
+            return
+        }
+
+        // prepend the path with the path to the static directory
+        path = filepath.Join(staticPath, path)
+
+        // check whether a file exists at the given path
+        _, err = os.Stat(path)
+        if os.IsNotExist(err) {
+            // file does not exist, serve index.html
+            http.ServeFile(w, r, filepath.Join(staticPath, indexPath))
+            return
+        } else if err != nil {
+            // if we got an error (that wasn't that the file doesn't exist) stating the
+            // file, return a 500 internal server error and stop
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        // otherwise, use http.FileServer to serve the static dir
+        http.FileServer(http.Dir(staticPath)).ServeHTTP(w, r)
     }
 }
 
-func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    s.router.ServeHTTP(w, r)
-}
