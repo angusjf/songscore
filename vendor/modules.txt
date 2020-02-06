@@ -14,3 +14,6 @@ github.com/lib/pq/oid
 github.com/lib/pq/scram
 # github.com/rs/cors v1.7.0
 github.com/rs/cors
+# golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish

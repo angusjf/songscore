@@ -5414,7 +5414,7 @@ var $author$project$NewReviewForm$convertToNewReview = F2(
 var $author$project$Types$GotMe = function (a) {
 	return {$: 'GotMe', a: a};
 };
-var $author$project$Main$apiRoot = 'https://songscore.herokuapp.com';
+var $author$project$Main$apiRoot = '';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6279,15 +6279,14 @@ var $author$project$Review$Review = F5(
 		return {id: id, stars: stars, subject: subject, text: text, user: user};
 	});
 var $elm$json$Json$Decode$map5 = _Json_map5;
-var $author$project$Subject$Subject = F4(
-	function (id, image, kind, title) {
-		return {id: id, image: image, kind: kind, title: title};
+var $author$project$Subject$Subject = F5(
+	function (id, image, kind, title, artist) {
+		return {artist: artist, id: id, image: image, kind: kind, title: title};
 	});
-var $elm$json$Json$Decode$map4 = _Json_map4;
 var $author$project$Subject$Song = {$: 'Song'};
 var $author$project$Subject$subjectKindDecoder = $elm$json$Json$Decode$succeed($author$project$Subject$Song);
-var $author$project$Subject$subjectDecoder = A5(
-	$elm$json$Json$Decode$map4,
+var $author$project$Subject$subjectDecoder = A6(
+	$elm$json$Json$Decode$map5,
 	$author$project$Subject$Subject,
 	A2(
 		$elm$json$Json$Decode$field,
@@ -6301,7 +6300,11 @@ var $author$project$Subject$subjectDecoder = A5(
 		$elm$json$Json$Decode$field,
 		'kind',
 		$elm$json$Json$Decode$maybe($author$project$Subject$subjectKindDecoder)),
-	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string));
+	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
+	A2(
+		$elm$json$Json$Decode$field,
+		'artist',
+		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)));
 var $author$project$Review$reviewDecoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$Review$Review,
@@ -6524,7 +6527,7 @@ var $author$project$NewReviewForm$setReviewFormSubjectQuery = F2(
 			form,
 			{
 				subject: $elm$core$Maybe$Just(
-					{id: $elm$core$Maybe$Nothing, image: $elm$core$Maybe$Nothing, kind: $elm$core$Maybe$Nothing, title: query}),
+					{artist: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, image: $elm$core$Maybe$Nothing, kind: $elm$core$Maybe$Nothing, title: query}),
 				subjectQuery: $elm$core$Maybe$Just(query)
 			});
 	});

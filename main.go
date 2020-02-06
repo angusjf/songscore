@@ -5,10 +5,10 @@ import (
 	"net/http"
     "os"
 
-    _ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
     "github.com/jinzhu/gorm"
+    _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type server struct {
