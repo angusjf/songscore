@@ -143,7 +143,7 @@ func (s *server) handleUsersPost() http.HandlerFunc {
 
 func (s *server) handleUserGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-	    s.respond(w, r, (User{ ID: 0, Username: "angusjf", Image: "" }), 501)
+	    s.respond(w, r, "Not implemented", 501)
     }
 }
 
@@ -156,9 +156,9 @@ func (s *server) withAuth(next http.Handler) http.Handler {
             return
         }
 
-        trimmed := strings.TrimPrefix("Bearer ", auth)
+        auth = strings.TrimPrefix(auth, "Bearer ")
 
-        token, err := jwt.Parse(trimmed, func(token *jwt.Token) (interface{}, error) {
+        token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
             if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
                 return nil, fmt.Errorf("Error parsing token")
             } else {
