@@ -19,10 +19,10 @@ type User struct {
 	ID           int        `json:"id"`
 	Username     string     `json:"username"`
 	Image        string     `json:"image,omitempty"`
+    PasswordHash string     `json:"-"`
     CreatedAt    time.Time  `json:"-"`
     UpdatedAt    time.Time  `json:"-"`
     DeletedAt    *time.Time `json:"-"`
-    PasswordHash string     `json:"-"`
 }
 
 type Subject struct {

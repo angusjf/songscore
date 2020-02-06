@@ -25,6 +25,7 @@ func (s *server) routes() {
 	api.HandleFunc("/reviews", s.handleReviewsGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
+	api.HandleFunc("/users", s.handleUsersPost()).Methods("POST")
 	api.HandleFunc("/me", s.handleUserGet()).Methods("GET")
 
     s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
@@ -52,7 +53,7 @@ func (s *server) handleReviewGet() http.HandlerFunc {
 func (s *server) handleReviewPost() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
         var review Review
-        err := json.NewDecoder(r.Body).Decode(&review)
+        err := s.decode(w, r, &review)
         if err != nil {
             s.respond(w, r, "Couldn't decode review", http.StatusBadRequest)
         } else {
@@ -74,7 +75,7 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
 
     return func (w http.ResponseWriter, r *http.Request) {
         var credentials Credentials
-        decodeErr := json.NewDecoder(r.Body).Decode(&credentials)
+        decodeErr := s.decode(w, r, &credentials)
         if decodeErr != nil {
             s.respond(w, r, "Couldn't decode", http.StatusBadRequest)
             return
@@ -111,14 +112,14 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
 }
 
 func (s *server) handleUsersPost() http.HandlerFunc {
-    type UserAndPassword struct {
-        User User
+    type NewUser struct {
+        Username string
         Password string
     }
 
     return func (w http.ResponseWriter, r *http.Request) {
-        var newUser UserAndPassword
-        err := json.NewDecoder(r.Body).Decode(&newUser)
+        var newUser NewUser
+        err := s.decode(w, r, &newUser)
         if err != nil {
             s.respond(w, r, "Couldn't decode user", http.StatusBadRequest)
             return
@@ -127,12 +128,15 @@ func (s *server) handleUsersPost() http.HandlerFunc {
         hashed, err := bcrypt.GenerateFromPassword(
             []byte(newUser.Password), bcrypt.DefaultCost)
 
-        newUser.User.PasswordHash = string(hashed)
+        user := User{
+            Username: newUser.Username,
+            PasswordHash: string(hashed),
+        }
 
-        if s.db.Create(&newUser.User).Error != nil {
+        if s.db.Create(&user).Error != nil {
             s.respond(w, r, "Could not create user", http.StatusBadRequest)
         } else {
-            s.respond(w, r, newUser.User, http.StatusCreated)
+            s.respond(w, r, user, http.StatusCreated)
         }
     }
 }
