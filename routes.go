@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+    "strings"
+    "context"
 
 	jwt "github.com/dgrijalva/jwt-go"
-    _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type spaHandler struct {
@@ -18,7 +19,8 @@ type spaHandler struct {
 
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
-	api.Handle("/reviews", s.onlyIfAuthorized(s.handleReviewsGet())).Methods("GET")
+    api.Use(s.withAuth)
+	api.Handle("/reviews", s.handleReviewsGet()).Methods("GET")
 	api.HandleFunc("/reviews/{id}", s.handleReviewsGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
@@ -48,10 +50,14 @@ func (s *server) handleReviewPost() http.HandlerFunc {
         var review Review
         err := json.NewDecoder(r.Body).Decode(&review)
         if err != nil {
-            fmt.Fprintf(w, "couldn't decode review")
+            fmt.Fprintf(w, "Couldn't decode review")
         } else {
-            s.db.Create(&review)
-            json.NewEncoder(w).Encode(review)
+            if review.User.Username == r.Context().Value("username") {
+                s.db.Create(&review)
+                json.NewEncoder(w).Encode(review)
+            } else {
+                fmt.Fprintf(w, "That user is not you")
+            }
         }
     }
 }
@@ -92,29 +98,35 @@ func (s *server) handleUserGet() http.HandlerFunc {
     }
 }
 
-func (s *server) onlyIfAuthorized(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Header["Authorization"] != nil {
-			trimmedToken := r.Header.Get("Authorization")[len("Bearer "):]
-			token, err := jwt.Parse(trimmedToken, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("There was an error")
-				} else {
-					return s.jwtSecretKey, nil
-				}
-			})
+func (s *server) withAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        auth := r.Header.Get("Authorization")
+		if auth == "" {
+            // no token, just go to endpoint anyway
+            next.ServeHTTP(w, r)
+            return
+        }
 
-			if err != nil {
-				fmt.Fprintf(w, err.Error())
-			}
+        trimmed := strings.TrimPrefix("Bearer ", auth)
 
-			if token.Valid {
-				h(w, r)
-			}
-		} else {
-			fmt.Fprintf(w, "Not Authorized: No Auth header")
-		}
-	}
+        token, err := jwt.Parse(trimmed, func(token *jwt.Token) (interface{}, error) {
+            if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+                return nil, fmt.Errorf("Error parsing token")
+            } else {
+                return s.jwtSecretKey, nil
+            }
+        })
+
+        if err != nil {
+            fmt.Fprintf(w, err.Error())
+        }
+
+        if token.Valid {
+            claims := token.Claims.(jwt.MapClaims)
+            ctx := context.WithValue(r.Context(), "username", claims["username"])
+            next.ServeHTTP(w, r.Clone(ctx))
+        }
+	})
 }
 
 func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
