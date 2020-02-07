@@ -4584,10 +4584,10 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
-var $author$project$Types$LinkClicked = function (a) {
+var $author$project$Main$LinkClicked = function (a) {
 	return {$: 'LinkClicked', a: a};
 };
-var $author$project$Types$UrlChanged = function (a) {
+var $author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
 var $elm$core$Basics$EQ = {$: 'EQ'};
@@ -5379,17 +5379,12 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Types$NewReviewBoxTextChanged = function (a) {
-	return {$: 'NewReviewBoxTextChanged', a: a};
+var $author$project$Main$NotFound = function (a) {
+	return {$: 'NotFound', a: a};
 };
-var $author$project$Types$NewReviewFormStarsRadioChanged = function (a) {
-	return {$: 'NewReviewFormStarsRadioChanged', a: a};
+var $author$project$Session$fromNavKey = function (key) {
+	return {key: key, userAndToken: $elm$core$Maybe$Nothing};
 };
-var $author$project$Types$NewReviewFormSubjectQueryChanged = function (a) {
-	return {$: 'NewReviewFormSubjectQueryChanged', a: a};
-};
-var $author$project$Types$NewReviewPostClicked = {$: 'NewReviewPostClicked'};
-var $author$project$Main$emptyNewReviewForm = {onChange: $author$project$Types$NewReviewBoxTextChanged, onPress: $author$project$Types$NewReviewPostClicked, onSubjectQueryChanged: $author$project$Types$NewReviewFormSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, starsRadioChanged: $author$project$Types$NewReviewFormStarsRadioChanged, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing};
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -6024,53 +6019,13 @@ var $elm$url$Url$Parser$parse = F2(
 					url.fragment,
 					$elm$core$Basics$identity)));
 	});
-var $author$project$Main$FeedRoute = {$: 'FeedRoute'};
-var $author$project$Main$LogInRoute = {$: 'LogInRoute'};
-var $author$project$Main$ReviewRoute = F2(
-	function (a, b) {
-		return {$: 'ReviewRoute', a: a, b: b};
-	});
-var $author$project$Main$RootRoute = {$: 'RootRoute'};
-var $author$project$Main$UserRoute = function (a) {
-	return {$: 'UserRoute', a: a};
-};
+var $author$project$Route$Feed = {$: 'Feed'};
+var $author$project$Route$Login = {$: 'Login'};
+var $author$project$Route$Register = {$: 'Register'};
+var $author$project$Route$Root = {$: 'Root'};
 var $elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
-var $elm$url$Url$Parser$custom = F2(
-	function (tipe, stringToSomething) {
-		return $elm$url$Url$Parser$Parser(
-			function (_v0) {
-				var visited = _v0.visited;
-				var unvisited = _v0.unvisited;
-				var params = _v0.params;
-				var frag = _v0.frag;
-				var value = _v0.value;
-				if (!unvisited.b) {
-					return _List_Nil;
-				} else {
-					var next = unvisited.a;
-					var rest = unvisited.b;
-					var _v2 = stringToSomething(next);
-					if (_v2.$ === 'Just') {
-						var nextValue = _v2.a;
-						return _List_fromArray(
-							[
-								A5(
-								$elm$url$Url$Parser$State,
-								A2($elm$core$List$cons, next, visited),
-								rest,
-								params,
-								frag,
-								value(nextValue))
-							]);
-					} else {
-						return _List_Nil;
-					}
-				}
-			});
-	});
-var $elm$url$Url$Parser$int = A2($elm$url$Url$Parser$custom, 'NUMBER', $elm$core$String$toInt);
 var $elm$url$Url$Parser$mapState = F2(
 	function (func, _v0) {
 		var visited = _v0.visited;
@@ -6157,109 +6112,123 @@ var $elm$url$Url$Parser$s = function (str) {
 			}
 		});
 };
-var $elm$url$Url$Parser$slash = F2(
-	function (_v0, _v1) {
-		var parseBefore = _v0.a;
-		var parseAfter = _v1.a;
-		return $elm$url$Url$Parser$Parser(
-			function (state) {
-				return A2(
-					$elm$core$List$concatMap,
-					parseAfter,
-					parseBefore(state));
-			});
-	});
-var $elm$url$Url$Parser$string = A2($elm$url$Url$Parser$custom, 'STRING', $elm$core$Maybe$Just);
 var $elm$url$Url$Parser$top = $elm$url$Url$Parser$Parser(
 	function (state) {
 		return _List_fromArray(
 			[state]);
 	});
-var $author$project$Main$routeParser = $elm$url$Url$Parser$oneOf(
+var $author$project$Route$routeParser = $elm$url$Url$Parser$oneOf(
 	_List_fromArray(
 		[
 			A2(
 			$elm$url$Url$Parser$map,
-			$author$project$Main$UserRoute,
-			A2(
-				$elm$url$Url$Parser$slash,
-				$elm$url$Url$Parser$s('user'),
-				$elm$url$Url$Parser$string)),
+			$author$project$Route$Register,
+			$elm$url$Url$Parser$s('register')),
 			A2(
 			$elm$url$Url$Parser$map,
-			$author$project$Main$ReviewRoute,
-			A2(
-				$elm$url$Url$Parser$slash,
-				$elm$url$Url$Parser$s('user'),
-				A2(
-					$elm$url$Url$Parser$slash,
-					$elm$url$Url$Parser$string,
-					A2(
-						$elm$url$Url$Parser$slash,
-						$elm$url$Url$Parser$s('review'),
-						$elm$url$Url$Parser$int)))),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Main$FeedRoute,
+			$author$project$Route$Feed,
 			$elm$url$Url$Parser$s('feed')),
 			A2(
 			$elm$url$Url$Parser$map,
-			$author$project$Main$LogInRoute,
+			$author$project$Route$Login,
 			$elm$url$Url$Parser$s('login')),
-			A2($elm$url$Url$Parser$map, $author$project$Main$RootRoute, $elm$url$Url$Parser$top)
+			A2($elm$url$Url$Parser$map, $author$project$Route$Root, $elm$url$Url$Parser$top)
 		]));
-var $author$project$Main$fromUrl = $elm$url$Url$Parser$parse($author$project$Main$routeParser);
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Main$init = F3(
-	function (_v0, url, key) {
-		var initModel = {
-			key: key,
-			newReviewForm: $author$project$Main$emptyNewReviewForm,
-			password: '',
-			reviews: $elm$core$Maybe$Nothing,
-			route: $author$project$Main$fromUrl(url),
-			token: '',
-			user: $elm$core$Maybe$Nothing,
-			username: ''
-		};
-		return _Utils_Tuple2(initModel, $elm$core$Platform$Cmd$none);
-	});
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$subscriptions = function (model) {
-	return $elm$core$Platform$Sub$none;
+var $author$project$Route$fromUrl = $elm$url$Url$Parser$parse($author$project$Route$routeParser);
+var $author$project$Main$getSession = function (page) {
+	switch (page.$) {
+		case 'NotFound':
+			var session = page.a;
+			return session;
+		case 'Register':
+			var model = page.a;
+			return model.session;
+		case 'Login':
+			var model = page.a;
+			return model.session;
+		default:
+			var model = page.a;
+			return model.session;
+	}
 };
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$NewReviewForm$convertToNewReview = F2(
-	function (form, user) {
-		var _v0 = form.stars;
-		if (_v0.$ === 'Just') {
-			var stars = _v0.a;
-			var _v1 = form.subject;
-			if (_v1.$ === 'Just') {
-				var subject = _v1.a;
-				return $elm$core$Maybe$Just(
-					{id: $elm$core$Maybe$Nothing, stars: stars, subject: subject, text: form.text, user: user});
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$Types$GotMe = function (a) {
-	return {$: 'GotMe', a: a};
+var $author$project$Pages$Feed$GotFeed = function (a) {
+	return {$: 'GotFeed', a: a};
 };
-var $author$project$Main$apiRoot = '';
+var $author$project$Pages$Feed$OnStarsRadioChanged = function (a) {
+	return {$: 'OnStarsRadioChanged', a: a};
+};
+var $author$project$Pages$Feed$OnSubjectChanged = function (a) {
+	return {$: 'OnSubjectChanged', a: a};
+};
+var $author$project$Pages$Feed$OnSubjectQueryChanged = function (a) {
+	return {$: 'OnSubjectQueryChanged', a: a};
+};
+var $author$project$Pages$Feed$OnSubmitPressed = {$: 'OnSubmitPressed'};
+var $author$project$Api$apiRoot = function () {
+	var _v0 = 1;
+	if (!_v0) {
+		return 'https://songscore.herokuapp.com';
+	} else {
+		return 'http://localhost:8081';
+	}
+}();
+var $author$project$Review$Review = F5(
+	function (id, text, stars, user, subject) {
+		return {id: id, stars: stars, subject: subject, text: text, user: user};
+	});
+var $author$project$User$User = F3(
+	function (id, image, username) {
+		return {id: id, image: image, username: username};
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$User$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$User$User,
+	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
+var $elm$json$Json$Decode$map5 = _Json_map5;
+var $author$project$Subject$Subject = F5(
+	function (id, image, kind, title, artist) {
+		return {artist: artist, id: id, image: image, kind: kind, title: title};
+	});
+var $author$project$Subject$Song = {$: 'Song'};
+var $author$project$Subject$subjectKindDecoder = $elm$json$Json$Decode$succeed($author$project$Subject$Song);
+var $author$project$Subject$subjectDecoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Subject$Subject,
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'kind', $author$project$Subject$subjectKindDecoder)),
+	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string)));
+var $author$project$Review$decoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Review$Review,
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'stars', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
+	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$subjectDecoder));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6562,336 +6531,177 @@ var $simonh1000$elm_jwt$Jwt$Http$get = F2(
 			token,
 			{body: $elm$http$Http$emptyBody, expect: expect, url: url});
 	});
-var $author$project$User$User = F3(
-	function (id, image, username) {
-		return {id: id, image: image, username: username};
-	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$maybe = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
-				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
-			]));
-};
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$User$userDecoder = A4(
-	$elm$json$Json$Decode$map3,
-	$author$project$User$User,
-	A2(
-		$elm$json$Json$Decode$field,
-		'id',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$int)),
-	A2(
-		$elm$json$Json$Decode$field,
-		'image',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
-var $author$project$Main$getMe = function (token) {
-	return A2(
-		$simonh1000$elm_jwt$Jwt$Http$get,
-		token,
-		{
-			expect: A2($elm$http$Http$expectJson, $author$project$Types$GotMe, $author$project$User$userDecoder),
-			url: $author$project$Main$apiRoot + '/api/me'
-		});
-};
-var $author$project$Types$GotReviews = function (a) {
-	return {$: 'GotReviews', a: a};
-};
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Review$Review = F5(
-	function (id, text, stars, user, subject) {
-		return {id: id, stars: stars, subject: subject, text: text, user: user};
-	});
-var $elm$json$Json$Decode$map5 = _Json_map5;
-var $author$project$Subject$Subject = F5(
-	function (id, image, kind, title, artist) {
-		return {artist: artist, id: id, image: image, kind: kind, title: title};
-	});
-var $author$project$Subject$Song = {$: 'Song'};
-var $author$project$Subject$subjectKindDecoder = $elm$json$Json$Decode$succeed($author$project$Subject$Song);
-var $author$project$Subject$subjectDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	$author$project$Subject$Subject,
-	A2(
-		$elm$json$Json$Decode$field,
-		'id',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$int)),
-	A2(
-		$elm$json$Json$Decode$field,
-		'image',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
-	A2(
-		$elm$json$Json$Decode$field,
-		'kind',
-		$elm$json$Json$Decode$maybe($author$project$Subject$subjectKindDecoder)),
-	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
-	A2(
-		$elm$json$Json$Decode$field,
-		'artist',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)));
-var $author$project$Review$reviewDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	$author$project$Review$Review,
-	A2(
-		$elm$json$Json$Decode$field,
-		'id',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$int)),
-	A2(
-		$elm$json$Json$Decode$field,
-		'text',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'stars', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'user', $author$project$User$userDecoder),
-	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$subjectDecoder));
-var $author$project$Main$getReviews = function (token) {
-	return A2(
-		$simonh1000$elm_jwt$Jwt$Http$get,
-		token,
-		{
-			expect: A2(
-				$elm$http$Http$expectJson,
-				$author$project$Types$GotReviews,
-				$elm$json$Json$Decode$list($author$project$Review$reviewDecoder)),
-			url: $author$project$Main$apiRoot + '/api/reviews'
-		});
-};
-var $elm$browser$Browser$Navigation$load = _Browser_load;
-var $elm$core$Debug$log = _Debug_log;
-var $author$project$Types$GotToken = function (a) {
-	return {$: 'GotToken', a: a};
-};
-var $elm$http$Http$expectString = function (toMsg) {
-	return A2(
-		$elm$http$Http$expectStringResponse,
-		toMsg,
-		$elm$http$Http$resolve($elm$core$Result$Ok));
-};
-var $elm$http$Http$jsonBody = function (value) {
-	return A2(
-		_Http_pair,
-		'application/json',
-		A2($elm$json$Json$Encode$encode, 0, value));
-};
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
-var $elm$http$Http$post = function (r) {
-	return $elm$http$Http$request(
-		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
-};
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Main$postLogin = F2(
-	function (username, password) {
-		var body = $elm$http$Http$jsonBody(
-			$elm$json$Json$Encode$object(
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						'username',
-						$elm$json$Json$Encode$string(username)),
-						_Utils_Tuple2(
-						'password',
-						$elm$json$Json$Encode$string(password))
-					])));
-		return $elm$http$Http$post(
-			{
-				body: body,
-				expect: $elm$http$Http$expectString($author$project$Types$GotToken),
-				url: $author$project$Main$apiRoot + '/api/auth'
-			});
-	});
-var $author$project$Types$GotNewReview = function (a) {
-	return {$: 'GotNewReview', a: a};
-};
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$null = _Json_encodeNull;
-var $author$project$Subject$encodeSubject = function (subject) {
-	var kind = function () {
-		var _v2 = subject.kind;
-		if (_v2.$ === 'Just') {
-			if (_v2.a.$ === 'Album') {
-				var _v3 = _v2.a;
-				return $elm$json$Json$Encode$string('Album');
-			} else {
-				var _v4 = _v2.a;
-				return $elm$json$Json$Encode$string('Song');
-			}
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	var image = function () {
-		var _v1 = subject.image;
-		if (_v1.$ === 'Just') {
-			var img = _v1.a;
-			return $elm$json$Json$Encode$string(img);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	var id = function () {
-		var _v0 = subject.id;
-		if (_v0.$ === 'Just') {
-			var i = _v0.a;
-			return $elm$json$Json$Encode$int(i);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('id', id),
-				_Utils_Tuple2('image', image),
-				_Utils_Tuple2('kind', kind),
-				_Utils_Tuple2(
-				'title',
-				$elm$json$Json$Encode$string(subject.title))
-			]));
-};
-var $author$project$User$encodeUser = function (user) {
-	var image = function () {
-		var _v1 = user.image;
-		if (_v1.$ === 'Just') {
-			var img = _v1.a;
-			return $elm$json$Json$Encode$string(img);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	var id = function () {
-		var _v0 = user.id;
-		if (_v0.$ === 'Just') {
-			var i = _v0.a;
-			return $elm$json$Json$Encode$int(i);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('id', id),
-				_Utils_Tuple2(
-				'username',
-				$elm$json$Json$Encode$string(user.username)),
-				_Utils_Tuple2('image', image)
-			]));
-};
-var $author$project$Review$encodeReview = function (review) {
-	var text = function () {
-		var _v1 = review.text;
-		if (_v1.$ === 'Just') {
-			var x = _v1.a;
-			return $elm$json$Json$Encode$string(x);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	var id = function () {
-		var _v0 = review.id;
-		if (_v0.$ === 'Just') {
-			var x = _v0.a;
-			return $elm$json$Json$Encode$int(x);
-		} else {
-			return $elm$json$Json$Encode$null;
-		}
-	}();
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('id', id),
-				_Utils_Tuple2('text', text),
-				_Utils_Tuple2(
-				'stars',
-				$elm$json$Json$Encode$int(review.stars)),
-				_Utils_Tuple2(
-				'user',
-				$author$project$User$encodeUser(review.user)),
-				_Utils_Tuple2(
-				'subject',
-				$author$project$Subject$encodeSubject(review.subject))
-			]));
-};
-var $simonh1000$elm_jwt$Jwt$Http$post = $simonh1000$elm_jwt$Jwt$Http$createRequest('POST');
-var $author$project$Main$postReview = F2(
-	function (token, review) {
+var $author$project$Api$getFeed = F2(
+	function (userAndToken, msg) {
 		return A2(
-			$simonh1000$elm_jwt$Jwt$Http$post,
-			token,
+			$simonh1000$elm_jwt$Jwt$Http$get,
+			userAndToken.token,
 			{
-				body: $elm$http$Http$jsonBody(
-					$author$project$Review$encodeReview(review)),
-				expect: A2($elm$http$Http$expectJson, $author$project$Types$GotNewReview, $author$project$Review$reviewDecoder),
-				url: $author$project$Main$apiRoot + '/api/reviews'
-			});
-	});
-var $author$project$Types$SignedUp = function (a) {
-	return {$: 'SignedUp', a: a};
-};
-var $author$project$Main$postSignUp = F2(
-	function (username, password) {
-		var body = $elm$http$Http$jsonBody(
-			$elm$json$Json$Encode$object(
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						'username',
-						$elm$json$Json$Encode$string(username)),
-						_Utils_Tuple2(
-						'password',
-						$elm$json$Json$Encode$string(password))
-					])));
-		return $elm$http$Http$post(
-			{
-				body: body,
-				expect: A2($elm$http$Http$expectJson, $author$project$Types$SignedUp, $author$project$User$userDecoder),
-				url: $author$project$Main$apiRoot + '/api/users'
+				expect: A2(
+					$elm$http$Http$expectJson,
+					msg,
+					$elm$json$Json$Decode$list($author$project$Review$decoder)),
+				url: $author$project$Api$apiRoot + ('/api/feed/' + $elm$core$String$fromInt(userAndToken.user.id))
 			});
 	});
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
-var $author$project$NewReviewForm$setReviewFormStars = F2(
-	function (form, n) {
-		return _Utils_update(
-			form,
-			{
-				stars: $elm$core$Maybe$Just(n)
-			});
+var $author$project$Route$routeToPieces = function (route) {
+	switch (route.$) {
+		case 'Register':
+			return _List_fromArray(
+				['register']);
+		case 'Feed':
+			return _List_fromArray(
+				['feed']);
+		case 'Login':
+			return _List_fromArray(
+				['login']);
+		default:
+			return _List_fromArray(
+				['']);
+	}
+};
+var $author$project$Route$routeToString = function (route) {
+	return '/' + A2(
+		$elm$core$String$join,
+		'/',
+		$author$project$Route$routeToPieces(route));
+};
+var $author$project$Route$goTo = F2(
+	function (key, route) {
+		return A2(
+			$elm$browser$Browser$Navigation$pushUrl,
+			key,
+			$author$project$Route$routeToString(route));
 	});
-var $author$project$NewReviewForm$setReviewFormSubjectQuery = F2(
-	function (form, query) {
-		return _Utils_update(
-			form,
-			{
-				subject: $elm$core$Maybe$Just(
-					{artist: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, image: $elm$core$Maybe$Nothing, kind: $elm$core$Maybe$Nothing, title: query}),
-				subjectQuery: $elm$core$Maybe$Just(query)
-			});
+var $author$project$Pages$Feed$init = function (session) {
+	var model = {
+		newReviewForm: {onChange: $author$project$Pages$Feed$OnSubjectChanged, onPress: $author$project$Pages$Feed$OnSubmitPressed, onStarsRadioChanged: $author$project$Pages$Feed$OnStarsRadioChanged, onSubjectQueryChanged: $author$project$Pages$Feed$OnSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing},
+		reviews: $elm$core$Maybe$Nothing,
+		session: session
+	};
+	var _v0 = model.session.userAndToken;
+	if (_v0.$ === 'Just') {
+		var uAndT = _v0.a;
+		return _Utils_Tuple2(
+			model,
+			A2($author$project$Api$getFeed, uAndT, $author$project$Pages$Feed$GotFeed));
+	} else {
+		return _Utils_Tuple2(
+			model,
+			A2($author$project$Route$goTo, model.session.key, $author$project$Route$Login));
+	}
+};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Pages$Login$init = function (session) {
+	var model = {password: '', problems: _List_Nil, session: session, username: ''};
+	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+};
+var $author$project$Pages$Register$init = function (session) {
+	var model = {password: '', passwordRepeat: '', problems: _List_Nil, session: session, username: ''};
+	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+};
+var $author$project$Main$Feed = function (a) {
+	return {$: 'Feed', a: a};
+};
+var $author$project$Main$FeedMsg = function (a) {
+	return {$: 'FeedMsg', a: a};
+};
+var $elm$core$Platform$Cmd$map = _Platform_map;
+var $author$project$Main$stepFeed = F2(
+	function (model, _v0) {
+		var feedModel = _v0.a;
+		var feedCmd = _v0.b;
+		return _Utils_Tuple2(
+			$author$project$Main$Feed(feedModel),
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$FeedMsg, feedCmd));
 	});
-var $author$project$NewReviewForm$setReviewFormText = F2(
-	function (form, text) {
-		return _Utils_update(
-			form,
-			{
-				text: $elm$core$Maybe$Just(text)
-			});
+var $author$project$Main$Login = function (a) {
+	return {$: 'Login', a: a};
+};
+var $author$project$Main$LoginMsg = function (a) {
+	return {$: 'LoginMsg', a: a};
+};
+var $author$project$Main$stepLogin = F2(
+	function (model, _v0) {
+		var loginModel = _v0.a;
+		var loginCmd = _v0.b;
+		return _Utils_Tuple2(
+			$author$project$Main$Login(loginModel),
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$LoginMsg, loginCmd));
 	});
+var $author$project$Main$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var $author$project$Main$RegisterMsg = function (a) {
+	return {$: 'RegisterMsg', a: a};
+};
+var $author$project$Main$stepRegister = F2(
+	function (model, _v0) {
+		var registerModel = _v0.a;
+		var registerCmd = _v0.b;
+		return _Utils_Tuple2(
+			$author$project$Main$Register(registerModel),
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$RegisterMsg, registerCmd));
+	});
+var $author$project$Main$stepUrl = F2(
+	function (url, page) {
+		var session = $author$project$Main$getSession(page);
+		var route = $author$project$Route$fromUrl(url);
+		if (route.$ === 'Nothing') {
+			return _Utils_Tuple2(
+				$author$project$Main$NotFound(session),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			switch (route.a.$) {
+				case 'Register':
+					var _v1 = route.a;
+					return A2(
+						$author$project$Main$stepRegister,
+						page,
+						$author$project$Pages$Register$init(session));
+				case 'Feed':
+					var _v2 = route.a;
+					return A2(
+						$author$project$Main$stepFeed,
+						page,
+						$author$project$Pages$Feed$init(session));
+				case 'Login':
+					var _v3 = route.a;
+					return A2(
+						$author$project$Main$stepLogin,
+						page,
+						$author$project$Pages$Login$init(session));
+				default:
+					var _v4 = route.a;
+					var _v5 = session.userAndToken;
+					if (_v5.$ === 'Just') {
+						return A2(
+							$author$project$Main$stepFeed,
+							page,
+							$author$project$Pages$Feed$init(session));
+					} else {
+						return A2(
+							$author$project$Main$stepLogin,
+							page,
+							$author$project$Pages$Login$init(session));
+					}
+			}
+		}
+	});
+var $author$project$Main$init = F3(
+	function (_v0, url, key) {
+		return A2(
+			$author$project$Main$stepUrl,
+			url,
+			$author$project$Main$NotFound(
+				$author$project$Session$fromNavKey(key)));
+	});
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -6936,14 +6746,65 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
-var $author$project$Main$update = F2(
+var $author$project$Widgets$NewReviewForm$setStars = F2(
+	function (form, n) {
+		return _Utils_update(
+			form,
+			{
+				stars: $elm$core$Maybe$Just(n)
+			});
+	});
+var $author$project$Widgets$NewReviewForm$setSubjectQuery = F2(
+	function (form, query) {
+		return _Utils_update(
+			form,
+			{
+				subject: $elm$core$Maybe$Just(
+					{artist: $elm$core$Maybe$Nothing, id: $elm$core$Maybe$Nothing, image: $elm$core$Maybe$Nothing, kind: $elm$core$Maybe$Nothing, title: query}),
+				subjectQuery: $elm$core$Maybe$Just(query)
+			});
+	});
+var $author$project$Widgets$NewReviewForm$setText = F2(
+	function (form, text) {
+		return _Utils_update(
+			form,
+			{
+				text: $elm$core$Maybe$Just(text)
+			});
+	});
+var $author$project$Pages$Feed$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'GotReviews':
+			case 'OnSubmitPressed':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'OnSubjectChanged':
+				var _new = msg.a;
+				var newForm = A2($author$project$Widgets$NewReviewForm$setText, model.newReviewForm, _new);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newReviewForm: newForm}),
+					$elm$core$Platform$Cmd$none);
+			case 'OnStarsRadioChanged':
+				var n = msg.a;
+				var newForm = A2($author$project$Widgets$NewReviewForm$setStars, model.newReviewForm, n);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newReviewForm: newForm}),
+					$elm$core$Platform$Cmd$none);
+			case 'OnSubjectQueryChanged':
+				var _new = msg.a;
+				var newForm = A2($author$project$Widgets$NewReviewForm$setSubjectQuery, model.newReviewForm, _new);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{newReviewForm: newForm}),
+					$elm$core$Platform$Cmd$none);
+			default:
 				var result = msg.a;
-				var _v1 = A2($elm$core$Debug$log, 'got reviews', result);
-				if (_v1.$ === 'Ok') {
-					var reviews = _v1.a;
+				if (result.$ === 'Ok') {
+					var reviews = result.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -6954,195 +6815,319 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			case 'NewReviewBoxTextChanged':
-				var newText = msg.a;
+		}
+	});
+var $author$project$Pages$Login$Completed = function (a) {
+	return {$: 'Completed', a: a};
+};
+var $elm$core$Debug$log = _Debug_log;
+var $elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2($elm$json$Json$Encode$encode, 0, value));
+};
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $elm$http$Http$post = function (r) {
+	return $elm$http$Http$request(
+		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Api$UserAndToken = F2(
+	function (user, token) {
+		return {token: token, user: user};
+	});
+var $author$project$Api$userAndTokenDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$author$project$Api$UserAndToken,
+	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
+	A2($elm$json$Json$Decode$field, 'token', $elm$json$Json$Decode$string));
+var $author$project$Api$postLogin = F2(
+	function (creds, msg) {
+		var body = $elm$http$Http$jsonBody(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'username',
+						$elm$json$Json$Encode$string(creds.username)),
+						_Utils_Tuple2(
+						'password',
+						$elm$json$Json$Encode$string(creds.password))
+					])));
+		return $elm$http$Http$post(
+			{
+				body: body,
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Api$userAndTokenDecoder),
+				url: $author$project$Api$apiRoot + '/api/auth'
+			});
+	});
+var $author$project$Pages$Login$validate = function (model) {
+	return $elm$core$Result$Ok(
+		{password: model.password, username: model.username});
+};
+var $author$project$Pages$Login$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'UsernameChanged':
+				var _new = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							newReviewForm: A2($author$project$NewReviewForm$setReviewFormText, model.newReviewForm, newText)
-						}),
+						{username: _new}),
 					$elm$core$Platform$Cmd$none);
-			case 'NewReviewPostClicked':
-				var _v2 = A2(
-					$elm$core$Maybe$andThen,
-					$author$project$NewReviewForm$convertToNewReview(model.newReviewForm),
-					model.user);
-				if (_v2.$ === 'Just') {
-					var newReview = _v2.a;
-					var newModel = _Utils_update(
-						model,
-						{newReviewForm: $author$project$Main$emptyNewReviewForm});
-					return _Utils_Tuple2(
-						newModel,
-						A2($author$project$Main$postReview, model.token, newReview));
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'GotNewReview':
-				var result = msg.a;
-				var _v3 = A2($elm$core$Debug$log, 'new review', result);
-				if (_v3.$ === 'Ok') {
-					var newReview = _v3.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								reviews: function () {
-									var _v4 = model.reviews;
-									if (_v4.$ === 'Just') {
-										var rs = _v4.a;
-										return $elm$core$Maybe$Just(
-											A2($elm$core$List$cons, newReview, rs));
-									} else {
-										return $elm$core$Maybe$Just(
-											A2($elm$core$List$cons, newReview, _List_Nil));
-									}
-								}()
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'NewReviewFormStarsRadioChanged':
-				var n = msg.a;
+			case 'PasswordChanged':
+				var _new = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							newReviewForm: A2($author$project$NewReviewForm$setReviewFormStars, model.newReviewForm, n)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'NewReviewFormSubjectQueryChanged':
-				var newQuery = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							newReviewForm: A2($author$project$NewReviewForm$setReviewFormSubjectQuery, model.newReviewForm, newQuery)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'OnUsernameChanged':
-				var newUsername = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{username: newUsername}),
-					$elm$core$Platform$Cmd$none);
-			case 'OnPasswordChanged':
-				var newPassword = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{password: newPassword}),
+						{password: _new}),
 					$elm$core$Platform$Cmd$none);
 			case 'LogInPressed':
-				return _Utils_Tuple2(
-					model,
-					A2($author$project$Main$postLogin, model.username, model.password));
-			case 'GotToken':
-				var result = msg.a;
-				var _v5 = A2($elm$core$Debug$log, 'got token', result);
-				if (_v5.$ === 'Ok') {
-					var token = _v5.a;
+				var _v1 = $author$project$Pages$Login$validate(model);
+				if (_v1.$ === 'Ok') {
+					var creds = _v1.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{token: token}),
-						$author$project$Main$getMe(token));
+							{problems: _List_Nil}),
+						A2($author$project$Api$postLogin, creds, $author$project$Pages$Login$Completed));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var problems = _v1.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{problems: problems}),
+						$elm$core$Platform$Cmd$none);
 				}
-			case 'GotMe':
+			default:
 				var result = msg.a;
-				var _v6 = A2($elm$core$Debug$log, 'got me', result);
-				if (_v6.$ === 'Ok') {
-					var user = _v6.a;
+				var _v2 = A2($elm$core$Debug$log, 'got result', result);
+				if (_v2.$ === 'Ok') {
+					var userAndToken = _v2.a;
+					var oldSession = model.session;
+					var newSession = _Utils_update(
+						oldSession,
+						{
+							userAndToken: $elm$core$Maybe$Just(userAndToken)
+						});
+					var newModel = _Utils_update(
+						model,
+						{session: newSession});
+					return _Utils_Tuple2(
+						newModel,
+						A2($author$project$Route$goTo, model.session.key, $author$project$Route$Feed));
+				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								user: $elm$core$Maybe$Just(user)
+								password: '',
+								problems: _List_fromArray(
+									['error!'])
 							}),
-						$author$project$Main$getReviews(model.token));
-				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						$elm$core$Platform$Cmd$none);
 				}
-			case 'LinkClicked':
-				var urlRequest = msg.a;
-				if (urlRequest.$ === 'Internal') {
-					var url = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						A2(
-							$elm$browser$Browser$Navigation$pushUrl,
-							model.key,
-							$elm$url$Url$toString(url)));
-				} else {
-					var href = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						$elm$browser$Browser$Navigation$load(href));
-				}
-			case 'UrlChanged':
-				var url = msg.a;
+		}
+	});
+var $author$project$Pages$Register$Completed = function (a) {
+	return {$: 'Completed', a: a};
+};
+var $author$project$Api$postUser = F2(
+	function (creds, msg) {
+		var body = $elm$http$Http$jsonBody(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'username',
+						$elm$json$Json$Encode$string(creds.username)),
+						_Utils_Tuple2(
+						'password',
+						$elm$json$Json$Encode$string(creds.password))
+					])));
+		return $elm$http$Http$post(
+			{
+				body: body,
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Api$userAndTokenDecoder),
+				url: $author$project$Api$apiRoot + '/api/users'
+			});
+	});
+var $author$project$Pages$Register$validate = function (model) {
+	return _Utils_eq(model.password, model.passwordRepeat) ? $elm$core$Result$Ok(
+		{password: model.password, username: model.username}) : $elm$core$Result$Err(
+		_List_fromArray(
+			['Passwords Should Match']));
+};
+var $author$project$Pages$Register$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'UsernameChanged':
+				var _new = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							route: $author$project$Main$fromUrl(url)
-						}),
+						{username: _new}),
+					$elm$core$Platform$Cmd$none);
+			case 'PasswordChanged':
+				var _new = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{password: _new}),
+					$elm$core$Platform$Cmd$none);
+			case 'PasswordRepeatChanged':
+				var _new = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{passwordRepeat: _new}),
 					$elm$core$Platform$Cmd$none);
 			case 'SignUpPressed':
-				return _Utils_Tuple2(
-					model,
-					A2($author$project$Main$postSignUp, model.username, model.password));
-			default:
-				var result = msg.a;
-				var _v8 = A2($elm$core$Debug$log, 'signed up', result);
-				if (_v8.$ === 'Ok') {
-					var user = _v8.a;
+				var _v1 = $author$project$Pages$Register$validate(model);
+				if (_v1.$ === 'Ok') {
+					var creds = _v1.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								user: $elm$core$Maybe$Just(user)
-							}),
+							{problems: _List_Nil}),
+						A2($author$project$Api$postUser, creds, $author$project$Pages$Register$Completed));
+				} else {
+					var problems = _v1.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{problems: problems}),
 						$elm$core$Platform$Cmd$none);
+				}
+			default:
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var userAndToken = result.a;
+					var oldSession = model.session;
+					var newSession = _Utils_update(
+						oldSession,
+						{
+							userAndToken: $elm$core$Maybe$Just(userAndToken)
+						});
+					var newModel = _Utils_update(
+						model,
+						{session: newSession});
+					return _Utils_Tuple2(
+						newModel,
+						A2($author$project$Route$goTo, model.session.key, $author$project$Route$Feed));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 		}
 	});
-var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alignBottom: 'ab', alignCenterX: 'cx', alignCenterY: 'cy', alignContainerBottom: 'acb', alignContainerCenterX: 'accx', alignContainerCenterY: 'accy', alignContainerRight: 'acr', alignLeft: 'al', alignRight: 'ar', alignTop: 'at', alignedHorizontally: 'ah', alignedVertically: 'av', any: 's', behind: 'bh', below: 'b', bold: 'w7', borderDashed: 'bd', borderDotted: 'bdt', borderNone: 'bn', borderSolid: 'bs', capturePointerEvents: 'cpe', clip: 'cp', clipX: 'cpx', clipY: 'cpy', column: 'c', container: 'ctr', contentBottom: 'cb', contentCenterX: 'ccx', contentCenterY: 'ccy', contentLeft: 'cl', contentRight: 'cr', contentTop: 'ct', cursorPointer: 'cptr', cursorText: 'ctxt', focus: 'fcs', focusedWithin: 'focus-within', fullSize: 'fs', grid: 'g', hasBehind: 'hbh', heightContent: 'hc', heightExact: 'he', heightFill: 'hf', heightFillPortion: 'hfp', hover: 'hv', imageContainer: 'ic', inFront: 'fr', inputMultiline: 'iml', inputMultilineFiller: 'imlf', inputMultilineParent: 'imlp', inputMultilineWrapper: 'implw', inputText: 'it', italic: 'i', link: 'lnk', nearby: 'nb', noTextSelection: 'notxt', onLeft: 'ol', onRight: 'or', opaque: 'oq', overflowHidden: 'oh', page: 'pg', paragraph: 'p', passPointerEvents: 'ppe', root: 'ui', row: 'r', scrollbars: 'sb', scrollbarsX: 'sbx', scrollbarsY: 'sby', seButton: 'sbt', single: 'e', sizeByCapital: 'cap', spaceEvenly: 'sev', strike: 'sk', text: 't', textCenter: 'tc', textExtraBold: 'w8', textExtraLight: 'w2', textHeavy: 'w9', textJustify: 'tj', textJustifyAll: 'tja', textLeft: 'tl', textLight: 'w3', textMedium: 'w5', textNormalWeight: 'w4', textRight: 'tr', textSemiBold: 'w6', textThin: 'w1', textUnitalicized: 'tun', transition: 'ts', transparent: 'clr', underline: 'u', widthContent: 'wc', widthExact: 'we', widthFill: 'wf', widthFillPortion: 'wfp', wrapped: 'wrp'};
-var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
-	return {$: 'Attr', a: a};
+var $author$project$Main$update = F2(
+	function (message, page) {
+		switch (message.$) {
+			case 'LinkClicked':
+				var urlRequest = message.a;
+				if (urlRequest.$ === 'Internal') {
+					var url = urlRequest.a;
+					return _Utils_Tuple2(
+						page,
+						A2(
+							$elm$browser$Browser$Navigation$pushUrl,
+							$author$project$Main$getSession(page).key,
+							$elm$url$Url$toString(url)));
+				} else {
+					var href = urlRequest.a;
+					return _Utils_Tuple2(
+						page,
+						$elm$browser$Browser$Navigation$load(href));
+				}
+			case 'UrlChanged':
+				var url = message.a;
+				return A2($author$project$Main$stepUrl, url, page);
+			case 'RegisterMsg':
+				var msg = message.a;
+				if (page.$ === 'Register') {
+					var model = page.a;
+					return A2(
+						$author$project$Main$stepRegister,
+						page,
+						A2($author$project$Pages$Register$update, msg, model));
+				} else {
+					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+				}
+			case 'LoginMsg':
+				var msg = message.a;
+				if (page.$ === 'Login') {
+					var model = page.a;
+					return A2(
+						$author$project$Main$stepLogin,
+						page,
+						A2($author$project$Pages$Login$update, msg, model));
+				} else {
+					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+				}
+			case 'FeedMsg':
+				var msg = message.a;
+				if (page.$ === 'Feed') {
+					var model = page.a;
+					return A2(
+						$author$project$Main$stepFeed,
+						page,
+						A2($author$project$Pages$Feed$update, msg, model));
+				} else {
+					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+				}
+			case 'None':
+				return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+			case 'NavbarLogoClicked':
+				return _Utils_Tuple2(
+					page,
+					A2(
+						$author$project$Route$goTo,
+						$author$project$Main$getSession(page).key,
+						$author$project$Route$Feed));
+			case 'NavbarSignupClicked':
+				return _Utils_Tuple2(
+					page,
+					A2(
+						$author$project$Route$goTo,
+						$author$project$Main$getSession(page).key,
+						$author$project$Route$Register));
+			default:
+				return _Utils_Tuple2(
+					page,
+					A2(
+						$author$project$Route$goTo,
+						$author$project$Main$getSession(page).key,
+						$author$project$Route$Login));
+		}
+	});
+var $author$project$Main$NavbarLoginClicked = {$: 'NavbarLoginClicked'};
+var $author$project$Main$NavbarLogoClicked = {$: 'NavbarLogoClicked'};
+var $author$project$Main$NavbarSignupClicked = {$: 'NavbarSignupClicked'};
+var $author$project$Main$None = {$: 'None'};
+var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
 };
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
-	return $mdgriffith$elm_ui$Internal$Model$Attr(
-		$elm$html$Html$Attributes$class(cls));
-};
-var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
-	function (a, b) {
-		return {$: 'OnlyDynamic', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$StaticRootAndDynamic = F2(
-	function (a, b) {
-		return {$: 'StaticRootAndDynamic', a: a, b: b};
-	});
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
 var $mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
-var $mdgriffith$elm_ui$Internal$Model$asEl = $mdgriffith$elm_ui$Internal$Model$AsEl;
+var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
+var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alignBottom: 'ab', alignCenterX: 'cx', alignCenterY: 'cy', alignContainerBottom: 'acb', alignContainerCenterX: 'accx', alignContainerCenterY: 'accy', alignContainerRight: 'acr', alignLeft: 'al', alignRight: 'ar', alignTop: 'at', alignedHorizontally: 'ah', alignedVertically: 'av', any: 's', behind: 'bh', below: 'b', bold: 'w7', borderDashed: 'bd', borderDotted: 'bdt', borderNone: 'bn', borderSolid: 'bs', capturePointerEvents: 'cpe', clip: 'cp', clipX: 'cpx', clipY: 'cpy', column: 'c', container: 'ctr', contentBottom: 'cb', contentCenterX: 'ccx', contentCenterY: 'ccy', contentLeft: 'cl', contentRight: 'cr', contentTop: 'ct', cursorPointer: 'cptr', cursorText: 'ctxt', focus: 'fcs', focusedWithin: 'focus-within', fullSize: 'fs', grid: 'g', hasBehind: 'hbh', heightContent: 'hc', heightExact: 'he', heightFill: 'hf', heightFillPortion: 'hfp', hover: 'hv', imageContainer: 'ic', inFront: 'fr', inputMultiline: 'iml', inputMultilineFiller: 'imlf', inputMultilineParent: 'imlp', inputMultilineWrapper: 'implw', inputText: 'it', italic: 'i', link: 'lnk', nearby: 'nb', noTextSelection: 'notxt', onLeft: 'ol', onRight: 'or', opaque: 'oq', overflowHidden: 'oh', page: 'pg', paragraph: 'p', passPointerEvents: 'ppe', root: 'ui', row: 'r', scrollbars: 'sb', scrollbarsX: 'sbx', scrollbarsY: 'sby', seButton: 'sbt', single: 'e', sizeByCapital: 'cap', spaceEvenly: 'sev', strike: 'sk', text: 't', textCenter: 'tc', textExtraBold: 'w8', textExtraLight: 'w2', textHeavy: 'w9', textJustify: 'tj', textJustifyAll: 'tja', textLeft: 'tl', textLight: 'w3', textMedium: 'w5', textNormalWeight: 'w4', textRight: 'tr', textSemiBold: 'w6', textThin: 'w1', textUnitalicized: 'tun', transition: 'ts', transparent: 'clr', underline: 'u', widthContent: 'wc', widthExact: 'we', widthFill: 'wf', widthFillPortion: 'wfp', wrapped: 'wrp'};
 var $mdgriffith$elm_ui$Internal$Model$Generic = {$: 'Generic'};
 var $mdgriffith$elm_ui$Internal$Model$div = $mdgriffith$elm_ui$Internal$Model$Generic;
 var $mdgriffith$elm_ui$Internal$Model$NoNearbyChildren = {$: 'NoNearbyChildren'};
@@ -7242,6 +7227,8 @@ var $mdgriffith$elm_ui$Internal$Model$addKeyedChildren = F3(
 							inFront)));
 		}
 	});
+var $mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
+var $mdgriffith$elm_ui$Internal$Model$asEl = $mdgriffith$elm_ui$Internal$Model$AsEl;
 var $mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var $mdgriffith$elm_ui$Internal$Model$asParagraph = $mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var $mdgriffith$elm_ui$Internal$Flag$Flag = function (a) {
@@ -7258,6 +7245,14 @@ var $mdgriffith$elm_ui$Internal$Flag$alignBottom = $mdgriffith$elm_ui$Internal$F
 var $mdgriffith$elm_ui$Internal$Flag$alignRight = $mdgriffith$elm_ui$Internal$Flag$flag(40);
 var $mdgriffith$elm_ui$Internal$Flag$centerX = $mdgriffith$elm_ui$Internal$Flag$flag(42);
 var $mdgriffith$elm_ui$Internal$Flag$centerY = $mdgriffith$elm_ui$Internal$Flag$flag(43);
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$Set$Set_elm_builtin = function (a) {
 	return {$: 'Set_elm_builtin', a: a};
@@ -12480,6 +12475,70 @@ var $mdgriffith$elm_ui$Internal$Model$element = F4(
 				$mdgriffith$elm_ui$Internal$Model$NoNearbyChildren,
 				$elm$core$List$reverse(attributes)));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
+	return {$: 'Height', a: a};
+};
+var $mdgriffith$elm_ui$Element$height = $mdgriffith$elm_ui$Internal$Model$Height;
+var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
+	return {$: 'Attr', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
+	return $mdgriffith$elm_ui$Internal$Model$Attr(
+		$elm$html$Html$Attributes$class(cls));
+};
+var $mdgriffith$elm_ui$Internal$Model$Content = {$: 'Content'};
+var $mdgriffith$elm_ui$Element$shrink = $mdgriffith$elm_ui$Internal$Model$Content;
+var $mdgriffith$elm_ui$Internal$Model$Width = function (a) {
+	return {$: 'Width', a: a};
+};
+var $mdgriffith$elm_ui$Element$width = $mdgriffith$elm_ui$Internal$Model$Width;
+var $mdgriffith$elm_ui$Element$column = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asColumn,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var $mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
+var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
+	function (a, b) {
+		return {$: 'OnlyDynamic', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Model$StaticRootAndDynamic = F2(
+	function (a, b) {
+		return {$: 'StaticRootAndDynamic', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Model$AllowHover = {$: 'AllowHover'};
 var $mdgriffith$elm_ui$Internal$Model$Layout = {$: 'Layout'};
 var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
@@ -12749,119 +12808,209 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var $author$project$Main$htmlify = function (elem) {
-	return _List_fromArray(
-		[
-			A2($mdgriffith$elm_ui$Element$layout, _List_Nil, elem)
-		]);
-};
-var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
-var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
-	return {$: 'Height', a: a};
-};
-var $mdgriffith$elm_ui$Element$height = $mdgriffith$elm_ui$Internal$Model$Height;
-var $mdgriffith$elm_ui$Internal$Model$Content = {$: 'Content'};
-var $mdgriffith$elm_ui$Element$shrink = $mdgriffith$elm_ui$Internal$Model$Content;
-var $mdgriffith$elm_ui$Internal$Model$Width = function (a) {
-	return {$: 'Width', a: a};
-};
-var $mdgriffith$elm_ui$Element$width = $mdgriffith$elm_ui$Internal$Model$Width;
-var $mdgriffith$elm_ui$Element$column = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asColumn,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $mdgriffith$elm_ui$Element$el = F2(
-	function (attrs, child) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					attrs)),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[child])));
-	});
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
-var $mdgriffith$elm_ui$Element$link = F2(
-	function (attrs, _v0) {
-		var url = _v0.url;
-		var label = _v0.label;
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$NodeName('a'),
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Attr(
-					$elm$html$Html$Attributes$href(url)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Internal$Model$Attr(
-						$elm$html$Html$Attributes$rel('noopener noreferrer')),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.link)))),
-								attrs))))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 	return {$: 'Text', a: a};
+};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var $mdgriffith$elm_ui$Internal$Model$map = F2(
+	function (fn, el) {
+		switch (el.$) {
+			case 'Styled':
+				var styled = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Styled(
+					{
+						html: F2(
+							function (add, context) {
+								return A2(
+									$elm$virtual_dom$VirtualDom$map,
+									fn,
+									A2(styled.html, add, context));
+							}),
+						styles: styled.styles
+					});
+			case 'Unstyled':
+				var html = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
+					A2(
+						$elm$core$Basics$composeL,
+						$elm$virtual_dom$VirtualDom$map(fn),
+						html));
+			case 'Text':
+				var str = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Text(str);
+			default:
+				return $mdgriffith$elm_ui$Internal$Model$Empty;
+		}
+	});
+var $mdgriffith$elm_ui$Element$map = $mdgriffith$elm_ui$Internal$Model$map;
+var $author$project$Page$map = F2(
+	function (converter, page) {
+		return {
+			body: A2($mdgriffith$elm_ui$Element$map, converter, page.body),
+			title: page.title
+		};
+	});
+var $mdgriffith$elm_ui$Internal$Model$Max = F2(
+	function (a, b) {
+		return {$: 'Max', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$maximum = F2(
+	function (i, l) {
+		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
+	});
+var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
+	function (a, b, c, d, e) {
+		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
+var $mdgriffith$elm_ui$Element$padding = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$padding,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+			'p-' + $elm$core$String$fromInt(x),
+			x,
+			x,
+			x,
+			x));
 };
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
-var $author$project$Main$viewErrorPage = function (model) {
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $mdgriffith$elm_ui$Element$image = F2(
+	function (attrs, _v0) {
+		var src = _v0.src;
+		var description = _v0.description;
+		var imageAttributes = A2(
+			$elm$core$List$filter,
+			function (a) {
+				switch (a.$) {
+					case 'Width':
+						return true;
+					case 'Height':
+						return true;
+					default:
+						return false;
+				}
+			},
+			attrs);
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
+				attrs),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[
+						A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asEl,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
+						_Utils_ap(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$src(src)),
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$alt(description))
+								]),
+							imageAttributes),
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
+					])));
+	});
+var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
+var $mdgriffith$elm_ui$Element$row = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asRow,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var $author$project$Review$view = function (review) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_Nil,
 		_List_fromArray(
 			[
 				A2(
-				$mdgriffith$elm_ui$Element$el,
+				$mdgriffith$elm_ui$Element$row,
 				_List_Nil,
-				$mdgriffith$elm_ui$Element$text('That page doesn\'t exist :(')),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('@' + review.user.username)),
+						A2(
+						$mdgriffith$elm_ui$Element$image,
+						_List_Nil,
+						{
+							description: 'profile picture',
+							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
+						})
+					])),
 				A2(
-				$mdgriffith$elm_ui$Element$link,
+				$mdgriffith$elm_ui$Element$row,
 				_List_Nil,
-				{
-					label: $mdgriffith$elm_ui$Element$text('Log in'),
-					url: '/login'
-				})
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text(review.subject.title)),
+						A2(
+						$mdgriffith$elm_ui$Element$image,
+						_List_Nil,
+						{
+							description: 'subject picture',
+							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
+						})
+					])),
+				A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text(
+							$elm$core$String$fromInt(review.stars) + '/5')),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text(
+							A2($elm$core$Maybe$withDefault, '(this review has no text)', review.text)))
+					]))
 			]));
 };
 var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
@@ -12881,8 +13030,6 @@ var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
-var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 	function (attrs, label, input) {
 		if (label.$ === 'HiddenLabel') {
@@ -12948,11 +13095,6 @@ var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 		}
 	});
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
 var $mdgriffith$elm_ui$Element$Input$autofill = A2(
 	$elm$core$Basics$composeL,
 	$mdgriffith$elm_ui$Internal$Model$Attr,
@@ -13041,11 +13183,6 @@ var $mdgriffith$elm_ui$Element$rgb = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
 	});
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
-var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
-	function (a, b, c, d, e) {
-		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
 var $mdgriffith$elm_ui$Element$paddingXY = F2(
 	function (x, y) {
 		return _Utils_eq(x, y) ? A2(
@@ -13069,10 +13206,6 @@ var $mdgriffith$elm_ui$Element$paddingXY = F2(
 				x));
 	});
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
-var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
 var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -13875,7 +14008,7 @@ var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
 		return {$: 'Placeholder', a: a, b: b};
 	});
 var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
-var $author$project$NewReviewForm$viewNewReviewFormMultiline = function (form) {
+var $author$project$Widgets$NewReviewForm$viewMultiline = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$multiline,
 		_List_Nil,
@@ -13898,35 +14031,13 @@ var $mdgriffith$elm_ui$Element$Input$Option = F2(
 	function (a, b) {
 		return {$: 'Option', a: a, b: b};
 	});
-var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asRow,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
 var $mdgriffith$elm_ui$Element$Input$defaultRadioOption = F2(
 	function (optionLabel, status) {
 		return A2(
@@ -14349,7 +14460,7 @@ var $mdgriffith$elm_ui$Element$Input$radioHelper = F3(
 			optionArea);
 	});
 var $mdgriffith$elm_ui$Element$Input$radio = $mdgriffith$elm_ui$Element$Input$radioHelper($mdgriffith$elm_ui$Element$Input$Column);
-var $author$project$NewReviewForm$viewNewReviewFormStars = function (form) {
+var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$radio,
 		_List_Nil,
@@ -14358,7 +14469,7 @@ var $author$project$NewReviewForm$viewNewReviewFormStars = function (form) {
 				$mdgriffith$elm_ui$Element$Input$labelAbove,
 				_List_Nil,
 				$mdgriffith$elm_ui$Element$text('Stars')),
-			onChange: form.starsRadioChanged,
+			onChange: form.onStarsRadioChanged,
 			options: _List_fromArray(
 				[
 					A2(
@@ -14394,7 +14505,7 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var $author$project$NewReviewForm$viewNewReviewFormSubjectForm = function (form) {
+var $author$project$Widgets$NewReviewForm$viewSubjectForm = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$text,
 		_List_Nil,
@@ -14503,7 +14614,7 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $author$project$NewReviewForm$viewNewReviewFormSubmitButton = function (form) {
+var $author$project$Widgets$NewReviewForm$viewSubmitButton = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
 		_List_Nil,
@@ -14512,155 +14623,78 @@ var $author$project$NewReviewForm$viewNewReviewFormSubmitButton = function (form
 			onPress: $elm$core$Maybe$Just(form.onPress)
 		});
 };
-var $author$project$NewReviewForm$viewNewReviewForm = function (form) {
+var $author$project$Widgets$NewReviewForm$view = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$author$project$NewReviewForm$viewNewReviewFormSubjectForm(form),
-				$author$project$NewReviewForm$viewNewReviewFormStars(form),
-				$author$project$NewReviewForm$viewNewReviewFormMultiline(form),
-				$author$project$NewReviewForm$viewNewReviewFormSubmitButton(form)
+				$author$project$Widgets$NewReviewForm$viewSubjectForm(form),
+				$author$project$Widgets$NewReviewForm$viewStars(form),
+				$author$project$Widgets$NewReviewForm$viewMultiline(form),
+				$author$project$Widgets$NewReviewForm$viewSubmitButton(form)
 			]));
 };
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
+var $author$project$Pages$Feed$view = function (model) {
+	return {
+		body: A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$author$project$Widgets$NewReviewForm$view(model.newReviewForm),
+					function () {
+					var _v0 = model.reviews;
+					if (_v0.$ === 'Just') {
+						var reviews = _v0.a;
+						return A2(
+							$mdgriffith$elm_ui$Element$column,
+							_List_Nil,
+							A2($elm$core$List$map, $author$project$Review$view, reviews));
+					} else {
+						return $mdgriffith$elm_ui$Element$text('loading...');
+					}
+				}()
+				])),
+		title: 'Feed'
+	};
 };
-var $mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _v0) {
-		var src = _v0.src;
-		var description = _v0.description;
-		var imageAttributes = A2(
-			$elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						$mdgriffith$elm_ui$Internal$Model$element,
-						$mdgriffith$elm_ui$Internal$Model$asEl,
-						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$src(src)),
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
+var $author$project$Pages$Login$LogInPressed = {$: 'LogInPressed'};
+var $author$project$Pages$Login$PasswordChanged = function (a) {
+	return {$: 'PasswordChanged', a: a};
+};
+var $author$project$Pages$Login$UsernameChanged = function (a) {
+	return {$: 'UsernameChanged', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
+var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
+var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 4);
+var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
+var $author$project$Styles$roundedSmall = $mdgriffith$elm_ui$Element$Border$rounded(8);
+var $author$project$Styles$text = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_Nil,
+		$mdgriffith$elm_ui$Element$text(str));
+};
+var $author$project$Styles$white = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 1.0, 1.0);
+var $author$project$Styles$button = F2(
+	function (str, action) {
+		return A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
+					$mdgriffith$elm_ui$Element$Font$bold,
+					$author$project$Styles$paddingSmall,
+					$author$project$Styles$roundedSmall
+				]),
+			{
+				label: $author$project$Styles$text(str),
+				onPress: action
+			});
 	});
-var $author$project$Review$viewReview = function (review) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('@' + review.user.username)),
-						A2(
-						$mdgriffith$elm_ui$Element$image,
-						_List_Nil,
-						{
-							description: 'profile picture',
-							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
-						})
-					])),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(review.subject.title)),
-						A2(
-						$mdgriffith$elm_ui$Element$image,
-						_List_Nil,
-						{
-							description: 'subject picture',
-							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
-						})
-					])),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(
-							$elm$core$String$fromInt(review.stars) + '/5')),
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(
-							A2($elm$core$Maybe$withDefault, '(this review has no text)', review.text)))
-					]))
-			]));
-};
-var $author$project$Main$viewFeedPage = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$author$project$NewReviewForm$viewNewReviewForm(model.newReviewForm),
-				function () {
-				var _v0 = model.reviews;
-				if (_v0.$ === 'Just') {
-					var reviews = _v0.a;
-					return A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_Nil,
-						A2($elm$core$List$map, $author$project$Review$viewReview, reviews));
-				} else {
-					return $mdgriffith$elm_ui$Element$text('loading...');
-				}
-			}()
-			]));
-};
-var $author$project$Types$LogInPressed = {$: 'LogInPressed'};
-var $author$project$Types$OnPasswordChanged = function (a) {
-	return {$: 'OnPasswordChanged', a: a};
-};
-var $author$project$Types$OnUsernameChanged = function (a) {
-	return {$: 'OnUsernameChanged', a: a};
-};
 var $mdgriffith$elm_ui$Element$Input$currentPassword = F2(
 	function (attrs, pass) {
 		return A3(
@@ -14674,170 +14708,317 @@ var $mdgriffith$elm_ui$Element$Input$currentPassword = F2(
 			attrs,
 			{label: pass.label, onChange: pass.onChange, placeholder: pass.placeholder, text: pass.text});
 	});
-var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
-	return {$: 'HiddenLabel', a: a};
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
-var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
-var $author$project$Main$onEnter = function (msg) {
-	var checkEnter = function (key) {
-		return (key === 'Enter') ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('Not the enter key');
-	};
-	var decoder = A2($elm$json$Json$Decode$andThen, checkEnter, $elm$json$Json$Decode$string);
-	return $mdgriffith$elm_ui$Element$htmlAttribute(
-		A2(
-			$elm$html$Html$Events$on,
-			'keyup',
-			A2($elm$json$Json$Decode$field, 'key', decoder)));
+var $author$project$Styles$textSmall = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16)
+			]),
+		$mdgriffith$elm_ui$Element$text(str));
 };
+var $author$project$Styles$labelSmall = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$labelAbove,
+		_List_Nil,
+		$author$project$Styles$textSmall(str));
+};
+var $author$project$Styles$spacingMedium = $mdgriffith$elm_ui$Element$spacing(16);
 var $mdgriffith$elm_ui$Element$Input$username = $mdgriffith$elm_ui$Element$Input$textHelper(
 	{
 		autofill: $elm$core$Maybe$Just('username'),
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var $author$project$Main$viewLogInPage = function (model) {
-	return A2(
+var $author$project$Pages$Login$view = function (model) {
+	return {
+		body: A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[$author$project$Styles$spacingMedium]),
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$text(''),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$username,
+					_List_Nil,
+					{
+						label: $author$project$Styles$labelSmall('Username'),
+						onChange: $author$project$Pages$Login$UsernameChanged,
+						placeholder: $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								$mdgriffith$elm_ui$Element$text('username'))),
+						text: model.username
+					}),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$currentPassword,
+					_List_Nil,
+					{
+						label: $author$project$Styles$labelSmall('Password'),
+						onChange: $author$project$Pages$Login$PasswordChanged,
+						placeholder: $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								$mdgriffith$elm_ui$Element$text('password'))),
+						show: false,
+						text: model.password
+					}),
+					A2(
+					$author$project$Styles$button,
+					'Log in',
+					$elm$core$Maybe$Just($author$project$Pages$Login$LogInPressed)),
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_Nil,
+					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, model.problems))
+				])),
+		title: 'Register'
+	};
+};
+var $author$project$Pages$NotFound$view = {
+	body: A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_Nil,
 		_List_fromArray(
 			[
-				A2(
-				$mdgriffith$elm_ui$Element$Input$username,
-				_List_Nil,
-				{
-					label: $mdgriffith$elm_ui$Element$Input$labelHidden('Username'),
-					onChange: $author$project$Types$OnUsernameChanged,
-					placeholder: $elm$core$Maybe$Just(
-						A2(
-							$mdgriffith$elm_ui$Element$Input$placeholder,
+				$mdgriffith$elm_ui$Element$text('Not Found!')
+			])),
+	title: 'Not Found'
+};
+var $author$project$Pages$Register$PasswordChanged = function (a) {
+	return {$: 'PasswordChanged', a: a};
+};
+var $author$project$Pages$Register$PasswordRepeatChanged = function (a) {
+	return {$: 'PasswordRepeatChanged', a: a};
+};
+var $author$project$Pages$Register$SignUpPressed = {$: 'SignUpPressed'};
+var $author$project$Pages$Register$UsernameChanged = function (a) {
+	return {$: 'UsernameChanged', a: a};
+};
+var $mdgriffith$elm_ui$Element$Input$newPassword = F2(
+	function (attrs, pass) {
+		return A3(
+			$mdgriffith$elm_ui$Element$Input$textHelper,
+			{
+				autofill: $elm$core$Maybe$Just('new-password'),
+				spellchecked: false,
+				type_: $mdgriffith$elm_ui$Element$Input$TextInputNode(
+					pass.show ? 'text' : 'password')
+			},
+			attrs,
+			{label: pass.label, onChange: pass.onChange, placeholder: pass.placeholder, text: pass.text});
+	});
+var $author$project$Pages$Register$view = function (model) {
+	return {
+		body: A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$text(''),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$username,
+					_List_Nil,
+					{
+						label: A2(
+							$mdgriffith$elm_ui$Element$Input$labelAbove,
 							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('username'))),
-					text: model.username
-				}),
+							$mdgriffith$elm_ui$Element$text('Username')),
+						onChange: $author$project$Pages$Register$UsernameChanged,
+						placeholder: $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								$mdgriffith$elm_ui$Element$text('username'))),
+						text: model.username
+					}),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$newPassword,
+					_List_Nil,
+					{
+						label: A2(
+							$mdgriffith$elm_ui$Element$Input$labelAbove,
+							_List_Nil,
+							$mdgriffith$elm_ui$Element$text('Password')),
+						onChange: $author$project$Pages$Register$PasswordChanged,
+						placeholder: $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								$mdgriffith$elm_ui$Element$text('password'))),
+						show: false,
+						text: model.password
+					}),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$newPassword,
+					_List_Nil,
+					{
+						label: A2(
+							$mdgriffith$elm_ui$Element$Input$labelAbove,
+							_List_Nil,
+							$mdgriffith$elm_ui$Element$text('Repeat Password')),
+						onChange: $author$project$Pages$Register$PasswordRepeatChanged,
+						placeholder: $elm$core$Maybe$Just(
+							A2(
+								$mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								$mdgriffith$elm_ui$Element$text('repeat password'))),
+						show: false,
+						text: model.passwordRepeat
+					}),
+					A2(
+					$mdgriffith$elm_ui$Element$Input$button,
+					_List_Nil,
+					{
+						label: $mdgriffith$elm_ui$Element$text('Sign Up'),
+						onPress: $elm$core$Maybe$Just($author$project$Pages$Register$SignUpPressed)
+					}),
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_Nil,
+					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, model.problems))
+				])),
+		title: 'Register'
+	};
+};
+var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
+var $author$project$Styles$buttonAlt = F2(
+	function (str, action) {
+		return A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
+					$mdgriffith$elm_ui$Element$Font$bold,
+					$author$project$Styles$paddingSmall,
+					$author$project$Styles$roundedSmall
+				]),
+			{
+				label: $author$project$Styles$text(str),
+				onPress: action
+			});
+	});
+var $author$project$Styles$paddingMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
+var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
+var $author$project$Widgets$Navbar$view = function (navbar) {
+	return A2(
+		$mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$spaceEvenly,
+				$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
+				$author$project$Styles$paddingMedium
+			]),
+		_List_fromArray(
+			[
+				A2($author$project$Styles$buttonAlt, '~', navbar.onLogoClicked),
 				A2(
-				$mdgriffith$elm_ui$Element$Input$currentPassword,
+				$mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
 				_List_fromArray(
 					[
-						$author$project$Main$onEnter($author$project$Types$LogInPressed)
-					]),
-				{
-					label: $mdgriffith$elm_ui$Element$Input$labelHidden('Password'),
-					onChange: $author$project$Types$OnPasswordChanged,
-					placeholder: $elm$core$Maybe$Just(
-						A2(
-							$mdgriffith$elm_ui$Element$Input$placeholder,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('password'))),
-					show: false,
-					text: model.password
-				}),
-				A2(
-				$mdgriffith$elm_ui$Element$Input$button,
-				_List_Nil,
-				{
-					label: $mdgriffith$elm_ui$Element$text('Log In'),
-					onPress: $elm$core$Maybe$Just($author$project$Types$LogInPressed)
-				})
+						A2($author$project$Styles$buttonAlt, 'Log in', navbar.onLoginClicked),
+						A2($author$project$Styles$buttonAlt, 'Sign Up', navbar.onSignupClicked)
+					]))
 			]));
 };
-var $author$project$Types$SignUpPressed = {$: 'SignUpPressed'};
-var $author$project$Main$viewSignUpPage = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
+var $author$project$Main$view = function (page) {
+	var navbar = {
+		currentUser: $elm$core$Maybe$Nothing,
+		loggedIn: false,
+		onLoginClicked: $elm$core$Maybe$Just($author$project$Main$NavbarLoginClicked),
+		onLogoClicked: $elm$core$Maybe$Just($author$project$Main$NavbarLogoClicked),
+		onSignupClicked: $elm$core$Maybe$Just($author$project$Main$NavbarSignupClicked),
+		onUserClicked: $elm$core$Maybe$Nothing
+	};
+	var _v0 = function () {
+		switch (page.$) {
+			case 'Register':
+				var model = page.a;
+				return A2(
+					$author$project$Page$map,
+					$author$project$Main$RegisterMsg,
+					$author$project$Pages$Register$view(model));
+			case 'Login':
+				var model = page.a;
+				return A2(
+					$author$project$Page$map,
+					$author$project$Main$LoginMsg,
+					$author$project$Pages$Login$view(model));
+			case 'Feed':
+				var model = page.a;
+				return A2(
+					$author$project$Page$map,
+					$author$project$Main$FeedMsg,
+					$author$project$Pages$Feed$view(model));
+			default:
+				var session = page.a;
+				return A2(
+					$author$project$Page$map,
+					function (_v2) {
+						return $author$project$Main$None;
+					},
+					$author$project$Pages$NotFound$view);
+		}
+	}();
+	var title = _v0.title;
+	var body = _v0.body;
+	return {
+		body: _List_fromArray(
 			[
 				A2(
-				$mdgriffith$elm_ui$Element$Input$username,
-				_List_Nil,
-				{
-					label: A2(
-						$mdgriffith$elm_ui$Element$Input$labelAbove,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Username')),
-					onChange: $author$project$Types$OnUsernameChanged,
-					placeholder: $elm$core$Maybe$Just(
-						A2(
-							$mdgriffith$elm_ui$Element$Input$placeholder,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('username'))),
-					text: model.username
-				}),
+				$mdgriffith$elm_ui$Element$layout,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
 				A2(
-				$mdgriffith$elm_ui$Element$Input$currentPassword,
-				_List_Nil,
-				{
-					label: A2(
-						$mdgriffith$elm_ui$Element$Input$labelAbove,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Password')),
-					onChange: $author$project$Types$OnPasswordChanged,
-					placeholder: $elm$core$Maybe$Just(
-						A2(
-							$mdgriffith$elm_ui$Element$Input$placeholder,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('password'))),
-					show: false,
-					text: model.password
-				}),
-				A2(
-				$mdgriffith$elm_ui$Element$Input$button,
-				_List_Nil,
-				{
-					label: $mdgriffith$elm_ui$Element$text('Sign Up'),
-					onPress: $elm$core$Maybe$Just($author$project$Types$SignUpPressed)
-				})
-			]));
-};
-var $author$project$Main$view = function (model) {
-	var rootTitle = 'SongScore: ';
-	var _v0 = model.route;
-	if (_v0.$ === 'Nothing') {
-		return {
-			body: $author$project$Main$htmlify(
-				$author$project$Main$viewErrorPage(model)),
-			title: rootTitle + '404'
-		};
-	} else {
-		var route = _v0.a;
-		switch (route.$) {
-			case 'UserRoute':
-				var username = route.a;
-				return {
-					body: $author$project$Main$htmlify(
-						$author$project$Main$viewErrorPage(model)),
-					title: rootTitle + 'Feed'
-				};
-			case 'ReviewRoute':
-				var username = route.a;
-				var reviewId = route.b;
-				return {
-					body: $author$project$Main$htmlify(
-						$author$project$Main$viewFeedPage(model)),
-					title: rootTitle + 'Feed'
-				};
-			case 'FeedRoute':
-				return {
-					body: $author$project$Main$htmlify(
-						$author$project$Main$viewFeedPage(model)),
-					title: rootTitle + 'Feed'
-				};
-			case 'LogInRoute':
-				return {
-					body: $author$project$Main$htmlify(
-						$author$project$Main$viewLogInPage(model)),
-					title: rootTitle + 'Log In'
-				};
-			default:
-				return {
-					body: $author$project$Main$htmlify(
-						$author$project$Main$viewSignUpPage(model)),
-					title: rootTitle + 'Sign Up'
-				};
-		}
-	}
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width(
+							A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill)),
+							$mdgriffith$elm_ui$Element$centerX
+						]),
+					_List_fromArray(
+						[
+							$author$project$Widgets$Navbar$view(navbar),
+							A2(
+							$mdgriffith$elm_ui$Element$el,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$padding(8)
+								]),
+							body)
+						])))
+			]),
+		title: title
+	};
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{init: $author$project$Main$init, onUrlChange: $author$project$Types$UrlChanged, onUrlRequest: $author$project$Types$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+	{
+		init: $author$project$Main$init,
+		onUrlChange: $author$project$Main$UrlChanged,
+		onUrlRequest: $author$project$Main$LinkClicked,
+		subscriptions: function (_v0) {
+			return $elm$core$Platform$Sub$none;
+		},
+		update: $author$project$Main$update,
+		view: $author$project$Main$view
+	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));

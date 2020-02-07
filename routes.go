@@ -21,6 +21,7 @@ type spaHandler struct {
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
     api.Use(s.withAuth)
+    // api.Use(s.log)
 	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewsGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
@@ -67,12 +68,17 @@ func (s *server) handleReviewPost() http.HandlerFunc {
     }
 }
 
-func (s *server) handleAuthLogin() http.HandlerFunc {
-    type Credentials struct {
-        Username string `json:"username"`
-        Password string `json:"password"`
-    }
+type Credentials struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+}
 
+type UserAndToken struct {
+    User User `json:"user"`
+    Token string `json:"token"`
+}
+
+func (s *server) handleAuthLogin() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
         var credentials Credentials
         decodeErr := s.decode(w, r, &credentials)
@@ -94,31 +100,33 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
         if compareErr != nil {
             s.respond(w, r, "Wrong password", http.StatusForbidden)
         } else {
-            token := jwt.New(jwt.SigningMethodHS256)
-            claims := token.Claims.(jwt.MapClaims)
-
-            claims["username"] = credentials.Username
-
-            tokenString, err := token.SignedString(s.jwtSecretKey)
+            tokenString, err := s.getTokenString(credentials.Username)
 
             if err != nil {
                 s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
                 return
             }
 
-            s.respond(w, r, tokenString, http.StatusOK)
+            userAndToken := UserAndToken{
+                User: user,
+                Token: tokenString,
+            }
+
+            s.respond(w, r, userAndToken, http.StatusOK)
         }
     }
 }
 
-func (s *server) handleUsersPost() http.HandlerFunc {
-    type NewUser struct {
-        Username string
-        Password string
-    }
+func (s *server) getTokenString(username string) (string, error) {
+    token := jwt.New(jwt.SigningMethodHS256)
+    claims := token.Claims.(jwt.MapClaims)
+    claims["username"] = username
+    return token.SignedString(s.jwtSecretKey)
+}
 
+func (s *server) handleUsersPost() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var newUser NewUser
+        var newUser Credentials
         err := s.decode(w, r, &newUser)
         if err != nil {
             s.respond(w, r, "Couldn't decode user", http.StatusBadRequest)
@@ -136,7 +144,25 @@ func (s *server) handleUsersPost() http.HandlerFunc {
         if s.db.Create(&user).Error != nil {
             s.respond(w, r, "Could not create user", http.StatusBadRequest)
         } else {
-            s.respond(w, r, user, http.StatusCreated)
+            var createdUser User
+
+            if s.db.Where("USERNAME = ?", user.Username).Find(&createdUser).Error != nil {
+                s.respond(w, r, "Couldn't new find user", http.StatusNotFound)
+                return
+            } else {
+                tokenString, err := s.getTokenString(newUser.Username)
+
+                if err != nil {
+                    s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
+                    return
+                }
+
+                userAndToken := UserAndToken{
+                    User: createdUser,
+                    Token: tokenString,
+                }
+                s.respond(w, r, userAndToken, http.StatusCreated)
+            }
         }
     }
 }
@@ -175,6 +201,13 @@ func (s *server) withAuth(next http.Handler) http.Handler {
             ctx := context.WithValue(r.Context(), "username", claims["username"])
             next.ServeHTTP(w, r.Clone(ctx))
         }
+	})
+}
+
+func (s *server) log(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        fmt.Printf(" -> %s", r.URL)
+        next.ServeHTTP(w, r)
 	})
 }
 
