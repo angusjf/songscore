@@ -49,9 +49,9 @@ func run() error {
     }
     defer s.db.Close()
 
-    s.db.AutoMigrate(&Review{})
-    s.db.AutoMigrate(&User{})
-    s.db.AutoMigrate(&Subject{})
+    s.db.AutoMigrate(&ReviewModel{})
+    s.db.AutoMigrate(&UserModel{})
+    s.db.AutoMigrate(&SubjectModel{})
 
 	s.router = mux.NewRouter()
     s.routes()

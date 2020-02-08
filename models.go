@@ -4,36 +4,105 @@ import (
     "time"
 )
 
-type Review struct {
-	ID      uint            `json:"id"`
-	Text    string          `json:"text,omitempty"`
-	Stars   int             `json:"stars"`
-	User    User            `json:"user"`
-	Subject Subject         `json:"subject"`
-    CreatedAt time.Time     `json:"createdAt"`
-    UpdatedAt time.Time     `json:"-"`
-    DeletedAt *time.Time    `json:"-"`
+type ReviewModel struct {
+	ID        int
+	Text      string
+	Stars     int
+	UserId    int
+	SubjectId int
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt *time.Time
 }
 
-type User struct {
-	ID           int        `json:"id"`
-	Username     string     `json:"username"`
-	Image        string     `json:"image,omitempty"`
-    PasswordHash string     `json:"-"`
-    CreatedAt    time.Time  `json:"-"`
-    UpdatedAt    time.Time  `json:"-"`
-    DeletedAt    *time.Time `json:"-"`
+func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
+    var user UserModel
+    if s.db.Where("id = ?", model.UserId).Find(&user).Error != nil {
+        panic("User is missing!")
+    }
+    var subject SubjectModel
+    if s.db.Where("id = ?", model.SubjectId).Find(&subject).Error != nil {
+        panic("Subject is missing!")
+    }
+    return ReviewWeb{
+        ID: model.ID,
+        Text: model.Text,
+        Stars: model.Stars,
+        User: s.UserToWeb(user),
+        Subject: s.SubjectToWeb(subject),
+        CreatedAt: model.CreatedAt,
+    }
 }
 
-type Subject struct {
-	ID     int           `json:"id"`
-	Title  string        `json:"title"`
-	Artist string        `json:"artist,omitempty"`
-	Image  string        `json:"image,omitempty"`
-	Kind   SubjectKind   `json:"kind"`
-    CreatedAt time.Time  `json:"-"`
-    UpdatedAt time.Time  `json:"-"`
-    DeletedAt *time.Time `json:"-"`
+func (s *server) ReviewToModel(web ReviewWeb, create bool) ReviewModel {
+    model := ReviewModel{
+        Text: web.Text,
+        Stars: web.Stars,
+        UserId: web.User.ID,
+    }
+
+    if !create {
+        model.ID = web.ID
+        model.SubjectId = web.Subject.ID
+    } else {
+        subject := s.SubjectToModel(web.Subject)
+        err := s.db.Create(&subject).Error
+        if err != nil {
+            panic(err)
+        }
+        model.SubjectId = subject.ID
+    }
+
+    return model
+}
+
+func (s *server) SubjectToModel(web SubjectWeb) SubjectModel {
+	return SubjectModel {
+        ID: web.ID,
+        Title: web.Title,
+        Artist: web.Artist,
+        Image: web.Image,
+        Kind: web.Kind,
+    }
+}
+
+type UserModel struct {
+	ID           int
+	Username     string
+	Image        string
+    PasswordHash string
+    CreatedAt    time.Time
+    UpdatedAt    time.Time
+    DeletedAt    *time.Time
+}
+
+func (s *server) UserToWeb(model UserModel) UserWeb {
+    return UserWeb{
+        ID: model.ID,
+        Username: model.Username,
+        Image: model.Image,
+    }
+}
+
+type SubjectModel struct {
+	ID     int
+	Title  string
+	Artist string
+	Image  string
+	Kind   SubjectKind
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt *time.Time
+}
+
+func (s *server) SubjectToWeb(model SubjectModel) SubjectWeb {
+    return SubjectWeb{
+        ID: model.ID,
+        Title: model.Title,
+        Artist: model.Artist,
+        Image: model.Image,
+        Kind: model.Kind,
+    }
 }
 
 type SubjectKind int

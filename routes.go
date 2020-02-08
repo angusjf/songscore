@@ -8,6 +8,7 @@ import (
 	"path/filepath"
     "strings"
     "context"
+    "time"
 
 	jwt "github.com/dgrijalva/jwt-go"
     bcrypt "golang.org/x/crypto/bcrypt"
@@ -18,76 +19,114 @@ type spaHandler struct {
     indexPath  string
 }
 
+type CredentialsWeb struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+}
+
+type UserAndTokenWeb struct {
+    User UserWeb `json:"user"`
+    Token string `json:"token"`
+}
+
+type UserWeb struct {
+    ID        int    `json:"id"`
+	Username  string `json:"username"`
+	Image     string `json:"image,omitempty"`
+}
+
+type ReviewWeb struct {
+	ID        int        `json:"id"`
+	Text      string     `json:"text,omitempty"`
+	Stars     int        `json:"stars"`
+	User      UserWeb    `json:"user"`
+	Subject   SubjectWeb `json:"subject"`
+    CreatedAt time.Time  `json:"createdAt"`
+}
+
+type SubjectWeb struct {
+	ID     int         `json:"id"`
+	Title  string      `json:"title"`
+	Artist string      `json:"artist,omitempty"`
+	Image  string      `json:"image,omitempty"`
+	Kind   SubjectKind `json:"kind,omitempty"`
+}
+
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
     api.Use(s.withAuth)
     // api.Use(s.log)
 	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
-	api.HandleFunc("/reviews", s.handleReviewsGet()).Methods("GET")
+	api.HandleFunc("/feeds/{id}", s.handleFeedGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
 	api.HandleFunc("/users", s.handleUsersPost()).Methods("POST")
-	api.HandleFunc("/me", s.handleUserGet()).Methods("GET")
 
     s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
 }
 
-func (s *server) handleReviewsGet() http.HandlerFunc {
+func (s *server) handleFeedGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var reviews []Review
-        s.db.Find(&reviews)
-        s.respond(w, r, reviews, http.StatusOK)
+        // TODO
+        var reviews []ReviewModel
+        if s.db.Find(&reviews).Error != nil {
+            s.respond(w, r, "Couldn't find feed", http.StatusBadRequest)
+            return
+        }
+
+        var reviewsWeb []ReviewWeb
+        for _, review := range reviews {
+            reviewsWeb = append(reviewsWeb, s.ReviewToWeb(review))
+        }
+
+        s.respond(w, r, reviewsWeb, http.StatusOK)
     }
 }
 
 func (s *server) handleReviewGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var review Review
+        var review ReviewModel
         if s.db.Where("ID = ?", "9999").Find(&review).Error != nil {
             s.respond(w, r, "No review with that ID found", http.StatusNotFound)
         } else {
-            s.respond(w, r, review, http.StatusOK)
+            s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
         }
     }
 }
 
 func (s *server) handleReviewPost() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var review Review
+        var review ReviewWeb
         err := s.decode(w, r, &review)
         if err != nil {
             s.respond(w, r, "Couldn't decode review", http.StatusBadRequest)
         } else {
-            if review.User.Username == r.Context().Value("username") {
-                s.db.Create(&review)
-                s.respond(w, r, review, http.StatusCreated)
+            id, ok := s.getUserId(r)
+            if ok {
+                if review.User.ID == id {
+                    model := s.ReviewToModel(review, true)
+                    s.db.Create(&model)
+                    s.respond(w, r, s.ReviewToWeb(model), http.StatusCreated)
+                } else {
+                    s.respond(w, r, "That user is not you", http.StatusForbidden)
+                }
             } else {
-                s.respond(w, r, "That user is not you", http.StatusForbidden)
+                s.respond(w, r, "Could not get user id", http.StatusForbidden)
             }
         }
     }
 }
 
-type Credentials struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
-}
-
-type UserAndToken struct {
-    User User `json:"user"`
-    Token string `json:"token"`
-}
-
 func (s *server) handleAuthLogin() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var credentials Credentials
+        var credentials CredentialsWeb
         decodeErr := s.decode(w, r, &credentials)
         if decodeErr != nil {
             s.respond(w, r, "Couldn't decode", http.StatusBadRequest)
             return
         }
 
-        var user User
+        var user UserModel
         if s.db.Where("USERNAME = ?", credentials.Username).Find(&user).Error != nil {
             s.respond(w, r, "Couldn't find user", http.StatusNotFound)
             return
@@ -100,15 +139,15 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
         if compareErr != nil {
             s.respond(w, r, "Wrong password", http.StatusForbidden)
         } else {
-            tokenString, err := s.getTokenString(credentials.Username)
+            tokenString, err := s.getTokenString(user)
 
             if err != nil {
                 s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
                 return
             }
 
-            userAndToken := UserAndToken{
-                User: user,
+            userAndToken := UserAndTokenWeb{
+                User: s.UserToWeb(user),
                 Token: tokenString,
             }
 
@@ -117,16 +156,16 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
     }
 }
 
-func (s *server) getTokenString(username string) (string, error) {
+func (s *server) getTokenString(model UserModel) (string, error) {
     token := jwt.New(jwt.SigningMethodHS256)
     claims := token.Claims.(jwt.MapClaims)
-    claims["username"] = username
+    claims["user_id"] = model.ID
     return token.SignedString(s.jwtSecretKey)
 }
 
 func (s *server) handleUsersPost() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var newUser Credentials
+        var newUser CredentialsWeb
         err := s.decode(w, r, &newUser)
         if err != nil {
             s.respond(w, r, "Couldn't decode user", http.StatusBadRequest)
@@ -136,7 +175,7 @@ func (s *server) handleUsersPost() http.HandlerFunc {
         hashed, err := bcrypt.GenerateFromPassword(
             []byte(newUser.Password), bcrypt.DefaultCost)
 
-        user := User{
+        user := UserModel{
             Username: newUser.Username,
             PasswordHash: string(hashed),
         }
@@ -144,21 +183,21 @@ func (s *server) handleUsersPost() http.HandlerFunc {
         if s.db.Create(&user).Error != nil {
             s.respond(w, r, "Could not create user", http.StatusBadRequest)
         } else {
-            var createdUser User
+            var createdUser UserModel
 
             if s.db.Where("USERNAME = ?", user.Username).Find(&createdUser).Error != nil {
                 s.respond(w, r, "Couldn't new find user", http.StatusNotFound)
                 return
             } else {
-                tokenString, err := s.getTokenString(newUser.Username)
+                tokenString, err := s.getTokenString(createdUser)
 
                 if err != nil {
                     s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
                     return
                 }
 
-                userAndToken := UserAndToken{
-                    User: createdUser,
+                userAndToken := UserAndTokenWeb{
+                    User: s.UserToWeb(createdUser),
                     Token: tokenString,
                 }
                 s.respond(w, r, userAndToken, http.StatusCreated)
@@ -198,7 +237,7 @@ func (s *server) withAuth(next http.Handler) http.Handler {
 
         if token.Valid {
             claims := token.Claims.(jwt.MapClaims)
-            ctx := context.WithValue(r.Context(), "username", claims["username"])
+            ctx := context.WithValue(r.Context(), "user_id", claims["user_id"])
             next.ServeHTTP(w, r.Clone(ctx))
         }
 	})
@@ -257,4 +296,9 @@ func (s *server) respond(w http.ResponseWriter, r *http.Request,
 func (s *server) decode(w http.ResponseWriter, r *http.Request,
                                 v interface{}) error {
     return json.NewDecoder(r.Body).Decode(v)
+}
+
+func (s *server) getUserId(r *http.Request) (int, bool) {
+    id, ok := r.Context().Value("user_id").(float64)
+    return int(id), ok
 }

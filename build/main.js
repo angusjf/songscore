@@ -6154,8 +6154,8 @@ var $author$project$Main$getSession = function (page) {
 var $author$project$Pages$Feed$GotFeed = function (a) {
 	return {$: 'GotFeed', a: a};
 };
-var $author$project$Pages$Feed$OnStarsRadioChanged = function (a) {
-	return {$: 'OnStarsRadioChanged', a: a};
+var $author$project$Pages$Feed$OnStarsChanged = function (a) {
+	return {$: 'OnStarsChanged', a: a};
 };
 var $author$project$Pages$Feed$OnSubjectChanged = function (a) {
 	return {$: 'OnSubjectChanged', a: a};
@@ -6164,6 +6164,7 @@ var $author$project$Pages$Feed$OnSubjectQueryChanged = function (a) {
 	return {$: 'OnSubjectQueryChanged', a: a};
 };
 var $author$project$Pages$Feed$OnSubmitPressed = {$: 'OnSubmitPressed'};
+var $author$project$Pages$Feed$clearReviewForm = {onChange: $author$project$Pages$Feed$OnSubjectChanged, onPress: $author$project$Pages$Feed$OnSubmitPressed, onStarsChanged: $author$project$Pages$Feed$OnStarsChanged, onSubjectQueryChanged: $author$project$Pages$Feed$OnSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing};
 var $author$project$Api$apiRoot = function () {
 	var _v0 = 1;
 	if (!_v0) {
@@ -6176,13 +6177,13 @@ var $author$project$Review$Review = F5(
 	function (id, text, stars, user, subject) {
 		return {id: id, stars: stars, subject: subject, text: text, user: user};
 	});
-var $author$project$User$User = F3(
-	function (id, image, username) {
-		return {id: id, image: image, username: username};
+var $author$project$Subject$Subject = F5(
+	function (id, image, kind, title, artist) {
+		return {artist: artist, id: id, image: image, kind: kind, title: title};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$map5 = _Json_map5;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -6193,21 +6194,9 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 			]));
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$User$decoder = A4(
-	$elm$json$Json$Decode$map3,
-	$author$project$User$User,
-	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
-var $elm$json$Json$Decode$map5 = _Json_map5;
-var $author$project$Subject$Subject = F5(
-	function (id, image, kind, title, artist) {
-		return {artist: artist, id: id, image: image, kind: kind, title: title};
-	});
 var $author$project$Subject$Song = {$: 'Song'};
 var $author$project$Subject$subjectKindDecoder = $elm$json$Json$Decode$succeed($author$project$Subject$Song);
-var $author$project$Subject$subjectDecoder = A6(
+var $author$project$Subject$decoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$Subject$Subject,
 	$elm$json$Json$Decode$maybe(
@@ -6219,6 +6208,18 @@ var $author$project$Subject$subjectDecoder = A6(
 	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string)));
+var $author$project$User$User = F3(
+	function (id, image, username) {
+		return {id: id, image: image, username: username};
+	});
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $author$project$User$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$User$User,
+	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
 var $author$project$Review$decoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$Review$Review,
@@ -6228,7 +6229,7 @@ var $author$project$Review$decoder = A6(
 		A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string)),
 	A2($elm$json$Json$Decode$field, 'stars', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
-	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$subjectDecoder));
+	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$decoder));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6542,7 +6543,7 @@ var $author$project$Api$getFeed = F2(
 					$elm$http$Http$expectJson,
 					msg,
 					$elm$json$Json$Decode$list($author$project$Review$decoder)),
-				url: $author$project$Api$apiRoot + ('/api/feed/' + $elm$core$String$fromInt(userAndToken.user.id))
+				url: $author$project$Api$apiRoot + ('/api/feeds/' + $elm$core$String$fromInt(userAndToken.user.id))
 			});
 	});
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
@@ -6576,11 +6577,7 @@ var $author$project$Route$goTo = F2(
 			$author$project$Route$routeToString(route));
 	});
 var $author$project$Pages$Feed$init = function (session) {
-	var model = {
-		newReviewForm: {onChange: $author$project$Pages$Feed$OnSubjectChanged, onPress: $author$project$Pages$Feed$OnSubmitPressed, onStarsRadioChanged: $author$project$Pages$Feed$OnStarsRadioChanged, onSubjectQueryChanged: $author$project$Pages$Feed$OnSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing},
-		reviews: $elm$core$Maybe$Nothing,
-		session: session
-	};
+	var model = {newReviewForm: $author$project$Pages$Feed$clearReviewForm, reviews: $elm$core$Maybe$Nothing, session: session};
 	var _v0 = model.session.userAndToken;
 	if (_v0.$ === 'Just') {
 		var uAndT = _v0.a;
@@ -6746,6 +6743,163 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
+var $author$project$Pages$Feed$GotNewReview = function (a) {
+	return {$: 'GotNewReview', a: a};
+};
+var $author$project$Widgets$NewReviewForm$convertToNewReview = F2(
+	function (form, user) {
+		var _v0 = form.stars;
+		if (_v0.$ === 'Just') {
+			var stars = _v0.a;
+			var _v1 = form.subject;
+			if (_v1.$ === 'Just') {
+				var subject = _v1.a;
+				return $elm$core$Maybe$Just(
+					{id: $elm$core$Maybe$Nothing, stars: stars, subject: subject, text: form.text, user: user});
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Debug$log = _Debug_log;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Subject$encode = function (subject) {
+	var kind = function () {
+		var _v2 = subject.kind;
+		if (_v2.$ === 'Just') {
+			if (_v2.a.$ === 'Album') {
+				var _v3 = _v2.a;
+				return $elm$json$Json$Encode$string('Album');
+			} else {
+				var _v4 = _v2.a;
+				return $elm$json$Json$Encode$string('Song');
+			}
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	var image = function () {
+		var _v1 = subject.image;
+		if (_v1.$ === 'Just') {
+			var img = _v1.a;
+			return $elm$json$Json$Encode$string(img);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	var id = function () {
+		var _v0 = subject.id;
+		if (_v0.$ === 'Just') {
+			var i = _v0.a;
+			return $elm$json$Json$Encode$int(i);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2('id', id),
+				_Utils_Tuple2('image', image),
+				_Utils_Tuple2('kind', kind),
+				_Utils_Tuple2(
+				'title',
+				$elm$json$Json$Encode$string(subject.title))
+			]));
+};
+var $author$project$User$encode = function (user) {
+	var image = function () {
+		var _v0 = user.image;
+		if (_v0.$ === 'Just') {
+			var img = _v0.a;
+			return $elm$json$Json$Encode$string(img);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'id',
+				$elm$json$Json$Encode$int(user.id)),
+				_Utils_Tuple2(
+				'username',
+				$elm$json$Json$Encode$string(user.username)),
+				_Utils_Tuple2('image', image)
+			]));
+};
+var $author$project$Review$encode = function (review) {
+	var text = function () {
+		var _v1 = review.text;
+		if (_v1.$ === 'Just') {
+			var x = _v1.a;
+			return $elm$json$Json$Encode$string(x);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	var id = function () {
+		var _v0 = review.id;
+		if (_v0.$ === 'Just') {
+			var x = _v0.a;
+			return $elm$json$Json$Encode$int(x);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2('id', id),
+				_Utils_Tuple2('text', text),
+				_Utils_Tuple2(
+				'stars',
+				$elm$json$Json$Encode$int(review.stars)),
+				_Utils_Tuple2(
+				'user',
+				$author$project$User$encode(review.user)),
+				_Utils_Tuple2(
+				'subject',
+				$author$project$Subject$encode(review.subject))
+			]));
+};
+var $elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2($elm$json$Json$Encode$encode, 0, value));
+};
+var $simonh1000$elm_jwt$Jwt$Http$post = $simonh1000$elm_jwt$Jwt$Http$createRequest('POST');
+var $author$project$Api$postReview = F3(
+	function (userAndToken, review, msg) {
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$post,
+			userAndToken.token,
+			{
+				body: $elm$http$Http$jsonBody(
+					$author$project$Review$encode(review)),
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Review$decoder),
+				url: $author$project$Api$apiRoot + '/api/reviews'
+			});
+	});
 var $author$project$Widgets$NewReviewForm$setStars = F2(
 	function (form, n) {
 		return _Utils_update(
@@ -6775,8 +6929,6 @@ var $author$project$Widgets$NewReviewForm$setText = F2(
 var $author$project$Pages$Feed$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'OnSubmitPressed':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'OnSubjectChanged':
 				var _new = msg.a;
 				var newForm = A2($author$project$Widgets$NewReviewForm$setText, model.newReviewForm, _new);
@@ -6785,7 +6937,7 @@ var $author$project$Pages$Feed$update = F2(
 						model,
 						{newReviewForm: newForm}),
 					$elm$core$Platform$Cmd$none);
-			case 'OnStarsRadioChanged':
+			case 'OnStarsChanged':
 				var n = msg.a;
 				var newForm = A2($author$project$Widgets$NewReviewForm$setStars, model.newReviewForm, n);
 				return _Utils_Tuple2(
@@ -6801,10 +6953,50 @@ var $author$project$Pages$Feed$update = F2(
 						model,
 						{newReviewForm: newForm}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'OnSubmitPressed':
+				var _v1 = model.session.userAndToken;
+				if (_v1.$ === 'Just') {
+					var uAndT = _v1.a;
+					var _v2 = A2($author$project$Widgets$NewReviewForm$convertToNewReview, model.newReviewForm, uAndT.user);
+					if (_v2.$ === 'Just') {
+						var newReview = _v2.a;
+						return _Utils_Tuple2(
+							model,
+							A3($author$project$Api$postReview, uAndT, newReview, $author$project$Pages$Feed$GotNewReview));
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'GotNewReview':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
-					var reviews = result.a;
+					var review = result.a;
+					var newReviews = $elm$core$Maybe$Just(
+						function () {
+							var _v4 = model.reviews;
+							if (_v4.$ === 'Just') {
+								var reviews = _v4.a;
+								return A2($elm$core$List$cons, review, reviews);
+							} else {
+								return _List_fromArray(
+									[review]);
+							}
+						}());
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{newReviewForm: $author$project$Pages$Feed$clearReviewForm, reviews: newReviews}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			default:
+				var result = msg.a;
+				var _v5 = A2($elm$core$Debug$log, '>>>>>>', result);
+				if (_v5.$ === 'Ok') {
+					var reviews = _v5.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -6820,31 +7012,10 @@ var $author$project$Pages$Feed$update = F2(
 var $author$project$Pages$Login$Completed = function (a) {
 	return {$: 'Completed', a: a};
 };
-var $elm$core$Debug$log = _Debug_log;
-var $elm$http$Http$jsonBody = function (value) {
-	return A2(
-		_Http_pair,
-		'application/json',
-		A2($elm$json$Json$Encode$encode, 0, value));
-};
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
 		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Api$UserAndToken = F2(
 	function (user, token) {
 		return {token: token, user: user};
@@ -12957,46 +13128,46 @@ var $mdgriffith$elm_ui$Element$row = F2(
 	});
 var $author$project$Review$view = function (review) {
 	return A2(
-		$mdgriffith$elm_ui$Element$column,
+		$mdgriffith$elm_ui$Element$row,
 		_List_Nil,
 		_List_fromArray(
 			[
 				A2(
-				$mdgriffith$elm_ui$Element$row,
+				$mdgriffith$elm_ui$Element$column,
 				_List_Nil,
 				_List_fromArray(
 					[
-						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('@' + review.user.username)),
 						A2(
 						$mdgriffith$elm_ui$Element$image,
 						_List_Nil,
 						{
 							description: 'profile picture',
 							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
-						})
-					])),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				_List_fromArray(
-					[
+						}),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(review.subject.title)),
+						$mdgriffith$elm_ui$Element$text('@' + review.user.username))
+					])),
+				A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_Nil,
+				_List_fromArray(
+					[
 						A2(
 						$mdgriffith$elm_ui$Element$image,
 						_List_Nil,
 						{
 							description: 'subject picture',
 							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
-						})
+						}),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text(review.subject.title))
 					])),
 				A2(
-				$mdgriffith$elm_ui$Element$row,
+				$mdgriffith$elm_ui$Element$column,
 				_List_Nil,
 				_List_fromArray(
 					[
@@ -13013,6 +13184,74 @@ var $author$project$Review$view = function (review) {
 					]))
 			]));
 };
+var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Element$Border$width = function (v) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + $elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
+};
+var $author$project$Styles$borderSmall = $mdgriffith$elm_ui$Element$Border$width(3);
+var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
+var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
+};
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		return _Utils_eq(x, y) ? A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(x),
+				x,
+				x,
+				x,
+				x)) : A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+				y,
+				x,
+				y,
+				x));
+	});
+var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 4);
+var $mdgriffith$elm_ui$Element$rgb = F3(
+	function (r, g, b) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
+	});
+var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
+var $author$project$Styles$roundedSmall = $mdgriffith$elm_ui$Element$Border$rounded(8);
 var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
@@ -13167,56 +13406,8 @@ var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
 			'background-color',
 			clr));
 };
-var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
-var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'border-color',
-			clr));
-};
-var $mdgriffith$elm_ui$Element$rgb = F3(
-	function (r, g, b) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
-	});
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
-var $mdgriffith$elm_ui$Element$paddingXY = F2(
-	function (x, y) {
-		return _Utils_eq(x, y) ? A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + $elm$core$String$fromInt(x),
-				x,
-				x,
-				x,
-				x)) : A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-				y,
-				x,
-				y,
-				x));
-	});
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
 		return {$: 'SpacingStyle', a: a, b: b, c: c};
@@ -13237,22 +13428,6 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x));
 };
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
-};
 var $mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle = _List_fromArray(
 	[
 		$mdgriffith$elm_ui$Element$Input$defaultTextPadding,
@@ -14027,184 +14202,11 @@ var $author$project$Widgets$NewReviewForm$viewMultiline = function (form) {
 			text: A2($elm$core$Maybe$withDefault, '', form.text)
 		});
 };
-var $mdgriffith$elm_ui$Element$Input$Option = F2(
-	function (a, b) {
-		return {$: 'Option', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
-var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
-var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
+var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
+	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
 };
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $mdgriffith$elm_ui$Element$Input$defaultRadioOption = F2(
-	function (optionLabel, status) {
-		return A2(
-			$mdgriffith$elm_ui$Element$row,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$spacing(10),
-					$mdgriffith$elm_ui$Element$alignLeft,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$width(
-							$mdgriffith$elm_ui$Element$px(14)),
-							$mdgriffith$elm_ui$Element$height(
-							$mdgriffith$elm_ui$Element$px(14)),
-							$mdgriffith$elm_ui$Element$Background$color($mdgriffith$elm_ui$Element$Input$white),
-							$mdgriffith$elm_ui$Element$Border$rounded(7),
-							function () {
-							if (status.$ === 'Selected') {
-								return $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
-							} else {
-								return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-							}
-						}(),
-							$mdgriffith$elm_ui$Element$Border$width(
-							function () {
-								switch (status.$) {
-									case 'Idle':
-										return 1;
-									case 'Focused':
-										return 1;
-									default:
-										return 5;
-								}
-							}()),
-							$mdgriffith$elm_ui$Element$Border$color(
-							function () {
-								switch (status.$) {
-									case 'Idle':
-										return A3($mdgriffith$elm_ui$Element$rgb, 208 / 255, 208 / 255, 208 / 255);
-									case 'Focused':
-										return A3($mdgriffith$elm_ui$Element$rgb, 208 / 255, 208 / 255, 208 / 255);
-									default:
-										return A3($mdgriffith$elm_ui$Element$rgb, 59 / 255, 153 / 255, 252 / 255);
-								}
-							}())
-						]),
-					$mdgriffith$elm_ui$Element$none),
-					A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							$mdgriffith$elm_ui$Internal$Model$htmlClass('unfocusable')
-						]),
-					optionLabel)
-				]));
-	});
-var $mdgriffith$elm_ui$Element$Input$option = F2(
-	function (val, txt) {
-		return A2(
-			$mdgriffith$elm_ui$Element$Input$Option,
-			val,
-			$mdgriffith$elm_ui$Element$Input$defaultRadioOption(txt));
-	});
-var $mdgriffith$elm_ui$Element$Input$Column = {$: 'Column'};
-var $mdgriffith$elm_ui$Element$Input$AfterFound = {$: 'AfterFound'};
-var $mdgriffith$elm_ui$Element$Input$BeforeFound = {$: 'BeforeFound'};
-var $mdgriffith$elm_ui$Element$Input$Idle = {$: 'Idle'};
-var $mdgriffith$elm_ui$Element$Input$NotFound = {$: 'NotFound'};
-var $mdgriffith$elm_ui$Element$Input$Selected = {$: 'Selected'};
-var $mdgriffith$elm_ui$Element$Input$column = F2(
-	function (attributes, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asColumn,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					attributes)),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $mdgriffith$elm_ui$Element$Input$downArrow = 'ArrowDown';
-var $mdgriffith$elm_ui$Internal$Model$filter = function (attrs) {
-	return A3(
-		$elm$core$List$foldr,
-		F2(
-			function (x, _v0) {
-				var found = _v0.a;
-				var has = _v0.b;
-				switch (x.$) {
-					case 'NoAttribute':
-						return _Utils_Tuple2(found, has);
-					case 'Class':
-						var key = x.a;
-						return _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							has);
-					case 'Attr':
-						var attr = x.a;
-						return _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							has);
-					case 'StyleClass':
-						var style = x.b;
-						return _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							has);
-					case 'Width':
-						var width = x.a;
-						return A2($elm$core$Set$member, 'width', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'width', has));
-					case 'Height':
-						var height = x.a;
-						return A2($elm$core$Set$member, 'height', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'height', has));
-					case 'Describe':
-						var description = x.a;
-						return A2($elm$core$Set$member, 'described', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'described', has));
-					case 'Nearby':
-						var location = x.a;
-						var elem = x.b;
-						return _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							has);
-					case 'AlignX':
-						return A2($elm$core$Set$member, 'align-x', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'align-x', has));
-					case 'AlignY':
-						return A2($elm$core$Set$member, 'align-y', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'align-y', has));
-					default:
-						return A2($elm$core$Set$member, 'transform', has) ? _Utils_Tuple2(found, has) : _Utils_Tuple2(
-							A2($elm$core$List$cons, x, found),
-							A2($elm$core$Set$insert, 'transform', has));
-				}
-			}),
-		_Utils_Tuple2(_List_Nil, $elm$core$Set$empty),
-		attrs).a;
-};
-var $mdgriffith$elm_ui$Internal$Model$get = F2(
-	function (attrs, isAttr) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, found) {
-					return isAttr(x) ? A2($elm$core$List$cons, x, found) : found;
-				}),
-			_List_Nil,
-			$mdgriffith$elm_ui$Internal$Model$filter(attrs));
-	});
-var $mdgriffith$elm_ui$Element$Input$leftArrow = 'ArrowLeft';
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -14222,313 +14224,9 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
+var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
-var $mdgriffith$elm_ui$Element$Input$onKeyLookup = function (lookup) {
-	var decode = function (code) {
-		var _v0 = lookup(code);
-		if (_v0.$ === 'Nothing') {
-			return $elm$json$Json$Decode$fail('No key matched');
-		} else {
-			var msg = _v0.a;
-			return $elm$json$Json$Decode$succeed(msg);
-		}
-	};
-	var isKey = A2(
-		$elm$json$Json$Decode$andThen,
-		decode,
-		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
-	return $mdgriffith$elm_ui$Internal$Model$Attr(
-		A2($elm$html$Html$Events$on, 'keyup', isKey));
-};
-var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
-var $mdgriffith$elm_ui$Element$Input$rightArrow = 'ArrowRight';
-var $mdgriffith$elm_ui$Element$Input$row = F2(
-	function (attributes, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asRow,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				attributes),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $mdgriffith$elm_ui$Element$Input$space = ' ';
-var $elm$html$Html$Attributes$tabindex = function (n) {
-	return A2(
-		_VirtualDom_attribute,
-		'tabIndex',
-		$elm$core$String$fromInt(n));
-};
-var $mdgriffith$elm_ui$Element$Input$tabindex = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$tabindex);
-var $mdgriffith$elm_ui$Element$Input$upArrow = 'ArrowUp';
-var $mdgriffith$elm_ui$Element$Input$radioHelper = F3(
-	function (orientation, attrs, input) {
-		var track = F2(
-			function (opt, _v14) {
-				var found = _v14.a;
-				var prev = _v14.b;
-				var nxt = _v14.c;
-				var val = opt.a;
-				switch (found.$) {
-					case 'NotFound':
-						return _Utils_eq(
-							$elm$core$Maybe$Just(val),
-							input.selected) ? _Utils_Tuple3($mdgriffith$elm_ui$Element$Input$BeforeFound, prev, nxt) : _Utils_Tuple3(found, val, nxt);
-					case 'BeforeFound':
-						return _Utils_Tuple3($mdgriffith$elm_ui$Element$Input$AfterFound, prev, val);
-					default:
-						return _Utils_Tuple3(found, prev, nxt);
-				}
-			});
-		var renderOption = function (_v11) {
-			var val = _v11.a;
-			var view = _v11.b;
-			var status = _Utils_eq(
-				$elm$core$Maybe$Just(val),
-				input.selected) ? $mdgriffith$elm_ui$Element$Input$Selected : $mdgriffith$elm_ui$Element$Input$Idle;
-			return A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$pointer,
-						function () {
-						if (orientation.$ === 'Row') {
-							return $mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink);
-						} else {
-							return $mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill);
-						}
-					}(),
-						$mdgriffith$elm_ui$Element$Events$onClick(
-						input.onChange(val)),
-						function () {
-						if (status.$ === 'Selected') {
-							return $mdgriffith$elm_ui$Internal$Model$Attr(
-								A2($elm$html$Html$Attributes$attribute, 'aria-checked', 'true'));
-						} else {
-							return $mdgriffith$elm_ui$Internal$Model$Attr(
-								A2($elm$html$Html$Attributes$attribute, 'aria-checked', 'false'));
-						}
-					}(),
-						$mdgriffith$elm_ui$Internal$Model$Attr(
-						A2($elm$html$Html$Attributes$attribute, 'role', 'radio'))
-					]),
-				view(status));
-		};
-		var prevNext = function () {
-			var _v5 = input.options;
-			if (!_v5.b) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var _v6 = _v5.a;
-				var val = _v6.a;
-				return function (_v7) {
-					var found = _v7.a;
-					var b = _v7.b;
-					var a = _v7.c;
-					switch (found.$) {
-						case 'NotFound':
-							return $elm$core$Maybe$Just(
-								_Utils_Tuple2(b, val));
-						case 'BeforeFound':
-							return $elm$core$Maybe$Just(
-								_Utils_Tuple2(b, val));
-						default:
-							return $elm$core$Maybe$Just(
-								_Utils_Tuple2(b, a));
-					}
-				}(
-					A3(
-						$elm$core$List$foldl,
-						track,
-						_Utils_Tuple3($mdgriffith$elm_ui$Element$Input$NotFound, val, val),
-						input.options));
-			}
-		}();
-		var optionArea = function () {
-			if (orientation.$ === 'Row') {
-				return A2(
-					$mdgriffith$elm_ui$Element$Input$row,
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute(input.label),
-						attrs),
-					A2($elm$core$List$map, renderOption, input.options));
-			} else {
-				return A2(
-					$mdgriffith$elm_ui$Element$Input$column,
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute(input.label),
-						attrs),
-					A2($elm$core$List$map, renderOption, input.options));
-			}
-		}();
-		var events = A2(
-			$mdgriffith$elm_ui$Internal$Model$get,
-			attrs,
-			function (attr) {
-				_v3$3:
-				while (true) {
-					switch (attr.$) {
-						case 'Width':
-							if (attr.a.$ === 'Fill') {
-								return true;
-							} else {
-								break _v3$3;
-							}
-						case 'Height':
-							if (attr.a.$ === 'Fill') {
-								return true;
-							} else {
-								break _v3$3;
-							}
-						case 'Attr':
-							return true;
-						default:
-							break _v3$3;
-					}
-				}
-				return false;
-			});
-		return A3(
-			$mdgriffith$elm_ui$Element$Input$applyLabel,
-			_Utils_ap(
-				A2(
-					$elm$core$List$filterMap,
-					$elm$core$Basics$identity,
-					_List_fromArray(
-						[
-							$elm$core$Maybe$Just($mdgriffith$elm_ui$Element$alignLeft),
-							$elm$core$Maybe$Just(
-							$mdgriffith$elm_ui$Element$Input$tabindex(0)),
-							$elm$core$Maybe$Just(
-							$mdgriffith$elm_ui$Internal$Model$htmlClass('focus')),
-							$elm$core$Maybe$Just($mdgriffith$elm_ui$Element$Region$announce),
-							$elm$core$Maybe$Just(
-							$mdgriffith$elm_ui$Internal$Model$Attr(
-								A2($elm$html$Html$Attributes$attribute, 'role', 'radiogroup'))),
-							function () {
-							if (prevNext.$ === 'Nothing') {
-								return $elm$core$Maybe$Nothing;
-							} else {
-								var _v1 = prevNext.a;
-								var prev = _v1.a;
-								var next = _v1.b;
-								return $elm$core$Maybe$Just(
-									$mdgriffith$elm_ui$Element$Input$onKeyLookup(
-										function (code) {
-											if (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$leftArrow)) {
-												return $elm$core$Maybe$Just(
-													input.onChange(prev));
-											} else {
-												if (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$upArrow)) {
-													return $elm$core$Maybe$Just(
-														input.onChange(prev));
-												} else {
-													if (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$rightArrow)) {
-														return $elm$core$Maybe$Just(
-															input.onChange(next));
-													} else {
-														if (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$downArrow)) {
-															return $elm$core$Maybe$Just(
-																input.onChange(next));
-														} else {
-															if (_Utils_eq(code, $mdgriffith$elm_ui$Element$Input$space)) {
-																var _v2 = input.selected;
-																if (_v2.$ === 'Nothing') {
-																	return $elm$core$Maybe$Just(
-																		input.onChange(prev));
-																} else {
-																	return $elm$core$Maybe$Nothing;
-																}
-															} else {
-																return $elm$core$Maybe$Nothing;
-															}
-														}
-													}
-												}
-											}
-										}));
-							}
-						}()
-						])),
-				events),
-			input.label,
-			optionArea);
-	});
-var $mdgriffith$elm_ui$Element$Input$radio = $mdgriffith$elm_ui$Element$Input$radioHelper($mdgriffith$elm_ui$Element$Input$Column);
-var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
-	return A2(
-		$mdgriffith$elm_ui$Element$Input$radio,
-		_List_Nil,
-		{
-			label: A2(
-				$mdgriffith$elm_ui$Element$Input$labelAbove,
-				_List_Nil,
-				$mdgriffith$elm_ui$Element$text('Stars')),
-			onChange: form.onStarsRadioChanged,
-			options: _List_fromArray(
-				[
-					A2(
-					$mdgriffith$elm_ui$Element$Input$option,
-					1,
-					$mdgriffith$elm_ui$Element$text('1')),
-					A2(
-					$mdgriffith$elm_ui$Element$Input$option,
-					2,
-					$mdgriffith$elm_ui$Element$text('2')),
-					A2(
-					$mdgriffith$elm_ui$Element$Input$option,
-					3,
-					$mdgriffith$elm_ui$Element$text('3')),
-					A2(
-					$mdgriffith$elm_ui$Element$Input$option,
-					4,
-					$mdgriffith$elm_ui$Element$text('4')),
-					A2(
-					$mdgriffith$elm_ui$Element$Input$option,
-					5,
-					$mdgriffith$elm_ui$Element$text('5'))
-				]),
-			selected: form.stars
-		});
-};
-var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
-	return {$: 'TextInputNode', a: a};
-};
-var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$textHelper(
-	{
-		autofill: $elm$core$Maybe$Nothing,
-		spellchecked: false,
-		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
-	});
-var $author$project$Widgets$NewReviewForm$viewSubjectForm = function (form) {
-	return A2(
-		$mdgriffith$elm_ui$Element$Input$text,
-		_List_Nil,
-		{
-			label: A2(
-				$mdgriffith$elm_ui$Element$Input$labelAbove,
-				_List_Nil,
-				$mdgriffith$elm_ui$Element$text('Subject...')),
-			onChange: form.onSubjectQueryChanged,
-			placeholder: $elm$core$Maybe$Just(
-				A2(
-					$mdgriffith$elm_ui$Element$Input$placeholder,
-					_List_Nil,
-					$mdgriffith$elm_ui$Element$text('search for a subect'))),
-			text: A2($elm$core$Maybe$withDefault, '', form.subjectQuery)
-		});
-};
-var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
-var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
-var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
-	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
-};
-var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 'MayPreventDefault', a: a};
 };
@@ -14561,6 +14259,13 @@ var $mdgriffith$elm_ui$Element$Input$onKey = F2(
 	});
 var $mdgriffith$elm_ui$Element$Input$onEnter = function (msg) {
 	return A2($mdgriffith$elm_ui$Element$Input$onKey, $mdgriffith$elm_ui$Element$Input$enter, msg);
+};
+var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
+var $elm$html$Html$Attributes$tabindex = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'tabIndex',
+		$elm$core$String$fromInt(n));
 };
 var $mdgriffith$elm_ui$Element$Input$button = F2(
 	function (attrs, _v0) {
@@ -14614,6 +14319,113 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $author$project$Widgets$NewReviewForm$greyStar = function (msg) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$button,
+		_List_Nil,
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$image,
+				_List_Nil,
+				{description: 'grey star', src: '/assets/images/grey-star.png'}),
+			onPress: $elm$core$Maybe$Just(msg)
+		});
+};
+var $author$project$Widgets$NewReviewForm$redStar = function (msg) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$button,
+		_List_Nil,
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$image,
+				_List_Nil,
+				{description: 'red star', src: '/assets/images/red-star.png'}),
+			onPress: $elm$core$Maybe$Just(msg)
+		});
+};
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
+	var _v0 = form.stars;
+	if (_v0.$ === 'Just') {
+		var n = _v0.a;
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_Nil,
+			A3(
+				$elm$core$List$map2,
+				F2(
+					function (f, x) {
+						return f(
+							form.onStarsChanged(x));
+					}),
+				_Utils_ap(
+					A2($elm$core$List$repeat, n, $author$project$Widgets$NewReviewForm$redStar),
+					A2($elm$core$List$repeat, 5 - n, $author$project$Widgets$NewReviewForm$greyStar)),
+				_List_fromArray(
+					[1, 2, 3, 4, 5])));
+	} else {
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_Nil,
+			A3(
+				$elm$core$List$map2,
+				F2(
+					function (f, x) {
+						return f(
+							form.onStarsChanged(x));
+					}),
+				A2($elm$core$List$repeat, 5, $author$project$Widgets$NewReviewForm$greyStar),
+				_List_fromArray(
+					[1, 2, 3, 4, 5])));
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
+	return {$: 'TextInputNode', a: a};
+};
+var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$textHelper(
+	{
+		autofill: $elm$core$Maybe$Nothing,
+		spellchecked: false,
+		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
+	});
+var $author$project$Widgets$NewReviewForm$viewSubjectForm = function (form) {
+	return A2(
+		$mdgriffith$elm_ui$Element$Input$text,
+		_List_Nil,
+		{
+			label: A2(
+				$mdgriffith$elm_ui$Element$Input$labelAbove,
+				_List_Nil,
+				$mdgriffith$elm_ui$Element$text('Subject...')),
+			onChange: form.onSubjectQueryChanged,
+			placeholder: $elm$core$Maybe$Just(
+				A2(
+					$mdgriffith$elm_ui$Element$Input$placeholder,
+					_List_Nil,
+					$mdgriffith$elm_ui$Element$text('search for a subject'))),
+			text: A2($elm$core$Maybe$withDefault, '', form.subjectQuery)
+		});
+};
 var $author$project$Widgets$NewReviewForm$viewSubmitButton = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
@@ -14626,9 +14438,16 @@ var $author$project$Widgets$NewReviewForm$viewSubmitButton = function (form) {
 var $author$project$Widgets$NewReviewForm$view = function (form) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
 		_List_fromArray(
 			[
+				$author$project$Styles$roundedSmall,
+				$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$red),
+				$author$project$Styles$borderSmall,
+				$author$project$Styles$paddingSmall
+			]),
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$text('Write a Review!'),
 				$author$project$Widgets$NewReviewForm$viewSubjectForm(form),
 				$author$project$Widgets$NewReviewForm$viewStars(form),
 				$author$project$Widgets$NewReviewForm$viewMultiline(form),
@@ -14668,9 +14487,6 @@ var $author$project$Pages$Login$UsernameChanged = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
 var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
-var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 4);
-var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
-var $author$project$Styles$roundedSmall = $mdgriffith$elm_ui$Element$Border$rounded(8);
 var $author$project$Styles$text = function (str) {
 	return A2(
 		$mdgriffith$elm_ui$Element$el,
