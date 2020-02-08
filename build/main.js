@@ -6166,11 +6166,14 @@ var $author$project$Pages$Feed$OnSubjectQueryChanged = function (a) {
 var $author$project$Pages$Feed$OnSubmitPressed = {$: 'OnSubmitPressed'};
 var $author$project$Pages$Feed$clearReviewForm = {onChange: $author$project$Pages$Feed$OnSubjectChanged, onPress: $author$project$Pages$Feed$OnSubmitPressed, onStarsChanged: $author$project$Pages$Feed$OnStarsChanged, onSubjectQueryChanged: $author$project$Pages$Feed$OnSubjectQueryChanged, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: $elm$core$Maybe$Nothing, text: $elm$core$Maybe$Nothing};
 var $author$project$Api$apiRoot = function () {
-	var _v0 = 1;
-	if (!_v0) {
-		return 'https://songscore.herokuapp.com';
-	} else {
-		return 'http://localhost:8081';
+	var _v0 = 2;
+	switch (_v0) {
+		case 0:
+			return 'https://songscore.herokuapp.com';
+		case 1:
+			return 'http://localhost:8081';
+		default:
+			return '';
 	}
 }();
 var $author$project$Review$Review = F5(
@@ -14637,7 +14640,8 @@ var $author$project$Pages$Register$view = function (model) {
 	return {
 		body: A2(
 			$mdgriffith$elm_ui$Element$column,
-			_List_Nil,
+			_List_fromArray(
+				[$author$project$Styles$spacingMedium]),
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$text(''),
@@ -14645,10 +14649,7 @@ var $author$project$Pages$Register$view = function (model) {
 					$mdgriffith$elm_ui$Element$Input$username,
 					_List_Nil,
 					{
-						label: A2(
-							$mdgriffith$elm_ui$Element$Input$labelAbove,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('Username')),
+						label: $author$project$Styles$labelSmall('Username'),
 						onChange: $author$project$Pages$Register$UsernameChanged,
 						placeholder: $elm$core$Maybe$Just(
 							A2(
@@ -14661,10 +14662,7 @@ var $author$project$Pages$Register$view = function (model) {
 					$mdgriffith$elm_ui$Element$Input$newPassword,
 					_List_Nil,
 					{
-						label: A2(
-							$mdgriffith$elm_ui$Element$Input$labelAbove,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('Password')),
+						label: $author$project$Styles$labelSmall('Password'),
 						onChange: $author$project$Pages$Register$PasswordChanged,
 						placeholder: $elm$core$Maybe$Just(
 							A2(
@@ -14678,10 +14676,7 @@ var $author$project$Pages$Register$view = function (model) {
 					$mdgriffith$elm_ui$Element$Input$newPassword,
 					_List_Nil,
 					{
-						label: A2(
-							$mdgriffith$elm_ui$Element$Input$labelAbove,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('Repeat Password')),
+						label: $author$project$Styles$labelSmall('Repeat password please'),
 						onChange: $author$project$Pages$Register$PasswordRepeatChanged,
 						placeholder: $elm$core$Maybe$Just(
 							A2(
@@ -14692,12 +14687,9 @@ var $author$project$Pages$Register$view = function (model) {
 						text: model.passwordRepeat
 					}),
 					A2(
-					$mdgriffith$elm_ui$Element$Input$button,
-					_List_Nil,
-					{
-						label: $mdgriffith$elm_ui$Element$text('Sign Up'),
-						onPress: $elm$core$Maybe$Just($author$project$Pages$Register$SignUpPressed)
-					}),
+					$author$project$Styles$button,
+					'Sign Up',
+					$elm$core$Maybe$Just($author$project$Pages$Register$SignUpPressed)),
 					A2(
 					$mdgriffith$elm_ui$Element$column,
 					_List_Nil,
