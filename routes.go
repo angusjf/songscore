@@ -9,6 +9,7 @@ import (
     "strings"
     "context"
     "time"
+	"github.com/gorilla/mux"
 
 	jwt "github.com/dgrijalva/jwt-go"
     bcrypt "golang.org/x/crypto/bcrypt"
@@ -56,11 +57,14 @@ func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
     api.Use(s.withAuth)
     // api.Use(s.log)
+	api.HandleFunc("/feeds/{username}", s.handleFeedGet()).Methods("GET")
 	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
-	api.HandleFunc("/feeds/{id}", s.handleFeedGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
 	api.HandleFunc("/users", s.handleUsersPost()).Methods("POST")
+	api.HandleFunc("/users/{username}", s.handleUserGet()).Methods("Get")
+	api.HandleFunc("/users/{username}/reviews", s.handleUserReviewsGet()).Methods("Get")
+    api.PathPrefix("/").Handler(s.handleApiNotFound())
 
     s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
 }
@@ -74,7 +78,7 @@ func (s *server) handleFeedGet() http.HandlerFunc {
             return
         }
 
-        var reviewsWeb []ReviewWeb
+        reviewsWeb := make([]ReviewWeb, 0, len(reviews))
         for _, review := range reviews {
             reviewsWeb = append(reviewsWeb, s.ReviewToWeb(review))
         }
@@ -85,11 +89,17 @@ func (s *server) handleFeedGet() http.HandlerFunc {
 
 func (s *server) handleReviewGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var review ReviewModel
-        if s.db.Where("ID = ?", "9999").Find(&review).Error != nil {
-            s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            if s.db.Where("ID = ?", id).Find(&review).Error != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+            }
         } else {
-            s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
         }
     }
 }
@@ -208,7 +218,45 @@ func (s *server) handleUsersPost() http.HandlerFunc {
 
 func (s *server) handleUserGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-	    s.respond(w, r, "Not implemented", 501)
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var userModel UserModel
+            if s.db.Where("USERNAME = ?", username).Find(&userModel).Error != nil {
+	            s.respond(w, r, "User not found!", http.StatusNotFound)
+                return
+            }
+            userWeb := s.UserToWeb(userModel)
+            s.respond(w, r, userWeb, http.StatusOK)
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s *server) handleUserReviewsGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var userModel UserModel
+            if s.db.Where("USERNAME = ?", username).Find(&userModel).Error != nil {
+	            s.respond(w, r, "User not found!", http.StatusNotFound)
+                return
+            }
+            var reviewModels []ReviewModel
+            if s.db.Where("USER_ID = ?", userModel.ID).Find(&reviewModels).Error != nil {
+                s.respond(w, r, "Database Error", http.StatusNotFound)
+                return
+            }
+            reviewsWeb := make([]ReviewWeb, 0, len(reviewModels))
+            for _, review := range reviewModels {
+                reviewsWeb = append(reviewsWeb, s.ReviewToWeb(review))
+            }
+            s.respond(w, r, reviewsWeb, http.StatusOK)
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
     }
 }
 
@@ -248,6 +296,12 @@ func (s *server) log(next http.Handler) http.Handler {
         fmt.Printf(" -> %s", r.URL)
         next.ServeHTTP(w, r)
 	})
+}
+
+func (s *server) handleApiNotFound() http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        s.respond(w, r, "Not Found", http.StatusNotFound)
+    }
 }
 
 func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
