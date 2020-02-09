@@ -7669,7 +7669,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 							songResults: _List_Nil,
 							subject: $elm$core$Maybe$Just(
 								$author$project$Widgets$NewReviewForm$albumResultToSubject(album)),
-							subjectQuery: album.name + (' - ' + album.artist)
+							subjectQuery: album.artist + (' - ' + album.name)
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
@@ -7682,7 +7682,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 							songResults: _List_Nil,
 							subject: $elm$core$Maybe$Just(
 								$author$project$Widgets$NewReviewForm$songResultToSubject(song)),
-							subjectQuery: song.name + (' - ' + song.artist)
+							subjectQuery: song.artist + (' - ' + song.name)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -13964,6 +13964,29 @@ var $author$project$Styles$spacingMedium = $mdgriffith$elm_ui$Element$spacing(16
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
+var $author$project$Styles$circleSmall = _List_fromArray(
+	[
+		$mdgriffith$elm_ui$Element$width(
+		$mdgriffith$elm_ui$Element$px(70)),
+		$mdgriffith$elm_ui$Element$height(
+		$mdgriffith$elm_ui$Element$px(70)),
+		$mdgriffith$elm_ui$Element$Border$rounded(140)
+	]);
 var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
@@ -14015,6 +14038,39 @@ var $mdgriffith$elm_ui$Element$image = F2(
 						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
 					])));
 	});
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
+var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
+var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
+	{
+		blur: 15,
+		color: $author$project$Styles$veryLightAlpha,
+		offset: _Utils_Tuple2(0, 0),
+		size: 0
+	});
 var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -14052,6 +14108,29 @@ var $mdgriffith$elm_ui$Element$link = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		return _Utils_eq(x, y) ? A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(x),
+				x,
+				x,
+				x,
+				x)) : A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+				y,
+				x,
+				y,
+				x));
+	});
+var $author$project$Styles$paddingMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 16);
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -14072,24 +14151,47 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $author$project$Styles$squareMedium = _List_fromArray(
 	[
 		$mdgriffith$elm_ui$Element$width(
-		$mdgriffith$elm_ui$Element$px(200)),
+		$mdgriffith$elm_ui$Element$px(140)),
 		$mdgriffith$elm_ui$Element$height(
-		$mdgriffith$elm_ui$Element$px(200))
+		$mdgriffith$elm_ui$Element$px(140))
 	]);
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
+var $author$project$Styles$text = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16)
+			]),
+		$mdgriffith$elm_ui$Element$text(str));
+};
 var $author$project$Review$greyStar = A2(
 	$mdgriffith$elm_ui$Element$image,
-	_List_Nil,
+	_List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(72)),
+			$mdgriffith$elm_ui$Element$height(
+			$mdgriffith$elm_ui$Element$px(72))
+		]),
 	{description: 'grey star', src: '/assets/images/grey-star.png'});
 var $author$project$Review$redStar = A2(
 	$mdgriffith$elm_ui$Element$image,
-	_List_Nil,
+	_List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(72)),
+			$mdgriffith$elm_ui$Element$height(
+			$mdgriffith$elm_ui$Element$px(72))
+		]),
 	{description: 'red star', src: '/assets/images/red-star.png'});
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
@@ -14112,10 +14214,12 @@ var $elm$core$List$repeat = F2(
 	function (n, value) {
 		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
+var $author$project$Styles$spacingSmall = $mdgriffith$elm_ui$Element$spacing(4);
 var $author$project$Review$viewNStars = function (n) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
-		_List_Nil,
+		_List_fromArray(
+			[$author$project$Styles$spacingSmall]),
 		_Utils_ap(
 			A2($elm$core$List$repeat, n, $author$project$Review$redStar),
 			A2($elm$core$List$repeat, 5 - n, $author$project$Review$greyStar)));
@@ -14124,32 +14228,13 @@ var $author$project$Review$view = function (review) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
-			[$author$project$Styles$spacingMedium]),
+			[$author$project$Styles$spacingMedium, $author$project$Styles$lightShadow, $author$project$Styles$paddingMedium]),
 		_List_fromArray(
 			[
 				A2(
-				$mdgriffith$elm_ui$Element$link,
-				_List_Nil,
-				{
-					label: A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								$mdgriffith$elm_ui$Element$image,
-								$author$project$Styles$squareMedium,
-								{
-									description: 'profile picture',
-									src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
-								}),
-								$mdgriffith$elm_ui$Element$text('@' + review.user.username)
-							])),
-					url: '/users/' + review.user.username
-				}),
-				A2(
 				$mdgriffith$elm_ui$Element$column,
-				_List_Nil,
+				_List_fromArray(
+					[$author$project$Styles$spacingMedium]),
 				_List_fromArray(
 					[
 						A2(
@@ -14160,24 +14245,54 @@ var $author$project$Review$view = function (review) {
 							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
 						}),
 						A2(
-						$mdgriffith$elm_ui$Element$el,
+						$mdgriffith$elm_ui$Element$column,
 						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(review.subject.title))
+						_List_fromArray(
+							[
+								$author$project$Styles$text(
+								A2($elm$core$Maybe$withDefault, '', review.subject.artist)),
+								$author$project$Styles$text(review.subject.title)
+							]))
 					])),
 				A2(
 				$mdgriffith$elm_ui$Element$column,
-				_List_Nil,
+				_List_fromArray(
+					[$author$project$Styles$spacingMedium]),
 				_List_fromArray(
 					[
 						A2(
-						$mdgriffith$elm_ui$Element$el,
+						$mdgriffith$elm_ui$Element$link,
 						_List_Nil,
-						$author$project$Review$viewNStars(review.stars)),
+						{
+							label: A2(
+								$mdgriffith$elm_ui$Element$row,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$mdgriffith$elm_ui$Element$image,
+										$author$project$Styles$circleSmall,
+										{
+											description: 'profile picture',
+											src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
+										}),
+										$author$project$Styles$text('@' + review.user.username)
+									])),
+							url: '/users/' + review.user.username
+						}),
 						A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text(
-							A2($elm$core$Maybe$withDefault, '(this review has no text)', review.text)))
+						$mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[$author$project$Styles$spacingMedium]),
+						_List_fromArray(
+							[
+								$author$project$Review$viewNStars(review.stars),
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_Nil,
+								$author$project$Styles$text(
+									A2($elm$core$Maybe$withDefault, '(this review has no text)', review.text)))
+							]))
 					]))
 			]));
 };
@@ -14209,55 +14324,20 @@ var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 			'border-color',
 			clr));
 };
-var $mdgriffith$elm_ui$Element$paddingXY = F2(
-	function (x, y) {
-		return _Utils_eq(x, y) ? A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + $elm$core$String$fromInt(x),
-				x,
-				x,
-				x,
-				x)) : A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-				y,
-				x,
-				y,
-				x));
-	});
-var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 4);
+var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 8);
 var $mdgriffith$elm_ui$Element$rgb = F3(
 	function (r, g, b) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
 	});
 var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
 var $author$project$Styles$roundedSmall = $mdgriffith$elm_ui$Element$Border$rounded(8);
 var $author$project$Widgets$NewReviewForm$OnTextChanged = function (a) {
 	return {$: 'OnTextChanged', a: a};
 };
-var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
-var $mdgriffith$elm_ui$Element$Input$Label = F3(
-	function (a, b, c) {
-		return {$: 'Label', a: a, b: b, c: c};
-	});
-var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
+var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
+	return {$: 'HiddenLabel', a: a};
+};
+var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
 var $mdgriffith$elm_ui$Element$Input$TextArea = {$: 'TextArea'};
 var $mdgriffith$elm_ui$Internal$Model$Class = F2(
 	function (a, b) {
@@ -14855,7 +14935,6 @@ var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 			'color',
 			fontColor));
 };
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
 		var placeholderAttrs = _v0.a;
@@ -15162,25 +15241,26 @@ var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
 var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
 var $author$project$Widgets$NewReviewForm$viewMultiline = function (form) {
 	return A2(
-		$mdgriffith$elm_ui$Element$Input$multiline,
-		_List_Nil,
-		{
-			label: A2(
-				$mdgriffith$elm_ui$Element$Input$labelAbove,
-				_List_Nil,
-				$mdgriffith$elm_ui$Element$text('Review text')),
-			onChange: function (s) {
-				return form.toOuterMsg(
-					$author$project$Widgets$NewReviewForm$OnTextChanged(s));
-			},
-			placeholder: $elm$core$Maybe$Just(
-				A2(
-					$mdgriffith$elm_ui$Element$Input$placeholder,
-					_List_Nil,
-					$mdgriffith$elm_ui$Element$text('type your review here!'))),
-			spellcheck: true,
-			text: A2($elm$core$Maybe$withDefault, '', form.text)
-		});
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[$author$project$Styles$paddingSmall]),
+		A2(
+			$mdgriffith$elm_ui$Element$Input$multiline,
+			_List_Nil,
+			{
+				label: $mdgriffith$elm_ui$Element$Input$labelHidden('Review text'),
+				onChange: function (s) {
+					return form.toOuterMsg(
+						$author$project$Widgets$NewReviewForm$OnTextChanged(s));
+				},
+				placeholder: $elm$core$Maybe$Just(
+					A2(
+						$mdgriffith$elm_ui$Element$Input$placeholder,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('type your review here!'))),
+				spellcheck: true,
+				text: A2($elm$core$Maybe$withDefault, '', form.text)
+			}));
 };
 var $author$project$Widgets$NewReviewForm$OnStarsChanged = function (a) {
 	return {$: 'OnStarsChanged', a: a};
@@ -15305,11 +15385,18 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 var $author$project$Widgets$NewReviewForm$greyStar = function (msg) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
 		{
 			label: A2(
 				$mdgriffith$elm_ui$Element$image,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+					]),
 				{description: 'grey star', src: '/assets/images/grey-star.png'}),
 			onPress: $elm$core$Maybe$Just(msg)
 		});
@@ -15317,11 +15404,18 @@ var $author$project$Widgets$NewReviewForm$greyStar = function (msg) {
 var $author$project$Widgets$NewReviewForm$redStar = function (msg) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
 		{
 			label: A2(
 				$mdgriffith$elm_ui$Element$image,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+					]),
 				{description: 'red star', src: '/assets/images/red-star.png'}),
 			onPress: $elm$core$Maybe$Just(msg)
 		});
@@ -15332,7 +15426,10 @@ var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
 		var n = _v0.a;
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
 			A3(
 				$elm$core$List$map2,
 				F2(
@@ -15349,7 +15446,10 @@ var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
 	} else {
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
 			A3(
 				$elm$core$List$map2,
 				F2(
@@ -15366,6 +15466,11 @@ var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
 var $author$project$Widgets$NewReviewForm$OnSubjectQueryChanged = function (a) {
 	return {$: 'OnSubjectQueryChanged', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
+var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
 var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
 	return {$: 'TextInputNode', a: a};
 };
@@ -15378,22 +15483,56 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 var $author$project$Widgets$NewReviewForm$OnAlbumResultClicked = function (a) {
 	return {$: 'OnAlbumResultClicked', a: a};
 };
-var $author$project$Widgets$NewReviewForm$viewAlbumResults = F2(
+var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Element$paragraph = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asParagraph,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var $author$project$Widgets$NewReviewForm$viewAlbumResult = F2(
 	function (toOuterMsg, album) {
 		return A2(
 			$mdgriffith$elm_ui$Element$Input$button,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
 			{
 				label: A2(
 					$mdgriffith$elm_ui$Element$column,
-					_List_Nil,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						]),
 					_List_fromArray(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$image,
 							$author$project$Styles$squareMedium,
 							{description: '', src: album.imageUrl}),
-							$mdgriffith$elm_ui$Element$text(album.name)
+							A2(
+							$mdgriffith$elm_ui$Element$paragraph,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+								]),
+							_List_fromArray(
+								[
+									$author$project$Styles$text(album.name)
+								]))
 						])),
 				onPress: $elm$core$Maybe$Just(
 					toOuterMsg(
@@ -15403,22 +15542,37 @@ var $author$project$Widgets$NewReviewForm$viewAlbumResults = F2(
 var $author$project$Widgets$NewReviewForm$OnSongResultClicked = function (a) {
 	return {$: 'OnSongResultClicked', a: a};
 };
-var $author$project$Widgets$NewReviewForm$viewSongResults = F2(
+var $author$project$Widgets$NewReviewForm$viewSongResult = F2(
 	function (toOuterMsg, song) {
 		return A2(
 			$mdgriffith$elm_ui$Element$Input$button,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
 			{
 				label: A2(
 					$mdgriffith$elm_ui$Element$column,
-					_List_Nil,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						]),
 					_List_fromArray(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$image,
 							$author$project$Styles$squareMedium,
 							{description: '', src: song.imageUrl}),
-							$mdgriffith$elm_ui$Element$text(song.name)
+							A2(
+							$mdgriffith$elm_ui$Element$paragraph,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+								]),
+							_List_fromArray(
+								[
+									$author$project$Styles$text(song.name)
+								]))
 						])),
 				onPress: $elm$core$Maybe$Just(
 					toOuterMsg(
@@ -15426,63 +15580,98 @@ var $author$project$Widgets$NewReviewForm$viewSongResults = F2(
 			});
 	});
 var $author$project$Widgets$NewReviewForm$viewSubjectForm = function (form) {
+	var songs = A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$author$project$Styles$paddingSmall,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$alignTop
+			]),
+		A2(
+			$elm$core$List$map,
+			$author$project$Widgets$NewReviewForm$viewSongResult(form.toOuterMsg),
+			form.songResults));
+	var searchBox = A2(
+		$mdgriffith$elm_ui$Element$Input$text,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
+		{
+			label: $mdgriffith$elm_ui$Element$Input$labelHidden('Subject'),
+			onChange: function (s) {
+				return form.toOuterMsg(
+					$author$project$Widgets$NewReviewForm$OnSubjectQueryChanged(s));
+			},
+			placeholder: $elm$core$Maybe$Just(
+				A2(
+					$mdgriffith$elm_ui$Element$Input$placeholder,
+					_List_Nil,
+					$mdgriffith$elm_ui$Element$text('search for a subject'))),
+			text: form.subjectQuery
+		});
+	var albums = A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$author$project$Styles$paddingSmall,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$alignTop
+			]),
+		A2(
+			$elm$core$List$map,
+			$author$project$Widgets$NewReviewForm$viewAlbumResult(form.toOuterMsg),
+			form.albumResults));
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[$author$project$Styles$paddingSmall]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						$mdgriffith$elm_ui$Element$Input$labelAbove,
-						_List_Nil,
-						$mdgriffith$elm_ui$Element$text('Subject...')),
-					onChange: function (s) {
-						return form.toOuterMsg(
-							$author$project$Widgets$NewReviewForm$OnSubjectQueryChanged(s));
-					},
-					placeholder: $elm$core$Maybe$Just(
-						A2(
-							$mdgriffith$elm_ui$Element$Input$placeholder,
-							_List_Nil,
-							$mdgriffith$elm_ui$Element$text('search for a subject'))),
-					text: form.subjectQuery
-				}),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				_List_fromArray(
+		function () {
+			var _v0 = _Utils_Tuple2(
+				$elm$core$List$isEmpty(form.albumResults),
+				$elm$core$List$isEmpty(form.songResults));
+			if (_v0.a && _v0.b) {
+				return _List_fromArray(
+					[searchBox]);
+			} else {
+				return _List_fromArray(
 					[
+						searchBox,
 						A2(
-						$mdgriffith$elm_ui$Element$column,
+						$mdgriffith$elm_ui$Element$row,
+						_List_Nil,
 						_List_fromArray(
-							[$author$project$Styles$paddingSmall]),
-						A2(
-							$elm$core$List$map,
-							$author$project$Widgets$NewReviewForm$viewAlbumResults(form.toOuterMsg),
-							form.albumResults)),
-						A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_fromArray(
-							[$author$project$Styles$paddingSmall]),
-						A2(
-							$elm$core$List$map,
-							$author$project$Widgets$NewReviewForm$viewSongResults(form.toOuterMsg),
-							form.songResults))
-					]))
-			]));
+							[albums, songs]))
+					]);
+			}
+		}());
 };
+var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
+var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
+var $author$project$Styles$white = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 1.0, 1.0);
+var $author$project$Styles$button = F2(
+	function (str, action) {
+		return A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
+					$mdgriffith$elm_ui$Element$Font$bold,
+					$author$project$Styles$paddingSmall,
+					$author$project$Styles$roundedSmall
+				]),
+			{
+				label: $author$project$Styles$text(str),
+				onPress: action
+			});
+	});
 var $author$project$Widgets$NewReviewForm$viewSubmitButton = function (form) {
 	return A2(
-		$mdgriffith$elm_ui$Element$Input$button,
-		_List_Nil,
-		{
-			label: $mdgriffith$elm_ui$Element$text('Post!'),
-			onPress: $elm$core$Maybe$Just(form.onPress)
-		});
+		$author$project$Styles$button,
+		'Post!',
+		$elm$core$Maybe$Just(form.onPress));
 };
 var $author$project$Widgets$NewReviewForm$view = function (form) {
 	return A2(
@@ -15492,7 +15681,10 @@ var $author$project$Widgets$NewReviewForm$view = function (form) {
 				$author$project$Styles$roundedSmall,
 				$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$red),
 				$author$project$Styles$borderSmall,
-				$author$project$Styles$paddingSmall
+				$author$project$Styles$paddingSmall,
+				$author$project$Styles$spacingSmall,
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(350))
 			]),
 		_List_fromArray(
 			[
@@ -15536,32 +15728,6 @@ var $author$project$Pages$Login$PasswordChanged = function (a) {
 var $author$project$Pages$Login$UsernameChanged = function (a) {
 	return {$: 'UsernameChanged', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
-var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
-var $author$project$Styles$text = function (str) {
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_Nil,
-		$mdgriffith$elm_ui$Element$text(str));
-};
-var $author$project$Styles$white = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 1.0, 1.0);
-var $author$project$Styles$button = F2(
-	function (str, action) {
-		return A2(
-			$mdgriffith$elm_ui$Element$Input$button,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$author$project$Styles$paddingSmall,
-					$author$project$Styles$roundedSmall
-				]),
-			{
-				label: $author$project$Styles$text(str),
-				onPress: action
-			});
-	});
 var $mdgriffith$elm_ui$Element$Input$currentPassword = F2(
 	function (attrs, pass) {
 		return A3(
@@ -15575,12 +15741,12 @@ var $mdgriffith$elm_ui$Element$Input$currentPassword = F2(
 			attrs,
 			{label: pass.label, onChange: pass.onChange, placeholder: pass.placeholder, text: pass.text});
 	});
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
-};
+var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
+var $mdgriffith$elm_ui$Element$Input$Label = F3(
+	function (a, b, c) {
+		return {$: 'Label', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
 var $author$project$Styles$textSmall = function (str) {
 	return A2(
 		$mdgriffith$elm_ui$Element$el,
@@ -15822,7 +15988,7 @@ var $author$project$Styles$buttonAlt = F2(
 				onPress: action
 			});
 	});
-var $author$project$Styles$paddingMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
+var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
 var $author$project$Widgets$Navbar$view = function (navbar) {
 	return A2(
@@ -15833,11 +15999,11 @@ var $author$project$Widgets$Navbar$view = function (navbar) {
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$spaceEvenly,
 				$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
-				$author$project$Styles$paddingMedium
+				$author$project$Styles$paddingMixedMedium
 			]),
 		_List_fromArray(
 			[
-				A2($author$project$Styles$buttonAlt, '~', navbar.onLogoClicked),
+				A2($author$project$Styles$buttonAlt, 'Home', navbar.onLogoClicked),
 				A2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
