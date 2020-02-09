@@ -6417,7 +6417,7 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
 var $author$project$Api$apiRoot = function () {
-	var _v0 = 1;
+	var _v0 = 2;
 	switch (_v0) {
 		case 0:
 			return 'https://songscore.herokuapp.com';
