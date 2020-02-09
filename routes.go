@@ -73,7 +73,7 @@ func (s *server) handleFeedGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
         // TODO
         var reviews []ReviewModel
-        if s.db.Find(&reviews).Error != nil {
+        if s.db.Order("CREATED_AT desc").Find(&reviews).Error != nil {
             s.respond(w, r, "Couldn't find feed", http.StatusBadRequest)
             return
         }
@@ -115,7 +115,7 @@ func (s *server) handleReviewPost() http.HandlerFunc {
             id, ok := s.getUserId(r)
             if ok {
                 if review.User.ID == id {
-                    model := s.ReviewToModel(review, true)
+                    model := s.NewReviewToModel(review)
                     s.db.Create(&model)
                     s.respond(w, r, s.ReviewToWeb(model), http.StatusCreated)
                 } else {

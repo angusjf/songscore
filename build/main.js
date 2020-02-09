@@ -6417,7 +6417,7 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
 var $author$project$Api$apiRoot = function () {
-	var _v0 = 2;
+	var _v0 = 1;
 	switch (_v0) {
 		case 0:
 			return 'https://songscore.herokuapp.com';
@@ -7303,40 +7303,32 @@ var $author$project$Widgets$NewReviewForm$albumResultToSubject = function (song)
 	return {
 		artist: $elm$core$Maybe$Just(song.artist),
 		id: $elm$core$Maybe$Nothing,
-		image: $elm$core$Maybe$Just(song.imageUrlLarge),
+		image: $elm$core$Maybe$Just(song.imageUrl),
 		kind: $elm$core$Maybe$Just($author$project$Subject$Album),
 		title: song.name
 	};
 };
 var $author$project$Widgets$NewReviewForm$minSearchLength = 2;
 var $author$project$Widgets$NewReviewForm$resultsLimit = 2;
-var $author$project$MusicDatabase$Album = F4(
-	function (name, artist, imageUrlSmall, imageUrlLarge) {
-		return {artist: artist, imageUrlLarge: imageUrlLarge, imageUrlSmall: imageUrlSmall, name: name};
+var $author$project$MusicDatabase$Album = F3(
+	function (name, artist, imageUrl) {
+		return {artist: artist, imageUrl: imageUrl, name: name};
 	});
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $elm$json$Json$Decode$map4 = _Json_map4;
 var $author$project$MusicDatabase$albumResultsDecoder = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
 		['results', 'albummatches', 'album']),
 	$elm$json$Json$Decode$list(
-		A5(
-			$elm$json$Json$Decode$map4,
+		A4(
+			$elm$json$Json$Decode$map3,
 			$author$project$MusicDatabase$Album,
 			A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
 			A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string),
-			A2(
-				$elm$json$Json$Decode$field,
-				'image',
-				A2(
-					$elm$json$Json$Decode$index,
-					2,
-					A2($elm$json$Json$Decode$field, '#text', $elm$json$Json$Decode$string))),
 			A2(
 				$elm$json$Json$Decode$field,
 				'image',
@@ -7382,7 +7374,7 @@ var $elm$url$Url$Builder$string = F2(
 			$elm$url$Url$percentEncode(key),
 			$elm$url$Url$percentEncode(value));
 	});
-var $author$project$MusicDatabase$buildUrl = F3(
+var $author$project$MusicDatabase$buildLastfmUrl = F3(
 	function (media, query, limit) {
 		return A3(
 			$elm$url$Url$Builder$crossOrigin,
@@ -7403,54 +7395,187 @@ var $author$project$MusicDatabase$searchAlbums = F3(
 		return $elm$http$Http$get(
 			{
 				expect: A2($elm$http$Http$expectJson, msg, $author$project$MusicDatabase$albumResultsDecoder),
-				url: A3($author$project$MusicDatabase$buildUrl, 'album', query, limit)
+				url: A3($author$project$MusicDatabase$buildLastfmUrl, 'album', query, limit)
 			});
 	});
-var $author$project$MusicDatabase$Song = F4(
-	function (name, artist, imageUrlSmall, imageUrlLarge) {
-		return {artist: artist, imageUrlLarge: imageUrlLarge, imageUrlSmall: imageUrlSmall, name: name};
+var $author$project$MusicDatabase$geniusToken = '6B5cvLsXuzowBsyhYFzdx4D3ZIEfkd-1VvYII2UXrKp01DZ44EPjAcZMQyUd3dSS';
+var $author$project$MusicDatabase$buildGeniusUrl = function (query) {
+	return A3(
+		$elm$url$Url$Builder$crossOrigin,
+		'https://api.genius.com',
+		_List_fromArray(
+			['search']),
+		_List_fromArray(
+			[
+				A2($elm$url$Url$Builder$string, 'q', query),
+				A2($elm$url$Url$Builder$string, 'access_token', $author$project$MusicDatabase$geniusToken)
+			]));
+};
+var $author$project$MusicDatabase$Song = F3(
+	function (name, artist, imageUrl) {
+		return {artist: artist, imageUrl: imageUrl, name: name};
 	});
 var $author$project$MusicDatabase$songResultsDecoder = A2(
 	$elm$json$Json$Decode$at,
 	_List_fromArray(
-		['results', 'trackmatches', 'track']),
+		['response', 'hits']),
 	$elm$json$Json$Decode$list(
-		A5(
-			$elm$json$Json$Decode$map4,
-			$author$project$MusicDatabase$Song,
-			A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
-			A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string),
-			A2(
-				$elm$json$Json$Decode$field,
-				'image',
+		A2(
+			$elm$json$Json$Decode$field,
+			'result',
+			A4(
+				$elm$json$Json$Decode$map3,
+				$author$project$MusicDatabase$Song,
+				A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
 				A2(
-					$elm$json$Json$Decode$index,
-					2,
-					A2($elm$json$Json$Decode$field, '#text', $elm$json$Json$Decode$string))),
-			A2(
-				$elm$json$Json$Decode$field,
-				'image',
-				A2(
-					$elm$json$Json$Decode$index,
-					3,
-					A2($elm$json$Json$Decode$field, '#text', $elm$json$Json$Decode$string))))));
-var $author$project$MusicDatabase$searchSongs = F3(
-	function (query, limit, msg) {
+					$elm$json$Json$Decode$at,
+					_List_fromArray(
+						['primary_artist', 'name']),
+					$elm$json$Json$Decode$string),
+				A2($elm$json$Json$Decode$field, 'song_art_image_url', $elm$json$Json$Decode$string)))));
+var $author$project$MusicDatabase$searchSongs = F2(
+	function (query, msg) {
 		return $elm$http$Http$get(
 			{
 				expect: A2($elm$http$Http$expectJson, msg, $author$project$MusicDatabase$songResultsDecoder),
-				url: A3($author$project$MusicDatabase$buildUrl, 'track', query, limit)
+				url: $author$project$MusicDatabase$buildGeniusUrl(query)
 			});
 	});
 var $author$project$Widgets$NewReviewForm$songResultToSubject = function (song) {
 	return {
 		artist: $elm$core$Maybe$Just(song.artist),
 		id: $elm$core$Maybe$Nothing,
-		image: $elm$core$Maybe$Just(song.imageUrlLarge),
+		image: $elm$core$Maybe$Just(song.imageUrl),
 		kind: $elm$core$Maybe$Just($author$project$Subject$Song),
 		title: song.name
 	};
 };
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
 var $author$project$Widgets$NewReviewForm$update = F2(
 	function (model, msg) {
 		switch (msg.$) {
@@ -7495,10 +7620,9 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 									return model.toOuterMsg(
 										$author$project$Widgets$NewReviewForm$GotAlbumResults(x));
 								}),
-								A3(
+								A2(
 								$author$project$MusicDatabase$searchSongs,
 								model.subjectQuery,
-								$author$project$Widgets$NewReviewForm$resultsLimit,
 								function (x) {
 									return model.toOuterMsg(
 										$author$project$Widgets$NewReviewForm$GotSongResults(x));
@@ -7511,7 +7635,9 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{albumResults: results}),
+							{
+								albumResults: A2($elm$core$List$take, $author$project$Widgets$NewReviewForm$resultsLimit, results)
+							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var results = res.a;
@@ -7519,15 +7645,18 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 				}
 			case 'GotSongResults':
 				var res = msg.a;
-				if (res.$ === 'Ok') {
-					var results = res.a;
+				var _v2 = A2($elm$core$Debug$log, '^^^', res);
+				if (_v2.$ === 'Ok') {
+					var results = _v2.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{songResults: results}),
+							{
+								songResults: A2($elm$core$List$take, $author$project$Widgets$NewReviewForm$resultsLimit, results)
+							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var results = res.a;
+					var results = _v2.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnAlbumResultClicked':
@@ -7540,7 +7669,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 							songResults: _List_Nil,
 							subject: $elm$core$Maybe$Just(
 								$author$project$Widgets$NewReviewForm$albumResultToSubject(album)),
-							subjectQuery: album.name + (' ' + album.artist)
+							subjectQuery: album.name + (' - ' + album.artist)
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
@@ -7553,7 +7682,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 							songResults: _List_Nil,
 							subject: $elm$core$Maybe$Just(
 								$author$project$Widgets$NewReviewForm$songResultToSubject(song)),
-							subjectQuery: song.name + (' ' + song.artist)
+							subjectQuery: song.name + (' - ' + song.artist)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -13812,6 +13941,26 @@ var $mdgriffith$elm_ui$Element$padding = function (x) {
 			x,
 			x));
 };
+var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
+	function (a, b, c) {
+		return {$: 'SpacingStyle', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$spacing = $mdgriffith$elm_ui$Internal$Flag$flag(3);
+var $mdgriffith$elm_ui$Internal$Model$spacingName = F2(
+	function (x, y) {
+		return 'spacing-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y)));
+	});
+var $mdgriffith$elm_ui$Element$spacing = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$spacing,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$SpacingStyle,
+			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
+			x,
+			x));
+};
+var $author$project$Styles$spacingMedium = $mdgriffith$elm_ui$Element$spacing(16);
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
@@ -13903,13 +14052,6 @@ var $mdgriffith$elm_ui$Element$link = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $author$project$Styles$mediumSquare = _List_fromArray(
-	[
-		$mdgriffith$elm_ui$Element$width(
-		A2($mdgriffith$elm_ui$Element$maximum, 200, $mdgriffith$elm_ui$Element$fill)),
-		$mdgriffith$elm_ui$Element$height(
-		A2($mdgriffith$elm_ui$Element$maximum, 200, $mdgriffith$elm_ui$Element$fill))
-	]);
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -13930,6 +14072,17 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $author$project$Styles$squareMedium = _List_fromArray(
+	[
+		$mdgriffith$elm_ui$Element$width(
+		$mdgriffith$elm_ui$Element$px(200)),
+		$mdgriffith$elm_ui$Element$height(
+		$mdgriffith$elm_ui$Element$px(200))
+	]);
 var $author$project$Review$greyStar = A2(
 	$mdgriffith$elm_ui$Element$image,
 	_List_Nil,
@@ -13970,7 +14123,8 @@ var $author$project$Review$viewNStars = function (n) {
 var $author$project$Review$view = function (review) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
-		_List_Nil,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium]),
 		_List_fromArray(
 			[
 				A2(
@@ -13984,7 +14138,7 @@ var $author$project$Review$view = function (review) {
 							[
 								A2(
 								$mdgriffith$elm_ui$Element$image,
-								$author$project$Styles$mediumSquare,
+								$author$project$Styles$squareMedium,
 								{
 									description: 'profile picture',
 									src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
@@ -14000,7 +14154,7 @@ var $author$project$Review$view = function (review) {
 					[
 						A2(
 						$mdgriffith$elm_ui$Element$image,
-						$author$project$Styles$mediumSquare,
+						$author$project$Styles$squareMedium,
 						{
 							description: 'subject picture',
 							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
@@ -14254,25 +14408,6 @@ var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
 };
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
-var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
-	function (a, b, c) {
-		return {$: 'SpacingStyle', a: a, b: b, c: c};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$spacing = $mdgriffith$elm_ui$Internal$Flag$flag(3);
-var $mdgriffith$elm_ui$Internal$Model$spacingName = F2(
-	function (x, y) {
-		return 'spacing-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y)));
-	});
-var $mdgriffith$elm_ui$Element$spacing = function (x) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$spacing,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$SpacingStyle,
-			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
-			x,
-			x));
-};
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
 var $mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle = _List_fromArray(
 	[
@@ -15256,8 +15391,8 @@ var $author$project$Widgets$NewReviewForm$viewAlbumResults = F2(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$image,
-							_List_Nil,
-							{description: '', src: album.imageUrlSmall}),
+							$author$project$Styles$squareMedium,
+							{description: '', src: album.imageUrl}),
 							$mdgriffith$elm_ui$Element$text(album.name)
 						])),
 				onPress: $elm$core$Maybe$Just(
@@ -15281,8 +15416,8 @@ var $author$project$Widgets$NewReviewForm$viewSongResults = F2(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$image,
-							_List_Nil,
-							{description: '', src: song.imageUrlSmall}),
+							$author$project$Styles$squareMedium,
+							{description: '', src: song.imageUrl}),
 							$mdgriffith$elm_ui$Element$text(song.name)
 						])),
 				onPress: $elm$core$Maybe$Just(
@@ -15372,7 +15507,8 @@ var $author$project$Pages$Feed$view = function (model) {
 	return {
 		body: A2(
 			$mdgriffith$elm_ui$Element$column,
-			_List_Nil,
+			_List_fromArray(
+				[$author$project$Styles$spacingMedium]),
 			_List_fromArray(
 				[
 					$author$project$Widgets$NewReviewForm$view(model.nrf),
@@ -15382,7 +15518,8 @@ var $author$project$Pages$Feed$view = function (model) {
 						var reviews = _v0.a;
 						return A2(
 							$mdgriffith$elm_ui$Element$column,
-							_List_Nil,
+							_List_fromArray(
+								[$author$project$Styles$spacingMedium]),
 							A2($elm$core$List$map, $author$project$Review$view, reviews));
 					} else {
 						return $mdgriffith$elm_ui$Element$text('loading...');
@@ -15459,7 +15596,6 @@ var $author$project$Styles$labelSmall = function (str) {
 		_List_Nil,
 		$author$project$Styles$textSmall(str));
 };
-var $author$project$Styles$spacingMedium = $mdgriffith$elm_ui$Element$spacing(16);
 var $mdgriffith$elm_ui$Element$Input$username = $mdgriffith$elm_ui$Element$Input$textHelper(
 	{
 		autofill: $elm$core$Maybe$Just('username'),

@@ -34,24 +34,32 @@ func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
     }
 }
 
-func (s *server) ReviewToModel(web ReviewWeb, create bool) ReviewModel {
+func (s *server) NewReviewToModel(web ReviewWeb) ReviewModel {
     model := ReviewModel{
         Text: web.Text,
         Stars: web.Stars,
         UserId: web.User.ID,
     }
 
-    if !create {
-        model.ID = web.ID
-        model.SubjectId = web.Subject.ID
-    } else {
-        subject := s.SubjectToModel(web.Subject)
-        err := s.db.Create(&subject).Error
-        if err != nil {
-            panic(err)
-        }
-        model.SubjectId = subject.ID
+    subject := s.NewSubjectToModel(web.Subject)
+    err := s.db.Create(&subject).Error
+    if err != nil {
+        panic(err)
     }
+    model.SubjectId = subject.ID
+
+    return model
+}
+
+func (s *server) ReviewToModel(web ReviewWeb) ReviewModel {
+    model := ReviewModel{
+        Text: web.Text,
+        Stars: web.Stars,
+        UserId: web.User.ID,
+    }
+
+    model.ID = web.ID
+    model.SubjectId = web.Subject.ID
 
     return model
 }
@@ -68,6 +76,23 @@ func (s *server) SubjectToModel(web SubjectWeb) SubjectModel {
         Title: web.Title,
         Artist: web.Artist,
         Image: web.Image,
+        Kind: kind,
+    }
+}
+
+func (s *server) NewSubjectToModel(web SubjectWeb) SubjectModel {
+    var kind SubjectKind
+    if web.Kind == "Album" {
+        kind = Album
+    } else {
+        kind = Song
+    }
+    internalImage, _ := imageUrlToBase64(web.Image)
+	return SubjectModel {
+        ID: web.ID,
+        Title: web.Title,
+        Artist: web.Artist,
+        Image: internalImage,
         Kind: kind,
     }
 }
