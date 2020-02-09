@@ -99,7 +99,7 @@ func (s *server) NewSubjectToModel(web SubjectWeb) SubjectModel {
 
 type UserModel struct {
 	ID           int
-	Username     string
+    Username     string `gorm:"unique;not null"`
 	Image        string
     PasswordHash string
     CreatedAt    time.Time

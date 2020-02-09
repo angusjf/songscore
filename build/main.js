@@ -16022,55 +16022,59 @@ var $author$project$Widgets$Navbar$view = F2(
 					'Home',
 					$elm$core$Maybe$Just(
 						toOuter($author$project$Widgets$Navbar$OnLogoClicked))),
+					A2(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
 					function () {
-					if (maybeUser.$ === 'Just') {
-						var user = maybeUser.a;
-						return A2(
-							$mdgriffith$elm_ui$Element$Input$button,
-							_List_fromArray(
+						if (maybeUser.$ === 'Just') {
+							var user = maybeUser.a;
+							return _List_fromArray(
 								[
-									$mdgriffith$elm_ui$Element$alignRight,
-									$author$project$Styles$spacingMedium,
-									$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
-									$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
-									$mdgriffith$elm_ui$Element$Font$bold,
-									$author$project$Styles$paddingSmall,
-									$author$project$Styles$roundedSmall
-								]),
-							{
-								label: function () {
-									var _v1 = user.image;
-									if (_v1.$ === 'Just') {
-										var image = _v1.a;
-										return A2(
-											$mdgriffith$elm_ui$Element$row,
-											_List_fromArray(
-												[$author$project$Styles$spacingSmall]),
-											_List_fromArray(
-												[
-													A2(
-													$mdgriffith$elm_ui$Element$image,
+									A2(
+									$mdgriffith$elm_ui$Element$Input$button,
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$alignRight,
+											$author$project$Styles$spacingMedium,
+											$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
+											$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
+											$mdgriffith$elm_ui$Element$Font$bold,
+											$author$project$Styles$paddingSmall,
+											$author$project$Styles$roundedSmall
+										]),
+									{
+										label: function () {
+											var _v1 = user.image;
+											if (_v1.$ === 'Just') {
+												var image = _v1.a;
+												return A2(
+													$mdgriffith$elm_ui$Element$row,
+													_List_fromArray(
+														[$author$project$Styles$spacingSmall]),
 													_List_fromArray(
 														[
-															$mdgriffith$elm_ui$Element$width(
-															$mdgriffith$elm_ui$Element$px(32))
-														]),
-													{description: 'profile picture', src: image}),
-													$author$project$Styles$text(user.username)
-												]));
-									} else {
-										return $author$project$Styles$text(user.username);
-									}
-								}(),
-								onPress: $elm$core$Maybe$Just(
-									toOuter($author$project$Widgets$Navbar$OnUserClicked))
-							});
-					} else {
-						return A2(
-							$mdgriffith$elm_ui$Element$row,
-							_List_fromArray(
-								[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
-							_List_fromArray(
+															A2(
+															$mdgriffith$elm_ui$Element$image,
+															_List_fromArray(
+																[
+																	$mdgriffith$elm_ui$Element$width(
+																	$mdgriffith$elm_ui$Element$px(32))
+																]),
+															{description: 'profile picture', src: image}),
+															$author$project$Styles$text(user.username)
+														]));
+											} else {
+												return $author$project$Styles$text(user.username);
+											}
+										}(),
+										onPress: $elm$core$Maybe$Just(
+											toOuter($author$project$Widgets$Navbar$OnUserClicked))
+									}),
+									A2($author$project$Styles$buttonAlt, 'Log out', $elm$core$Maybe$Nothing)
+								]);
+						} else {
+							return _List_fromArray(
 								[
 									A2(
 									$author$project$Styles$buttonAlt,
@@ -16082,9 +16086,9 @@ var $author$project$Widgets$Navbar$view = F2(
 									'Sign Up',
 									$elm$core$Maybe$Just(
 										toOuter($author$project$Widgets$Navbar$OnSignupClicked)))
-								]));
-					}
-				}()
+								]);
+						}
+					}())
 				]));
 	});
 var $author$project$Main$view = function (page) {
