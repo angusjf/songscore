@@ -6417,7 +6417,7 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
 var $author$project$Api$apiRoot = function () {
-	var _v0 = 2;
+	var _v0 = 1;
 	switch (_v0) {
 		case 0:
 			return 'https://songscore.herokuapp.com';
@@ -8080,6 +8080,28 @@ var $author$project$Pages$User$update = F2(
 			}
 		}
 	});
+var $author$project$Widgets$Navbar$update = F2(
+	function (msg, session) {
+		switch (msg.$) {
+			case 'OnLogoClicked':
+				return A2($author$project$Route$goTo, session.key, $author$project$Route$Feed);
+			case 'OnSignupClicked':
+				return A2($author$project$Route$goTo, session.key, $author$project$Route$Register);
+			case 'OnLoginClicked':
+				return A2($author$project$Route$goTo, session.key, $author$project$Route$Login);
+			default:
+				var _v1 = session.userAndToken;
+				if (_v1.$ === 'Just') {
+					var uAndT = _v1.a;
+					return A2(
+						$author$project$Route$goTo,
+						session.key,
+						$author$project$Route$User(uAndT.user.username));
+				} else {
+					return $elm$core$Platform$Cmd$none;
+				}
+		}
+	});
 var $author$project$Main$update = F2(
 	function (message, page) {
 		switch (message.$) {
@@ -8137,27 +8159,6 @@ var $author$project$Main$update = F2(
 				}
 			case 'None':
 				return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
-			case 'NavbarLogoClicked':
-				return _Utils_Tuple2(
-					page,
-					A2(
-						$author$project$Route$goTo,
-						$author$project$Main$getSession(page).key,
-						$author$project$Route$Feed));
-			case 'NavbarSignupClicked':
-				return _Utils_Tuple2(
-					page,
-					A2(
-						$author$project$Route$goTo,
-						$author$project$Main$getSession(page).key,
-						$author$project$Route$Register));
-			case 'NavbarLoginClicked':
-				return _Utils_Tuple2(
-					page,
-					A2(
-						$author$project$Route$goTo,
-						$author$project$Main$getSession(page).key,
-						$author$project$Route$Login));
 			case 'UserMsg':
 				var msg = message.a;
 				if (page.$ === 'User') {
@@ -8169,7 +8170,7 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'ReviewMsg':
 				var msg = message.a;
 				if (page.$ === 'Review') {
 					var model = page.a;
@@ -8180,11 +8181,19 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
 				}
+			default:
+				var msg = message.a;
+				return _Utils_Tuple2(
+					page,
+					A2(
+						$author$project$Widgets$Navbar$update,
+						msg,
+						$author$project$Main$getSession(page)));
 		}
 	});
-var $author$project$Main$NavbarLoginClicked = {$: 'NavbarLoginClicked'};
-var $author$project$Main$NavbarLogoClicked = {$: 'NavbarLogoClicked'};
-var $author$project$Main$NavbarSignupClicked = {$: 'NavbarSignupClicked'};
+var $author$project$Main$NavbarMsg = function (a) {
+	return {$: 'NavbarMsg', a: a};
+};
 var $author$project$Main$None = {$: 'None'};
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
@@ -15969,6 +15978,10 @@ var $author$project$Pages$User$view = function (model) {
 		}()
 	};
 };
+var $author$project$Widgets$Navbar$OnLoginClicked = {$: 'OnLoginClicked'};
+var $author$project$Widgets$Navbar$OnLogoClicked = {$: 'OnLogoClicked'};
+var $author$project$Widgets$Navbar$OnSignupClicked = {$: 'OnSignupClicked'};
+var $author$project$Widgets$Navbar$OnUserClicked = {$: 'OnUserClicked'};
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $author$project$Styles$buttonAlt = F2(
@@ -15990,40 +16003,92 @@ var $author$project$Styles$buttonAlt = F2(
 	});
 var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
-var $author$project$Widgets$Navbar$view = function (navbar) {
-	return A2(
-		$mdgriffith$elm_ui$Element$row,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$spaceEvenly,
-				$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
-				$author$project$Styles$paddingMixedMedium
-			]),
-		_List_fromArray(
-			[
-				A2($author$project$Styles$buttonAlt, 'Home', navbar.onLogoClicked),
-				A2(
-				$mdgriffith$elm_ui$Element$row,
-				_List_fromArray(
-					[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
-				_List_fromArray(
-					[
-						A2($author$project$Styles$buttonAlt, 'Log in', navbar.onLoginClicked),
-						A2($author$project$Styles$buttonAlt, 'Sign Up', navbar.onSignupClicked)
-					]))
-			]));
-};
+var $author$project$Widgets$Navbar$view = F2(
+	function (toOuter, maybeUser) {
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$spaceEvenly,
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
+					$author$project$Styles$paddingMixedMedium
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Styles$buttonAlt,
+					'Home',
+					$elm$core$Maybe$Just(
+						toOuter($author$project$Widgets$Navbar$OnLogoClicked))),
+					function () {
+					if (maybeUser.$ === 'Just') {
+						var user = maybeUser.a;
+						return A2(
+							$mdgriffith$elm_ui$Element$Input$button,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$alignRight,
+									$author$project$Styles$spacingMedium,
+									$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
+									$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
+									$mdgriffith$elm_ui$Element$Font$bold,
+									$author$project$Styles$paddingSmall,
+									$author$project$Styles$roundedSmall
+								]),
+							{
+								label: function () {
+									var _v1 = user.image;
+									if (_v1.$ === 'Just') {
+										var image = _v1.a;
+										return A2(
+											$mdgriffith$elm_ui$Element$row,
+											_List_fromArray(
+												[$author$project$Styles$spacingSmall]),
+											_List_fromArray(
+												[
+													A2(
+													$mdgriffith$elm_ui$Element$image,
+													_List_fromArray(
+														[
+															$mdgriffith$elm_ui$Element$width(
+															$mdgriffith$elm_ui$Element$px(32))
+														]),
+													{description: 'profile picture', src: image}),
+													$author$project$Styles$text(user.username)
+												]));
+									} else {
+										return $author$project$Styles$text(user.username);
+									}
+								}(),
+								onPress: $elm$core$Maybe$Just(
+									toOuter($author$project$Widgets$Navbar$OnUserClicked))
+							});
+					} else {
+						return A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_fromArray(
+								[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
+							_List_fromArray(
+								[
+									A2(
+									$author$project$Styles$buttonAlt,
+									'Log in',
+									$elm$core$Maybe$Just(
+										toOuter($author$project$Widgets$Navbar$OnLoginClicked))),
+									A2(
+									$author$project$Styles$buttonAlt,
+									'Sign Up',
+									$elm$core$Maybe$Just(
+										toOuter($author$project$Widgets$Navbar$OnSignupClicked)))
+								]));
+					}
+				}()
+				]));
+	});
 var $author$project$Main$view = function (page) {
-	var navbar = {
-		currentUser: $elm$core$Maybe$Nothing,
-		loggedIn: false,
-		onLoginClicked: $elm$core$Maybe$Just($author$project$Main$NavbarLoginClicked),
-		onLogoClicked: $elm$core$Maybe$Just($author$project$Main$NavbarLogoClicked),
-		onSignupClicked: $elm$core$Maybe$Just($author$project$Main$NavbarSignupClicked),
-		onUserClicked: $elm$core$Maybe$Nothing
-	};
+	var navbar = _Utils_Tuple0;
 	var _v0 = function () {
 		switch (page.$) {
 			case 'Register':
@@ -16087,7 +16152,15 @@ var $author$project$Main$view = function (page) {
 						]),
 					_List_fromArray(
 						[
-							$author$project$Widgets$Navbar$view(navbar),
+							A2(
+							$author$project$Widgets$Navbar$view,
+							$author$project$Main$NavbarMsg,
+							A2(
+								$elm$core$Maybe$map,
+								function ($) {
+									return $.user;
+								},
+								$author$project$Main$getSession(page).userAndToken)),
 							A2(
 							$mdgriffith$elm_ui$Element$el,
 							_List_fromArray(
