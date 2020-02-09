@@ -57,12 +57,18 @@ func (s *server) ReviewToModel(web ReviewWeb, create bool) ReviewModel {
 }
 
 func (s *server) SubjectToModel(web SubjectWeb) SubjectModel {
+    var kind SubjectKind
+    if web.Kind == "Album" {
+        kind = Album
+    } else {
+        kind = Song
+    }
 	return SubjectModel {
         ID: web.ID,
         Title: web.Title,
         Artist: web.Artist,
         Image: web.Image,
-        Kind: web.Kind,
+        Kind: kind,
     }
 }
 
@@ -96,12 +102,18 @@ type SubjectModel struct {
 }
 
 func (s *server) SubjectToWeb(model SubjectModel) SubjectWeb {
+    var kind string
+    if model.Kind == Album {
+        kind = "Album"
+    } else {
+        kind = "Song"
+    }
     return SubjectWeb{
         ID: model.ID,
         Title: model.Title,
         Artist: model.Artist,
         Image: model.Image,
-        Kind: model.Kind,
+        Kind: kind,
     }
 }
 

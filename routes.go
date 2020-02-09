@@ -46,17 +46,17 @@ type ReviewWeb struct {
 }
 
 type SubjectWeb struct {
-	ID     int         `json:"id"`
-	Title  string      `json:"title"`
-	Artist string      `json:"artist,omitempty"`
-	Image  string      `json:"image,omitempty"`
-	Kind   SubjectKind `json:"kind,omitempty"`
+	ID     int    `json:"id"`
+	Title  string `json:"title"`
+	Artist string `json:"artist,omitempty"`
+	Image  string `json:"image,omitempty"`
+	Kind   string `json:"kind,omitempty"`
 }
 
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
     api.Use(s.withAuth)
-    // api.Use(s.log)
+    api.Use(s.log)
 	api.HandleFunc("/feeds/{username}", s.handleFeedGet()).Methods("GET")
 	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
@@ -110,6 +110,7 @@ func (s *server) handleReviewPost() http.HandlerFunc {
         err := s.decode(w, r, &review)
         if err != nil {
             s.respond(w, r, "Couldn't decode review", http.StatusBadRequest)
+            fmt.Printf("%v", err)
         } else {
             id, ok := s.getUserId(r)
             if ok {
@@ -174,8 +175,14 @@ func (s *server) getTokenString(model UserModel) (string, error) {
 }
 
 func (s *server) handleUsersPost() http.HandlerFunc {
+    type NewUserWeb struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+        Image string `json:"image"`
+    }
+
     return func (w http.ResponseWriter, r *http.Request) {
-        var newUser CredentialsWeb
+        var newUser NewUserWeb
         err := s.decode(w, r, &newUser)
         if err != nil {
             s.respond(w, r, "Couldn't decode user", http.StatusBadRequest)
@@ -187,6 +194,7 @@ func (s *server) handleUsersPost() http.HandlerFunc {
 
         user := UserModel{
             Username: newUser.Username,
+            Image: newUser.Image,
             PasswordHash: string(hashed),
         }
 
@@ -293,7 +301,7 @@ func (s *server) withAuth(next http.Handler) http.Handler {
 
 func (s *server) log(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        fmt.Printf(" -> %s", r.URL)
+        fmt.Printf(" -> %s\n", r.URL)
         next.ServeHTTP(w, r)
 	})
 }
