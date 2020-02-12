@@ -52,6 +52,7 @@ func run() error {
     s.db.AutoMigrate(&ReviewModel{})
     s.db.AutoMigrate(&UserModel{})
     s.db.AutoMigrate(&SubjectModel{})
+    s.db.AutoMigrate(&CommentModel{})
 
 	s.router = mux.NewRouter()
     s.routes()

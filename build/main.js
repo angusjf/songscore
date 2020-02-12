@@ -80,271 +80,6 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
 
 
-// EQUALITY
-
-function _Utils_eq(x, y)
-{
-	for (
-		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
-		isEqual && (pair = stack.pop());
-		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
-		)
-	{}
-
-	return isEqual;
-}
-
-function _Utils_eqHelp(x, y, depth, stack)
-{
-	if (x === y)
-	{
-		return true;
-	}
-
-	if (typeof x !== 'object' || x === null || y === null)
-	{
-		typeof x === 'function' && _Debug_crash(5);
-		return false;
-	}
-
-	if (depth > 100)
-	{
-		stack.push(_Utils_Tuple2(x,y));
-		return true;
-	}
-
-	/**/
-	if (x.$ === 'Set_elm_builtin')
-	{
-		x = $elm$core$Set$toList(x);
-		y = $elm$core$Set$toList(y);
-	}
-	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	/**_UNUSED/
-	if (x.$ < 0)
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	for (var key in x)
-	{
-		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-var _Utils_equal = F2(_Utils_eq);
-var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
-
-
-
-// COMPARISONS
-
-// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
-// the particular integer values assigned to LT, EQ, and GT.
-
-function _Utils_cmp(x, y, ord)
-{
-	if (typeof x !== 'object')
-	{
-		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
-	}
-
-	/**/
-	if (x instanceof String)
-	{
-		var a = x.valueOf();
-		var b = y.valueOf();
-		return a === b ? 0 : a < b ? -1 : 1;
-	}
-	//*/
-
-	/**_UNUSED/
-	if (typeof x.$ === 'undefined')
-	//*/
-	/**/
-	if (x.$[0] === '#')
-	//*/
-	{
-		return (ord = _Utils_cmp(x.a, y.a))
-			? ord
-			: (ord = _Utils_cmp(x.b, y.b))
-				? ord
-				: _Utils_cmp(x.c, y.c);
-	}
-
-	// traverse conses until end of a list or a mismatch
-	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
-	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
-}
-
-var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
-var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
-var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
-var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
-
-var _Utils_compare = F2(function(x, y)
-{
-	var n = _Utils_cmp(x, y);
-	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
-});
-
-
-// COMMON VALUES
-
-var _Utils_Tuple0_UNUSED = 0;
-var _Utils_Tuple0 = { $: '#0' };
-
-function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
-
-function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
-
-function _Utils_chr_UNUSED(c) { return c; }
-function _Utils_chr(c) { return new String(c); }
-
-
-// RECORDS
-
-function _Utils_update(oldRecord, updatedFields)
-{
-	var newRecord = {};
-
-	for (var key in oldRecord)
-	{
-		newRecord[key] = oldRecord[key];
-	}
-
-	for (var key in updatedFields)
-	{
-		newRecord[key] = updatedFields[key];
-	}
-
-	return newRecord;
-}
-
-
-// APPEND
-
-var _Utils_append = F2(_Utils_ap);
-
-function _Utils_ap(xs, ys)
-{
-	// append Strings
-	if (typeof xs === 'string')
-	{
-		return xs + ys;
-	}
-
-	// append Lists
-	if (!xs.b)
-	{
-		return ys;
-	}
-	var root = _List_Cons(xs.a, ys);
-	xs = xs.b
-	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		curr = curr.b = _List_Cons(xs.a, ys);
-	}
-	return root;
-}
-
-
-
-var _List_Nil_UNUSED = { $: 0 };
-var _List_Nil = { $: '[]' };
-
-function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-	}));
-});
-
-
-
 var _JsArray_empty = [];
 
 function _JsArray_singleton(value)
@@ -790,6 +525,271 @@ function _Debug_regionToString(region)
 	}
 	return 'on lines ' + region.start.line + ' through ' + region.end.line;
 }
+
+
+
+// EQUALITY
+
+function _Utils_eq(x, y)
+{
+	for (
+		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
+		isEqual && (pair = stack.pop());
+		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
+		)
+	{}
+
+	return isEqual;
+}
+
+function _Utils_eqHelp(x, y, depth, stack)
+{
+	if (x === y)
+	{
+		return true;
+	}
+
+	if (typeof x !== 'object' || x === null || y === null)
+	{
+		typeof x === 'function' && _Debug_crash(5);
+		return false;
+	}
+
+	if (depth > 100)
+	{
+		stack.push(_Utils_Tuple2(x,y));
+		return true;
+	}
+
+	/**/
+	if (x.$ === 'Set_elm_builtin')
+	{
+		x = $elm$core$Set$toList(x);
+		y = $elm$core$Set$toList(y);
+	}
+	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	/**_UNUSED/
+	if (x.$ < 0)
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	for (var key in x)
+	{
+		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+var _Utils_equal = F2(_Utils_eq);
+var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
+
+
+
+// COMPARISONS
+
+// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
+// the particular integer values assigned to LT, EQ, and GT.
+
+function _Utils_cmp(x, y, ord)
+{
+	if (typeof x !== 'object')
+	{
+		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
+	}
+
+	/**/
+	if (x instanceof String)
+	{
+		var a = x.valueOf();
+		var b = y.valueOf();
+		return a === b ? 0 : a < b ? -1 : 1;
+	}
+	//*/
+
+	/**_UNUSED/
+	if (typeof x.$ === 'undefined')
+	//*/
+	/**/
+	if (x.$[0] === '#')
+	//*/
+	{
+		return (ord = _Utils_cmp(x.a, y.a))
+			? ord
+			: (ord = _Utils_cmp(x.b, y.b))
+				? ord
+				: _Utils_cmp(x.c, y.c);
+	}
+
+	// traverse conses until end of a list or a mismatch
+	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
+	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
+}
+
+var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
+var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
+var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
+var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
+
+var _Utils_compare = F2(function(x, y)
+{
+	var n = _Utils_cmp(x, y);
+	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
+});
+
+
+// COMMON VALUES
+
+var _Utils_Tuple0_UNUSED = 0;
+var _Utils_Tuple0 = { $: '#0' };
+
+function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
+
+function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+
+function _Utils_chr_UNUSED(c) { return c; }
+function _Utils_chr(c) { return new String(c); }
+
+
+// RECORDS
+
+function _Utils_update(oldRecord, updatedFields)
+{
+	var newRecord = {};
+
+	for (var key in oldRecord)
+	{
+		newRecord[key] = oldRecord[key];
+	}
+
+	for (var key in updatedFields)
+	{
+		newRecord[key] = updatedFields[key];
+	}
+
+	return newRecord;
+}
+
+
+// APPEND
+
+var _Utils_append = F2(_Utils_ap);
+
+function _Utils_ap(xs, ys)
+{
+	// append Strings
+	if (typeof xs === 'string')
+	{
+		return xs + ys;
+	}
+
+	// append Lists
+	if (!xs.b)
+	{
+		return ys;
+	}
+	var root = _List_Cons(xs.a, ys);
+	xs = xs.b
+	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		curr = curr.b = _List_Cons(xs.a, ys);
+	}
+	return root;
+}
+
+
+
+var _List_Nil_UNUSED = { $: 0 };
+var _List_Nil = { $: '[]' };
+
+function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+	}));
+});
 
 
 
@@ -4762,16 +4762,41 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
 var $author$project$Main$LinkClicked = function (a) {
 	return {$: 'LinkClicked', a: a};
 };
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
-var $elm$core$Basics$EQ = {$: 'EQ'};
-var $elm$core$Basics$GT = {$: 'GT'};
-var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$List$cons = _List_cons;
+var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
+var $elm$core$Array$foldr = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (node.$ === 'SubTree') {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldr,
+			helper,
+			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
+			tree);
+	});
+var $elm$core$Array$toList = function (array) {
+	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+};
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
@@ -4824,30 +4849,9 @@ var $elm$core$Set$toList = function (_v0) {
 	var dict = _v0.a;
 	return $elm$core$Dict$keys(dict);
 };
-var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
-var $elm$core$Array$foldr = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (node.$ === 'SubTree') {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldr,
-			helper,
-			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
-			tree);
-	});
-var $elm$core$Array$toList = function (array) {
-	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
-};
+var $elm$core$Basics$EQ = {$: 'EQ'};
+var $elm$core$Basics$GT = {$: 'GT'};
+var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -4871,10 +4875,6 @@ var $elm$json$Json$Decode$OneOf = function (a) {
 };
 var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -5243,6 +5243,7 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
+var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5557,12 +5558,12 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var $author$project$Session$fromNavKey = function (key) {
-	return {key: key, userAndToken: $elm$core$Maybe$Nothing};
-};
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$Main$NotFound = {$: 'NotFound'};
+var $author$project$Session$create = F2(
+	function (uAndT, key) {
+		return {key: key, userAndToken: uAndT};
+	});
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -6387,28 +6388,6 @@ var $author$project$Route$routeParser = $elm$url$Url$Parser$oneOf(
 				$elm$url$Url$Parser$string))
 		]));
 var $author$project$Route$fromUrl = $elm$url$Url$Parser$parse($author$project$Route$routeParser);
-var $author$project$Main$getSession = function (page) {
-	switch (page.$) {
-		case 'NotFound':
-			var session = page.a;
-			return session;
-		case 'Register':
-			var model = page.a;
-			return model.session;
-		case 'Login':
-			var model = page.a;
-			return model.session;
-		case 'Feed':
-			var model = page.a;
-			return model.session;
-		case 'User':
-			var model = page.a;
-			return model.session;
-		default:
-			var model = page.a;
-			return model.session;
-	}
-};
 var $author$project$Pages$Feed$GotFeed = function (a) {
 	return {$: 'GotFeed', a: a};
 };
@@ -6416,28 +6395,21 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 	return {$: 'NRFMsg', a: a};
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
-var $author$project$Api$apiRoot = function () {
-	var _v0 = 2;
-	switch (_v0) {
-		case 0:
-			return 'https://songscore.herokuapp.com';
-		case 1:
-			return 'http://localhost:8081';
-		default:
-			return '';
-	}
-}();
-var $author$project$Review$Review = F5(
-	function (id, text, stars, user, subject) {
-		return {id: id, stars: stars, subject: subject, text: text, user: user};
+var $author$project$Api$apiRoot = '';
+var $author$project$Review$Review = F8(
+	function (id, text, stars, user, subject, comments, likes, dislikes) {
+		return {comments: comments, dislikes: dislikes, id: id, likes: likes, stars: stars, subject: subject, text: text, user: user};
 	});
-var $author$project$Subject$Subject = F5(
-	function (id, image, kind, title, artist) {
-		return {artist: artist, id: id, image: image, kind: kind, title: title};
+var $author$project$Review$Comment = F3(
+	function (id, user, text) {
+		return {id: id, text: text, user: user};
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$User$User = F3(
+	function (id, image, username) {
+		return {id: id, image: image, username: username};
+	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm$json$Json$Decode$map3 = _Json_map3;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -6448,6 +6420,25 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 			]));
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$User$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$User$User,
+	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
+var $author$project$Review$decodeComment = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$Review$Comment,
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
+	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
+	A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string));
+var $author$project$Subject$Subject = F5(
+	function (id, image, kind, title, artist) {
+		return {artist: artist, id: id, image: image, kind: kind, title: title};
+	});
+var $elm$json$Json$Decode$map5 = _Json_map5;
 var $author$project$Subject$Album = {$: 'Album'};
 var $author$project$Subject$Song = {$: 'Song'};
 var $author$project$Subject$toSubjectKind = function (kind) {
@@ -6472,20 +6463,10 @@ var $author$project$Subject$decoder = A6(
 	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string)));
-var $author$project$User$User = F3(
-	function (id, image, username) {
-		return {id: id, image: image, username: username};
-	});
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $author$project$User$decoder = A4(
-	$elm$json$Json$Decode$map3,
-	$author$project$User$User,
-	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
-var $author$project$Review$decoder = A6(
-	$elm$json$Json$Decode$map5,
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$map8 = _Json_map8;
+var $author$project$Review$decoder = A9(
+	$elm$json$Json$Decode$map8,
 	$author$project$Review$Review,
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
@@ -6493,7 +6474,19 @@ var $author$project$Review$decoder = A6(
 		A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string)),
 	A2($elm$json$Json$Decode$field, 'stars', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
-	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$decoder));
+	A2($elm$json$Json$Decode$field, 'subject', $author$project$Subject$decoder),
+	A2(
+		$elm$json$Json$Decode$field,
+		'comments',
+		$elm$json$Json$Decode$list($author$project$Review$decodeComment)),
+	A2(
+		$elm$json$Json$Decode$field,
+		'likes',
+		$elm$json$Json$Decode$list($author$project$User$decoder)),
+	A2(
+		$elm$json$Json$Decode$field,
+		'dislikes',
+		$elm$json$Json$Decode$list($author$project$User$decoder)));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6796,7 +6789,6 @@ var $simonh1000$elm_jwt$Jwt$Http$get = F2(
 			token,
 			{body: $elm$http$Http$emptyBody, expect: expect, url: url});
 	});
-var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Api$getFeed = F2(
 	function (userAndToken, msg) {
 		return A2(
@@ -6858,33 +6850,51 @@ var $author$project$Widgets$NewReviewForm$init = F2(
 	function (toOuterMsg, onPress) {
 		return {albumResults: _List_Nil, onPress: onPress, songResults: _List_Nil, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: '', text: $elm$core$Maybe$Nothing, toOuterMsg: toOuterMsg};
 	});
-var $author$project$Pages$Feed$init = function (session) {
-	var model = {
-		nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed),
-		reviews: $elm$core$Maybe$Nothing,
-		session: session
-	};
-	var _v0 = model.session.userAndToken;
-	if (_v0.$ === 'Just') {
-		var uAndT = _v0.a;
-		return _Utils_Tuple2(
-			model,
-			A2($author$project$Api$getFeed, uAndT, $author$project$Pages$Feed$GotFeed));
-	} else {
-		return _Utils_Tuple2(
-			model,
-			A2($author$project$Route$goTo, model.session.key, $author$project$Route$Login));
-	}
-};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Widgets$ReviewList$setReviews = function (reviews) {
+	return A2(
+		$elm$core$List$map,
+		function (r) {
+			return _Utils_Tuple2(r, '');
+		},
+		reviews);
+};
+var $author$project$Widgets$ReviewList$init = F2(
+	function (session, reviews) {
+		return _Utils_Tuple3(
+			$author$project$Widgets$ReviewList$setReviews(reviews),
+			session,
+			$elm$core$Platform$Cmd$none);
+	});
+var $author$project$Pages$Feed$init = function (session) {
+	var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
+	var rl = _v0.a;
+	var model = {
+		feed: rl,
+		nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed)
+	};
+	var _v1 = session.userAndToken;
+	if (_v1.$ === 'Just') {
+		var uAndT = _v1.a;
+		return _Utils_Tuple3(
+			model,
+			session,
+			A2($author$project$Api$getFeed, uAndT, $author$project$Pages$Feed$GotFeed));
+	} else {
+		return _Utils_Tuple3(
+			model,
+			session,
+			A2($author$project$Route$goTo, session.key, $author$project$Route$Login));
+	}
+};
 var $author$project$Pages$Login$init = function (session) {
-	var model = {password: '', problems: _List_Nil, session: session, username: ''};
-	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+	var model = {password: '', problems: _List_Nil, username: ''};
+	return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 };
 var $author$project$Pages$Register$init = function (session) {
-	var model = {password: '', passwordRepeat: '', problems: _List_Nil, profilePicture: $elm$core$Maybe$Nothing, session: session, username: ''};
-	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+	var model = {password: '', passwordRepeat: '', problems: _List_Nil, profilePicture: $elm$core$Maybe$Nothing, username: '', usernameAvailable: $elm$core$Maybe$Nothing};
+	return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 };
 var $author$project$Pages$Review$GotReview = function (a) {
 	return {$: 'GotReview', a: a};
@@ -6913,9 +6923,12 @@ var $author$project$Api$getReview = F3(
 	});
 var $author$project$Pages$Review$init = F3(
 	function (session, username, id) {
-		var model = {review: $elm$core$Maybe$Nothing, session: session};
-		return _Utils_Tuple2(
+		var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
+		var reviewListModel = _v0.a;
+		var model = {review: $elm$core$Maybe$Nothing, reviewListModel: reviewListModel};
+		return _Utils_Tuple3(
 			model,
+			session,
 			A3($author$project$Api$getReview, session.userAndToken, id, $author$project$Pages$Review$GotReview));
 	});
 var $author$project$Pages$User$GotUser = function (a) {
@@ -6933,9 +6946,12 @@ var $author$project$Api$getUser = F3(
 	});
 var $author$project$Pages$User$init = F2(
 	function (session, username) {
-		var model = {reviews: $elm$core$Maybe$Nothing, session: session, user: $elm$core$Maybe$Nothing};
-		return _Utils_Tuple2(
+		var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
+		var reviewListModel = _v0.a;
+		var model = {reviewListModel: reviewListModel, user: $elm$core$Maybe$Nothing};
+		return _Utils_Tuple3(
 			model,
+			session,
 			A3($author$project$Api$getUser, session.userAndToken, username, $author$project$Pages$User$GotUser));
 	});
 var $author$project$Main$Feed = function (a) {
@@ -6948,9 +6964,13 @@ var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$Main$stepFeed = F2(
 	function (model, _v0) {
 		var feedModel = _v0.a;
-		var feedCmd = _v0.b;
+		var session = _v0.b;
+		var feedCmd = _v0.c;
 		return _Utils_Tuple2(
-			$author$project$Main$Feed(feedModel),
+			{
+				page: $author$project$Main$Feed(feedModel),
+				session: session
+			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$FeedMsg, feedCmd));
 	});
 var $author$project$Main$Login = function (a) {
@@ -6962,9 +6982,13 @@ var $author$project$Main$LoginMsg = function (a) {
 var $author$project$Main$stepLogin = F2(
 	function (model, _v0) {
 		var loginModel = _v0.a;
-		var loginCmd = _v0.b;
+		var session = _v0.b;
+		var loginCmd = _v0.c;
 		return _Utils_Tuple2(
-			$author$project$Main$Login(loginModel),
+			{
+				page: $author$project$Main$Login(loginModel),
+				session: session
+			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$LoginMsg, loginCmd));
 	});
 var $author$project$Main$Register = function (a) {
@@ -6976,9 +7000,13 @@ var $author$project$Main$RegisterMsg = function (a) {
 var $author$project$Main$stepRegister = F2(
 	function (model, _v0) {
 		var registerModel = _v0.a;
-		var registerCmd = _v0.b;
+		var session = _v0.b;
+		var registerCmd = _v0.c;
 		return _Utils_Tuple2(
-			$author$project$Main$Register(registerModel),
+			{
+				page: $author$project$Main$Register(registerModel),
+				session: session
+			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$RegisterMsg, registerCmd));
 	});
 var $author$project$Main$Review = function (a) {
@@ -6990,9 +7018,13 @@ var $author$project$Main$ReviewMsg = function (a) {
 var $author$project$Main$stepReview = F2(
 	function (model, _v0) {
 		var reviewModel = _v0.a;
-		var reviewCmd = _v0.b;
+		var session = _v0.b;
+		var reviewCmd = _v0.c;
 		return _Utils_Tuple2(
-			$author$project$Main$Review(reviewModel),
+			{
+				page: $author$project$Main$Review(reviewModel),
+				session: session
+			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$ReviewMsg, reviewCmd));
 	});
 var $author$project$Main$User = function (a) {
@@ -7004,18 +7036,23 @@ var $author$project$Main$UserMsg = function (a) {
 var $author$project$Main$stepUser = F2(
 	function (model, _v0) {
 		var userModel = _v0.a;
-		var userCmd = _v0.b;
+		var session = _v0.b;
+		var userCmd = _v0.c;
 		return _Utils_Tuple2(
-			$author$project$Main$User(userModel),
+			{
+				page: $author$project$Main$User(userModel),
+				session: session
+			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$UserMsg, userCmd));
 	});
 var $author$project$Main$stepUrl = F2(
-	function (url, page) {
-		var session = $author$project$Main$getSession(page);
+	function (url, model) {
 		var _v0 = $author$project$Route$fromUrl(url);
 		if (_v0.$ === 'Nothing') {
 			return _Utils_Tuple2(
-				$author$project$Main$NotFound(session),
+				_Utils_update(
+					model,
+					{page: $author$project$Main$NotFound}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			switch (_v0.a.$) {
@@ -7023,62 +7060,75 @@ var $author$project$Main$stepUrl = F2(
 					var _v1 = _v0.a;
 					return A2(
 						$author$project$Main$stepRegister,
-						page,
-						$author$project$Pages$Register$init(session));
+						model,
+						$author$project$Pages$Register$init(model.session));
 				case 'Feed':
 					var _v2 = _v0.a;
 					return A2(
 						$author$project$Main$stepFeed,
-						page,
-						$author$project$Pages$Feed$init(session));
+						model,
+						$author$project$Pages$Feed$init(model.session));
 				case 'Login':
 					var _v3 = _v0.a;
 					return A2(
 						$author$project$Main$stepLogin,
-						page,
-						$author$project$Pages$Login$init(session));
+						model,
+						$author$project$Pages$Login$init(model.session));
 				case 'Root':
 					var _v4 = _v0.a;
-					var _v5 = session.userAndToken;
+					var _v5 = model.session.userAndToken;
 					if (_v5.$ === 'Just') {
 						return A2(
 							$author$project$Main$stepFeed,
-							page,
-							$author$project$Pages$Feed$init(session));
+							model,
+							$author$project$Pages$Feed$init(model.session));
 					} else {
 						return A2(
 							$author$project$Main$stepLogin,
-							page,
-							$author$project$Pages$Login$init(session));
+							model,
+							$author$project$Pages$Login$init(model.session));
 					}
 				case 'User':
 					var username = _v0.a.a;
 					return A2(
 						$author$project$Main$stepUser,
-						page,
-						A2($author$project$Pages$User$init, session, username));
+						model,
+						A2($author$project$Pages$User$init, model.session, username));
 				default:
 					var _v6 = _v0.a;
 					var username = _v6.a;
 					var id = _v6.b;
 					return A2(
 						$author$project$Main$stepReview,
-						page,
-						A3($author$project$Pages$Review$init, session, username, id));
+						model,
+						A3($author$project$Pages$Review$init, model.session, username, id));
 			}
 		}
 	});
 var $author$project$Main$init = F3(
-	function (_v0, url, key) {
+	function (uAndT, url, key) {
 		return A2(
 			$author$project$Main$stepUrl,
 			url,
-			$author$project$Main$NotFound(
-				$author$project$Session$fromNavKey(key)));
+			{
+				page: $author$project$Main$NotFound,
+				session: A2($author$project$Session$create, uAndT, key)
+			});
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $elm$browser$Browser$Navigation$load = _Browser_load;
+var $author$project$Main$stepNavbar = F2(
+	function (model, _v0) {
+		var session = _v0.a;
+		var cmd = _v0.b;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{session: session}),
+			cmd);
+	});
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -7126,6 +7176,16 @@ var $elm$url$Url$toString = function (url) {
 var $author$project$Pages$Feed$GotNewReview = function (a) {
 	return {$: 'GotNewReview', a: a};
 };
+var $author$project$Pages$Feed$RLMsg = function (a) {
+	return {$: 'RLMsg', a: a};
+};
+var $author$project$Widgets$ReviewList$addReview = F2(
+	function (review, model) {
+		return A2(
+			$elm$core$List$cons,
+			_Utils_Tuple2(review, ''),
+			model);
+	});
 var $author$project$Widgets$NewReviewForm$convertToReview = F2(
 	function (form, user) {
 		var _v0 = form.stars;
@@ -7141,7 +7201,7 @@ var $author$project$Widgets$NewReviewForm$convertToReview = F2(
 				}
 			}();
 			return $elm$core$Maybe$Just(
-				{id: $elm$core$Maybe$Nothing, stars: stars, subject: subject, text: form.text, user: user});
+				{comments: _List_Nil, dislikes: _List_Nil, id: $elm$core$Maybe$Nothing, likes: _List_Nil, stars: stars, subject: subject, text: form.text, user: user});
 		} else {
 			return $elm$core$Maybe$Nothing;
 		}
@@ -7239,6 +7299,37 @@ var $author$project$User$encode = function (user) {
 				_Utils_Tuple2('image', image)
 			]));
 };
+var $author$project$Review$encodeComment = function (comment) {
+	var id = function () {
+		var _v0 = comment.id;
+		if (_v0.$ === 'Just') {
+			var x = _v0.a;
+			return $elm$json$Json$Encode$int(x);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2('id', id),
+				_Utils_Tuple2(
+				'text',
+				$elm$json$Json$Encode$string(comment.text)),
+				_Utils_Tuple2(
+				'user',
+				$author$project$User$encode(comment.user))
+			]));
+};
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
 var $author$project$Review$encode = function (review) {
 	var text = function () {
 		var _v1 = review.text;
@@ -7271,7 +7362,16 @@ var $author$project$Review$encode = function (review) {
 				$author$project$User$encode(review.user)),
 				_Utils_Tuple2(
 				'subject',
-				$author$project$Subject$encode(review.subject))
+				$author$project$Subject$encode(review.subject)),
+				_Utils_Tuple2(
+				'likes',
+				A2($elm$json$Json$Encode$list, $author$project$User$encode, review.likes)),
+				_Utils_Tuple2(
+				'dislikes',
+				A2($elm$json$Json$Encode$list, $author$project$User$encode, review.dislikes)),
+				_Utils_Tuple2(
+				'comment',
+				A2($elm$json$Json$Encode$list, $author$project$Review$encodeComment, review.comments))
 			]));
 };
 var $elm$http$Http$jsonBody = function (value) {
@@ -7577,7 +7677,7 @@ var $elm$core$List$take = F2(
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $author$project$Widgets$NewReviewForm$update = F2(
-	function (model, msg) {
+	function (msg, model) {
 		switch (msg.$) {
 			case 'OnTextChanged':
 				var _new = msg.a;
@@ -7687,11 +7787,283 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Pages$Feed$update = F2(
-	function (msg, model) {
+var $author$project$Widgets$ReviewList$CommentSubmitted = function (a) {
+	return {$: 'CommentSubmitted', a: a};
+};
+var $author$project$Widgets$ReviewList$ReviewDeleted = function (a) {
+	return {$: 'ReviewDeleted', a: a};
+};
+var $author$project$Widgets$ReviewList$ReviewDisliked = function (a) {
+	return {$: 'ReviewDisliked', a: a};
+};
+var $author$project$Widgets$ReviewList$ReviewLiked = function (a) {
+	return {$: 'ReviewLiked', a: a};
+};
+var $simonh1000$elm_jwt$Jwt$Http$delete = F2(
+	function (token, _v0) {
+		var url = _v0.url;
+		var expect = _v0.expect;
+		return A3(
+			$simonh1000$elm_jwt$Jwt$Http$createRequest,
+			'DELETE',
+			token,
+			{body: $elm$http$Http$emptyBody, expect: expect, url: url});
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Api$deleteReview = F3(
+	function (uAndT, review, msg) {
+		var id = A2(
+			$elm$core$Maybe$withDefault,
+			'NULL',
+			A2($elm$core$Maybe$map, $elm$core$String$fromInt, review.id));
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$delete,
+			uAndT.token,
+			{
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Review$decoder),
+				url: $author$project$Api$apiRoot + ('/api/reviews/' + id)
+			});
+	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Widgets$ReviewList$deleteReview = F2(
+	function (review, dict) {
+		return A2(
+			$elm$core$List$filter,
+			function (_v0) {
+				var r = _v0.a;
+				var c = _v0.b;
+				return !_Utils_eq(r.id, review.id);
+			},
+			dict);
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$Api$postComment = F4(
+	function (uAndT, review, comment, msg) {
+		var id = $elm$core$String$fromInt(
+			A2($elm$core$Maybe$withDefault, -1, review.id));
+		var body = $author$project$Review$encodeComment(
+			{id: $elm$core$Maybe$Nothing, text: comment, user: uAndT.user});
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$post,
+			uAndT.token,
+			{
+				body: $elm$http$Http$jsonBody(body),
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Review$decoder),
+				url: $author$project$Api$apiRoot + ('/api/reviews/' + (id + '/comments'))
+			});
+	});
+var $author$project$Api$postDislike = F3(
+	function (uAndT, review, msg) {
+		var id = $elm$core$String$fromInt(
+			A2($elm$core$Maybe$withDefault, -1, review.id));
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$post,
+			uAndT.token,
+			{
+				body: $elm$http$Http$emptyBody,
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Review$decoder),
+				url: $author$project$Api$apiRoot + ('/api/reviews/' + (id + '/dislike'))
+			});
+	});
+var $author$project$Api$postLike = F3(
+	function (uAndT, review, msg) {
+		var id = $elm$core$String$fromInt(
+			A2($elm$core$Maybe$withDefault, -1, review.id));
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$post,
+			uAndT.token,
+			{
+				body: $elm$http$Http$emptyBody,
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Review$decoder),
+				url: $author$project$Api$apiRoot + ('/api/reviews/' + (id + '/like'))
+			});
+	});
+var $author$project$Widgets$ReviewList$setIf = F3(
+	function (pred, elem, list) {
+		if (list.b) {
+			var x = list.a;
+			var xs = list.b;
+			var _v1 = pred(x);
+			if (_v1) {
+				return A2(
+					$elm$core$List$cons,
+					elem,
+					A3($author$project$Widgets$ReviewList$setIf, pred, elem, xs));
+			} else {
+				return A2(
+					$elm$core$List$cons,
+					x,
+					A3($author$project$Widgets$ReviewList$setIf, pred, elem, xs));
+			}
+		} else {
+			return _List_Nil;
+		}
+	});
+var $author$project$Widgets$ReviewList$setComment = F3(
+	function (review, newComment, dict) {
+		return A3(
+			$author$project$Widgets$ReviewList$setIf,
+			function (_v0) {
+				var r = _v0.a;
+				var c = _v0.b;
+				return _Utils_eq(r.id, review.id);
+			},
+			_Utils_Tuple2(review, newComment),
+			dict);
+	});
+var $author$project$Widgets$ReviewList$updateReview = F2(
+	function (review, dict) {
+		return A3(
+			$author$project$Widgets$ReviewList$setIf,
+			function (_v0) {
+				var r = _v0.a;
+				var c = _v0.b;
+				return _Utils_eq(r.id, review.id);
+			},
+			_Utils_Tuple2(review, ''),
+			dict);
+	});
+var $author$project$Widgets$ReviewList$update = F3(
+	function (msg, model, session) {
+		switch (msg.$) {
+			case 'OnDelete':
+				var review = msg.a;
+				var _v1 = session.userAndToken;
+				if (_v1.$ === 'Just') {
+					var uAndT = _v1.a;
+					return _Utils_Tuple3(
+						model,
+						session,
+						A3($author$project$Api$deleteReview, uAndT, review, $author$project$Widgets$ReviewList$ReviewDeleted));
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'OnLike':
+				var review = msg.a;
+				var _v2 = session.userAndToken;
+				if (_v2.$ === 'Just') {
+					var uAndT = _v2.a;
+					return _Utils_Tuple3(
+						model,
+						session,
+						A3($author$project$Api$postLike, uAndT, review, $author$project$Widgets$ReviewList$ReviewLiked));
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'OnDislike':
+				var review = msg.a;
+				var _v3 = session.userAndToken;
+				if (_v3.$ === 'Just') {
+					var uAndT = _v3.a;
+					return _Utils_Tuple3(
+						model,
+						session,
+						A3($author$project$Api$postDislike, uAndT, review, $author$project$Widgets$ReviewList$ReviewDisliked));
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'OnCommentSubmit':
+				var review = msg.a;
+				var comment = msg.b;
+				var _v4 = session.userAndToken;
+				if (_v4.$ === 'Just') {
+					var uAndT = _v4.a;
+					return _Utils_Tuple3(
+						model,
+						session,
+						A4($author$project$Api$postComment, uAndT, review, comment, $author$project$Widgets$ReviewList$CommentSubmitted));
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'ReviewDeleted':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var review = result.a;
+					return _Utils_Tuple3(
+						A2($author$project$Widgets$ReviewList$deleteReview, review, model),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'ReviewLiked':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var review = result.a;
+					return _Utils_Tuple3(
+						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'ReviewDisliked':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var review = result.a;
+					return _Utils_Tuple3(
+						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'CommentSubmitted':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var review = result.a;
+					return _Utils_Tuple3(
+						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			default:
+				var review = msg.a;
+				var newComment = msg.b;
+				return _Utils_Tuple3(
+					A3($author$project$Widgets$ReviewList$setComment, review, newComment, model),
+					session,
+					$elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Pages$Feed$update = F3(
+	function (msg, model, session) {
 		switch (msg.$) {
 			case 'OnNRFSubmitPressed':
-				var _v1 = model.session.userAndToken;
+				var _v1 = session.userAndToken;
 				if (_v1.$ === 'Just') {
 					var uAndT = _v1.a;
 					var _v2 = A2(
@@ -7700,66 +8072,71 @@ var $author$project$Pages$Feed$update = F2(
 						A2($author$project$Widgets$NewReviewForm$convertToReview, model.nrf, uAndT.user));
 					if (_v2.$ === 'Just') {
 						var newReview = _v2.a;
-						return _Utils_Tuple2(
+						return _Utils_Tuple3(
 							model,
+							session,
 							A3($author$project$Api$postReview, uAndT, newReview, $author$project$Pages$Feed$GotNewReview));
 					} else {
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 					}
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'GotNewReview':
 				var result = msg.a;
 				var _v3 = A2($elm$core$Debug$log, '!', result);
 				if (_v3.$ === 'Ok') {
 					var review = _v3.a;
-					var newReviews = $elm$core$Maybe$Just(
-						function () {
-							var _v4 = model.reviews;
-							if (_v4.$ === 'Just') {
-								var reviews = _v4.a;
-								return A2($elm$core$List$cons, review, reviews);
-							} else {
-								return _List_fromArray(
-									[review]);
-							}
-						}());
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{
-								nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed),
-								reviews: newReviews
+								feed: A2($author$project$Widgets$ReviewList$addReview, review, model.feed),
+								nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed)
 							}),
+						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'GotFeed':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var reviews = result.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{
-								reviews: $elm$core$Maybe$Just(reviews)
+								feed: $author$project$Widgets$ReviewList$setReviews(reviews)
 							}),
+						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'NRFMsg':
 				var nrfMsg = msg.a;
-				var _v6 = A2($author$project$Widgets$NewReviewForm$update, model.nrf, nrfMsg);
-				var nrfModel = _v6.a;
-				var cmd = _v6.b;
-				return _Utils_Tuple2(
+				var _v5 = A2($author$project$Widgets$NewReviewForm$update, nrfMsg, model.nrf);
+				var nrfModel = _v5.a;
+				var cmd = _v5.b;
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{nrf: nrfModel}),
+					session,
 					cmd);
+			default:
+				var rlMsg = msg.a;
+				var _v6 = A3($author$project$Widgets$ReviewList$update, rlMsg, model.feed, session);
+				var rlModel = _v6.a;
+				var newSession = _v6.b;
+				var rlCmd = _v6.c;
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{feed: rlModel}),
+					newSession,
+					A2($elm$core$Platform$Cmd$map, $author$project$Pages$Feed$RLMsg, rlCmd));
 		}
 	});
 var $author$project$Pages$Login$Completed = function (a) {
@@ -7798,42 +8175,91 @@ var $author$project$Api$postLogin = F2(
 				url: $author$project$Api$apiRoot + '/api/auth'
 			});
 	});
+var $elm$core$Maybe$destruct = F3(
+	function (_default, func, maybe) {
+		if (maybe.$ === 'Just') {
+			var a = maybe.a;
+			return func(a);
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Session$store = _Platform_outgoingPort(
+	'store',
+	function ($) {
+		return A3(
+			$elm$core$Maybe$destruct,
+			$elm$json$Json$Encode$null,
+			function ($) {
+				return $elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'token',
+							$elm$json$Json$Encode$string($.token)),
+							_Utils_Tuple2(
+							'user',
+							function ($) {
+								return $elm$json$Json$Encode$object(
+									_List_fromArray(
+										[
+											_Utils_Tuple2(
+											'id',
+											$elm$json$Json$Encode$int($.id)),
+											_Utils_Tuple2(
+											'image',
+											function ($) {
+												return A3($elm$core$Maybe$destruct, $elm$json$Json$Encode$null, $elm$json$Json$Encode$string, $);
+											}($.image)),
+											_Utils_Tuple2(
+											'username',
+											$elm$json$Json$Encode$string($.username))
+										]));
+							}($.user))
+						]));
+			},
+			$);
+	});
 var $author$project$Pages$Login$validate = function (model) {
 	return $elm$core$Result$Ok(
 		{password: model.password, username: model.username});
 };
-var $author$project$Pages$Login$update = F2(
-	function (msg, model) {
+var $author$project$Pages$Login$update = F3(
+	function (msg, model, session) {
 		switch (msg.$) {
 			case 'UsernameChanged':
 				var _new = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{username: _new}),
+					session,
 					$elm$core$Platform$Cmd$none);
 			case 'PasswordChanged':
 				var _new = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{password: _new}),
+					session,
 					$elm$core$Platform$Cmd$none);
 			case 'LogInPressed':
 				var _v1 = $author$project$Pages$Login$validate(model);
 				if (_v1.$ === 'Ok') {
 					var creds = _v1.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{problems: _List_Nil}),
+						session,
 						A2($author$project$Api$postLogin, creds, $author$project$Pages$Login$Completed));
 				} else {
 					var problems = _v1.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{problems: problems}),
+						session,
 						$elm$core$Platform$Cmd$none);
 				}
 			default:
@@ -7841,20 +8267,24 @@ var $author$project$Pages$Login$update = F2(
 				var _v2 = A2($elm$core$Debug$log, 'got result', result);
 				if (_v2.$ === 'Ok') {
 					var userAndToken = _v2.a;
-					var oldSession = model.session;
+					var oldSession = session;
 					var newSession = _Utils_update(
 						oldSession,
 						{
 							userAndToken: $elm$core$Maybe$Just(userAndToken)
 						});
-					var newModel = _Utils_update(
+					return _Utils_Tuple3(
 						model,
-						{session: newSession});
-					return _Utils_Tuple2(
-						newModel,
-						A2($author$project$Route$goTo, model.session.key, $author$project$Route$Feed));
+						newSession,
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2($author$project$Route$goTo, session.key, $author$project$Route$Feed),
+									$author$project$Session$store(
+									$elm$core$Maybe$Just(userAndToken))
+								])));
 				} else {
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{
@@ -7862,12 +8292,16 @@ var $author$project$Pages$Login$update = F2(
 								problems: _List_fromArray(
 									['error!'])
 							}),
+						session,
 						$elm$core$Platform$Cmd$none);
 				}
 		}
 	});
 var $author$project$Pages$Register$Completed = function (a) {
 	return {$: 'Completed', a: a};
+};
+var $author$project$Pages$Register$GotUsernameAvailable = function (a) {
+	return {$: 'GotUsernameAvailable', a: a};
 };
 var $author$project$Pages$Register$ImageDecoded = function (a) {
 	return {$: 'ImageDecoded', a: a};
@@ -7885,6 +8319,15 @@ var $elm$file$File$Select$file = F2(
 			$elm$core$Task$perform,
 			toMsg,
 			_File_uploadOne(mimes));
+	});
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $author$project$Api$getUsernameAvailability = F2(
+	function (username, msg) {
+		return $elm$http$Http$get(
+			{
+				expect: A2($elm$http$Http$expectJson, msg, $elm$json$Json$Decode$bool),
+				url: $author$project$Api$apiRoot + ('/api/users/' + (username + '/available'))
+			});
 	});
 var $author$project$Api$postUser = F2(
 	function (newUser, msg) {
@@ -7910,17 +8353,9 @@ var $author$project$Api$postUser = F2(
 			});
 	});
 var $elm$file$File$toUrl = _File_toUrl;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
+var $elm$core$Basics$not = _Basics_not;
 var $author$project$Pages$Register$validate = function (model) {
-	return _Utils_eq(model.password, model.passwordRepeat) ? $elm$core$Result$Ok(
+	return (_Utils_eq(model.password, model.passwordRepeat) && (A2($elm$core$Maybe$withDefault, false, model.usernameAvailable) && ((!A2($elm$core$String$contains, ' ', model.username)) && ($elm$core$String$length(model.username) > 1)))) ? $elm$core$Result$Ok(
 		{
 			image: A2($elm$core$Maybe$withDefault, '', model.profilePicture),
 			password: model.password,
@@ -7929,69 +8364,79 @@ var $author$project$Pages$Register$validate = function (model) {
 		_List_fromArray(
 			['Passwords Should Match']));
 };
-var $author$project$Pages$Register$update = F2(
-	function (msg, model) {
+var $author$project$Pages$Register$update = F3(
+	function (msg, model, session) {
 		switch (msg.$) {
 			case 'UsernameChanged':
 				var _new = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{username: _new}),
-					$elm$core$Platform$Cmd$none);
+					session,
+					A2($author$project$Api$getUsernameAvailability, _new, $author$project$Pages$Register$GotUsernameAvailable));
 			case 'PasswordChanged':
 				var _new = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{password: _new}),
+					session,
 					$elm$core$Platform$Cmd$none);
 			case 'PasswordRepeatChanged':
 				var _new = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{passwordRepeat: _new}),
+					session,
 					$elm$core$Platform$Cmd$none);
 			case 'SignUpPressed':
 				var _v1 = $author$project$Pages$Register$validate(model);
 				if (_v1.$ === 'Ok') {
 					var newUser = _v1.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{problems: _List_Nil}),
+						session,
 						A2($author$project$Api$postUser, newUser, $author$project$Pages$Register$Completed));
 				} else {
 					var problems = _v1.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{problems: problems}),
+						session,
 						$elm$core$Platform$Cmd$none);
 				}
 			case 'Completed':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var userAndToken = result.a;
-					var oldSession = model.session;
+					var oldSession = session;
 					var newSession = _Utils_update(
 						oldSession,
 						{
 							userAndToken: $elm$core$Maybe$Just(userAndToken)
 						});
-					var newModel = _Utils_update(
+					return _Utils_Tuple3(
 						model,
-						{session: newSession});
-					return _Utils_Tuple2(
-						newModel,
-						A2($author$project$Route$goTo, model.session.key, $author$project$Route$Feed));
+						newSession,
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2($author$project$Route$goTo, session.key, $author$project$Route$Feed),
+									$author$project$Session$store(
+									$elm$core$Maybe$Just(userAndToken))
+								])));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'ProfilePicturePressed':
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					model,
+					session,
 					A2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
@@ -7999,37 +8444,81 @@ var $author$project$Pages$Register$update = F2(
 						$author$project$Pages$Register$OnImageSelected));
 			case 'OnImageSelected':
 				var file = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					model,
+					session,
 					A2(
 						$elm$core$Task$perform,
 						$author$project$Pages$Register$ImageDecoded,
 						$elm$file$File$toUrl(file)));
-			default:
+			case 'ImageDecoded':
 				var url = msg.a;
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{
 							profilePicture: $elm$core$Maybe$Just(url)
 						}),
+					session,
 					$elm$core$Platform$Cmd$none);
+			default:
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var bool = result.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{
+								usernameAvailable: $elm$core$Maybe$Just(bool)
+							}),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
-var $author$project$Pages$Review$update = F2(
-	function (msg, model) {
-		var result = msg.a;
-		if (result.$ === 'Ok') {
-			var review = result.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						review: $elm$core$Maybe$Just(review)
-					}),
-				$elm$core$Platform$Cmd$none);
+var $author$project$Pages$Review$ReviewListMsg = function (a) {
+	return {$: 'ReviewListMsg', a: a};
+};
+var $author$project$Pages$Review$stepReviewList = F2(
+	function (model, _v0) {
+		var reviewListModel = _v0.a;
+		var session = _v0.b;
+		var msg = _v0.c;
+		return _Utils_Tuple3(
+			_Utils_update(
+				model,
+				{reviewListModel: reviewListModel}),
+			session,
+			A2($elm$core$Platform$Cmd$map, $author$project$Pages$Review$ReviewListMsg, msg));
+	});
+var $author$project$Pages$Review$update = F3(
+	function (msg, model, session) {
+		if (msg.$ === 'GotReview') {
+			var result = msg.a;
+			if (result.$ === 'Ok') {
+				var review = result.a;
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{
+							review: $elm$core$Maybe$Just(review),
+							reviewListModel: $author$project$Widgets$ReviewList$setReviews(
+								_List_fromArray(
+									[review]))
+						}),
+					session,
+					$elm$core$Platform$Cmd$none);
+			} else {
+				return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+			}
 		} else {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			var rlMsg = msg.a;
+			return A2(
+				$author$project$Pages$Review$stepReviewList,
+				model,
+				A3($author$project$Widgets$ReviewList$update, rlMsg, model.reviewListModel, session));
 		}
 	});
 var $author$project$Pages$User$GotReviews = function (a) {
@@ -8048,153 +8537,258 @@ var $author$project$Api$getUserReviews = F3(
 				url: $author$project$Api$apiRoot + ('/api/users/' + (user.username + '/reviews'))
 			});
 	});
-var $author$project$Pages$User$update = F2(
-	function (msg, model) {
-		if (msg.$ === 'GotReviews') {
-			var result = msg.a;
-			if (result.$ === 'Ok') {
-				var reviews = result.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							reviews: $elm$core$Maybe$Just(reviews)
-						}),
-					$elm$core$Platform$Cmd$none);
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
-		} else {
-			var result = msg.a;
-			if (result.$ === 'Ok') {
-				var user = result.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							user: $elm$core$Maybe$Just(user)
-						}),
-					A3($author$project$Api$getUserReviews, model.session.userAndToken, user, $author$project$Pages$User$GotReviews));
-			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			}
+var $author$project$Pages$User$ReviewListMsg = function (a) {
+	return {$: 'ReviewListMsg', a: a};
+};
+var $author$project$Pages$User$stepReviewList = F2(
+	function (model, _v0) {
+		var reviewListModel = _v0.a;
+		var session = _v0.b;
+		var msg = _v0.c;
+		return _Utils_Tuple3(
+			_Utils_update(
+				model,
+				{reviewListModel: reviewListModel}),
+			session,
+			A2($elm$core$Platform$Cmd$map, $author$project$Pages$User$ReviewListMsg, msg));
+	});
+var $author$project$Pages$User$update = F3(
+	function (msg, model, session) {
+		switch (msg.$) {
+			case 'GotReviews':
+				var result = msg.a;
+				var _v1 = A2($elm$core$Debug$log, '£££££', result);
+				if (_v1.$ === 'Ok') {
+					var reviews = _v1.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{
+								reviewListModel: $author$project$Widgets$ReviewList$setReviews(reviews)
+							}),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'GotUser':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var user = result.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{
+								user: $elm$core$Maybe$Just(user)
+							}),
+						session,
+						A3($author$project$Api$getUserReviews, session.userAndToken, user, $author$project$Pages$User$GotReviews));
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			default:
+				var rlMsg = msg.a;
+				return A2(
+					$author$project$Pages$User$stepReviewList,
+					model,
+					A3($author$project$Widgets$ReviewList$update, rlMsg, model.reviewListModel, session));
 		}
 	});
 var $author$project$Widgets$Navbar$update = F2(
 	function (msg, session) {
 		switch (msg.$) {
 			case 'OnLogoClicked':
-				return A2($author$project$Route$goTo, session.key, $author$project$Route$Feed);
+				return _Utils_Tuple2(
+					session,
+					A2($author$project$Route$goTo, session.key, $author$project$Route$Feed));
 			case 'OnSignupClicked':
-				return A2($author$project$Route$goTo, session.key, $author$project$Route$Register);
+				return _Utils_Tuple2(
+					session,
+					A2($author$project$Route$goTo, session.key, $author$project$Route$Register));
 			case 'OnLoginClicked':
-				return A2($author$project$Route$goTo, session.key, $author$project$Route$Login);
-			default:
+				return _Utils_Tuple2(
+					session,
+					A2($author$project$Route$goTo, session.key, $author$project$Route$Login));
+			case 'OnUserClicked':
 				var _v1 = session.userAndToken;
 				if (_v1.$ === 'Just') {
 					var uAndT = _v1.a;
-					return A2(
-						$author$project$Route$goTo,
-						session.key,
-						$author$project$Route$User(uAndT.user.username));
+					return _Utils_Tuple2(
+						session,
+						A2(
+							$author$project$Route$goTo,
+							session.key,
+							$author$project$Route$User(uAndT.user.username)));
 				} else {
-					return $elm$core$Platform$Cmd$none;
+					return _Utils_Tuple2(session, $elm$core$Platform$Cmd$none);
 				}
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						session,
+						{userAndToken: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($author$project$Route$goTo, session.key, $author$project$Route$Root),
+								$author$project$Session$store($elm$core$Maybe$Nothing)
+							])));
 		}
 	});
 var $author$project$Main$update = F2(
-	function (message, page) {
+	function (message, model) {
 		switch (message.$) {
 			case 'LinkClicked':
 				var urlRequest = message.a;
 				if (urlRequest.$ === 'Internal') {
 					var url = urlRequest.a;
 					return _Utils_Tuple2(
-						page,
+						model,
 						A2(
 							$elm$browser$Browser$Navigation$pushUrl,
-							$author$project$Main$getSession(page).key,
+							model.session.key,
 							$elm$url$Url$toString(url)));
 				} else {
 					var href = urlRequest.a;
 					return _Utils_Tuple2(
-						page,
+						model,
 						$elm$browser$Browser$Navigation$load(href));
 				}
 			case 'UrlChanged':
 				var url = message.a;
-				return A2($author$project$Main$stepUrl, url, page);
+				return A2($author$project$Main$stepUrl, url, model);
 			case 'RegisterMsg':
 				var msg = message.a;
-				if (page.$ === 'Register') {
-					var model = page.a;
+				var _v2 = model.page;
+				if (_v2.$ === 'Register') {
+					var innerModel = _v2.a;
 					return A2(
 						$author$project$Main$stepRegister,
-						page,
-						A2($author$project$Pages$Register$update, msg, model));
+						model,
+						A3($author$project$Pages$Register$update, msg, innerModel, model.session));
 				} else {
-					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'LoginMsg':
 				var msg = message.a;
-				if (page.$ === 'Login') {
-					var model = page.a;
+				var _v3 = model.page;
+				if (_v3.$ === 'Login') {
+					var innerModel = _v3.a;
 					return A2(
 						$author$project$Main$stepLogin,
-						page,
-						A2($author$project$Pages$Login$update, msg, model));
+						model,
+						A3($author$project$Pages$Login$update, msg, innerModel, model.session));
 				} else {
-					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'FeedMsg':
 				var msg = message.a;
-				if (page.$ === 'Feed') {
-					var model = page.a;
+				var _v4 = model.page;
+				if (_v4.$ === 'Feed') {
+					var innerModel = _v4.a;
 					return A2(
 						$author$project$Main$stepFeed,
-						page,
-						A2($author$project$Pages$Feed$update, msg, model));
+						model,
+						A3($author$project$Pages$Feed$update, msg, innerModel, model.session));
 				} else {
-					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'None':
-				return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'UserMsg':
 				var msg = message.a;
-				if (page.$ === 'User') {
-					var model = page.a;
+				var _v5 = model.page;
+				if (_v5.$ === 'User') {
+					var innerModel = _v5.a;
 					return A2(
 						$author$project$Main$stepUser,
-						page,
-						A2($author$project$Pages$User$update, msg, model));
+						model,
+						A3($author$project$Pages$User$update, msg, innerModel, model.session));
 				} else {
-					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'ReviewMsg':
 				var msg = message.a;
-				if (page.$ === 'Review') {
-					var model = page.a;
+				var _v6 = model.page;
+				if (_v6.$ === 'Review') {
+					var innerModel = _v6.a;
 					return A2(
 						$author$project$Main$stepReview,
-						page,
-						A2($author$project$Pages$Review$update, msg, model));
+						model,
+						A3($author$project$Pages$Review$update, msg, innerModel, model.session));
 				} else {
-					return _Utils_Tuple2(page, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			default:
 				var msg = message.a;
-				return _Utils_Tuple2(
-					page,
-					A2(
-						$author$project$Widgets$Navbar$update,
-						msg,
-						$author$project$Main$getSession(page)));
+				return A2(
+					$author$project$Main$stepNavbar,
+					model,
+					A2($author$project$Widgets$Navbar$update, msg, model.session));
 		}
 	});
 var $author$project$Main$NavbarMsg = function (a) {
 	return {$: 'NavbarMsg', a: a};
 };
 var $author$project$Main$None = {$: 'None'};
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Internal$Model$Styled = function (a) {
+	return {$: 'Styled', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
+};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var $mdgriffith$elm_ui$Internal$Model$map = F2(
+	function (fn, el) {
+		switch (el.$) {
+			case 'Styled':
+				var styled = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Styled(
+					{
+						html: F2(
+							function (add, context) {
+								return A2(
+									$elm$virtual_dom$VirtualDom$map,
+									fn,
+									A2(styled.html, add, context));
+							}),
+						styles: styled.styles
+					});
+			case 'Unstyled':
+				var html = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
+					A2(
+						$elm$core$Basics$composeL,
+						$elm$virtual_dom$VirtualDom$map(fn),
+						html));
+			case 'Text':
+				var str = el.a;
+				return $mdgriffith$elm_ui$Internal$Model$Text(str);
+			default:
+				return $mdgriffith$elm_ui$Internal$Model$Empty;
+		}
+	});
+var $mdgriffith$elm_ui$Element$map = $mdgriffith$elm_ui$Internal$Model$map;
+var $author$project$Page$map = F2(
+	function (converter, page) {
+		return {
+			body: A2($mdgriffith$elm_ui$Element$map, converter, page.body),
+			title: page.title
+		};
+	});
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
@@ -8235,12 +8829,6 @@ var $mdgriffith$elm_ui$Internal$Model$Keyed = function (a) {
 	return {$: 'Keyed', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$NoStyleSheet = {$: 'NoStyleSheet'};
-var $mdgriffith$elm_ui$Internal$Model$Styled = function (a) {
-	return {$: 'Styled', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
-};
 var $mdgriffith$elm_ui$Internal$Model$addChildren = F2(
 	function (existing, nearbyChildren) {
 		switch (nearbyChildren.$) {
@@ -8558,16 +9146,6 @@ var $mdgriffith$elm_ui$Internal$Model$formatBoxShadow = function (shadow) {
 					$mdgriffith$elm_ui$Internal$Model$formatColor(shadow.color))
 				])));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
 		var x = _v0.a;
@@ -10686,15 +11264,6 @@ var $mdgriffith$elm_ui$Internal$Model$staticRoot = function (opts) {
 				_List_Nil);
 	}
 };
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -10762,9 +11331,6 @@ var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var $mdgriffith$elm_ui$Internal$Model$renderProps = F3(
 	function (force, _v0, existing) {
 		var key = _v0.a;
@@ -11444,17 +12010,6 @@ var $mdgriffith$elm_ui$Internal$Model$adjust = F3(
 	function (size, height, vertical) {
 		return {height: height / size, size: size, vertical: vertical};
 	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -11475,7 +12030,6 @@ var $elm$core$List$minimum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $mdgriffith$elm_ui$Internal$Model$convertAdjustment = function (adjustment) {
 	var lines = _List_fromArray(
 		[adjustment.capital, adjustment.baseline, adjustment.descender, adjustment.lowercase]);
@@ -11760,7 +12314,6 @@ var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 	return _VirtualDom_keyedNode(
 		_VirtualDom_noScript(tag));
 };
-var $elm$core$Basics$not = _Basics_not;
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $mdgriffith$elm_ui$Internal$Flag$present = F2(
@@ -13877,54 +14430,6 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
-var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-var $mdgriffith$elm_ui$Internal$Model$map = F2(
-	function (fn, el) {
-		switch (el.$) {
-			case 'Styled':
-				var styled = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Styled(
-					{
-						html: F2(
-							function (add, context) {
-								return A2(
-									$elm$virtual_dom$VirtualDom$map,
-									fn,
-									A2(styled.html, add, context));
-							}),
-						styles: styled.styles
-					});
-			case 'Unstyled':
-				var html = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
-					A2(
-						$elm$core$Basics$composeL,
-						$elm$virtual_dom$VirtualDom$map(fn),
-						html));
-			case 'Text':
-				var str = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Text(str);
-			default:
-				return $mdgriffith$elm_ui$Internal$Model$Empty;
-		}
-	});
-var $mdgriffith$elm_ui$Element$map = $mdgriffith$elm_ui$Internal$Model$map;
-var $author$project$Page$map = F2(
-	function (converter, page) {
-		return {
-			body: A2($mdgriffith$elm_ui$Element$map, converter, page.body),
-			title: page.title
-		};
-	});
 var $mdgriffith$elm_ui$Internal$Model$Max = F2(
 	function (a, b) {
 		return {$: 'Max', a: a, b: b};
@@ -13950,6 +14455,34 @@ var $mdgriffith$elm_ui$Element$padding = function (x) {
 			x,
 			x));
 };
+var $author$project$Styles$skeleton = F2(
+	function (bar, body) {
+		return A2(
+			$mdgriffith$elm_ui$Element$layout,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
+			A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width(
+						A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill)),
+						$mdgriffith$elm_ui$Element$centerX
+					]),
+				_List_fromArray(
+					[
+						bar,
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$padding(8)
+							]),
+						body)
+					])));
+	});
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
 		return {$: 'SpacingStyle', a: a, b: b, c: c};
@@ -13970,341 +14503,6 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x));
 };
 var $author$project$Styles$spacingMedium = $mdgriffith$elm_ui$Element$spacing(16);
-var $mdgriffith$elm_ui$Element$text = function (content) {
-	return $mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
-var $author$project$Styles$circleSmall = _List_fromArray(
-	[
-		$mdgriffith$elm_ui$Element$width(
-		$mdgriffith$elm_ui$Element$px(70)),
-		$mdgriffith$elm_ui$Element$height(
-		$mdgriffith$elm_ui$Element$px(70)),
-		$mdgriffith$elm_ui$Element$Border$rounded(140)
-	]);
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _v0) {
-		var src = _v0.src;
-		var description = _v0.description;
-		var imageAttributes = A2(
-			$elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						$mdgriffith$elm_ui$Internal$Model$element,
-						$mdgriffith$elm_ui$Internal$Model$asEl,
-						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$src(src)),
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
-	});
-var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
-	return $elm$core$String$concat(
-		_List_fromArray(
-			[
-				shadow.inset ? 'box-inset' : 'box-',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
-			]));
-};
-var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
-var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
-	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$shadows,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
-			'box-shadow',
-			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
-};
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
-var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
-	{
-		blur: 15,
-		color: $author$project$Styles$veryLightAlpha,
-		offset: _Utils_Tuple2(0, 0),
-		size: 0
-	});
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
-var $mdgriffith$elm_ui$Element$link = F2(
-	function (attrs, _v0) {
-		var url = _v0.url;
-		var label = _v0.label;
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$NodeName('a'),
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Attr(
-					$elm$html$Html$Attributes$href(url)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Internal$Model$Attr(
-						$elm$html$Html$Attributes$rel('noopener noreferrer')),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.link)))),
-								attrs))))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
-var $mdgriffith$elm_ui$Element$paddingXY = F2(
-	function (x, y) {
-		return _Utils_eq(x, y) ? A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + $elm$core$String$fromInt(x),
-				x,
-				x,
-				x,
-				x)) : A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-				y,
-				x,
-				y,
-				x));
-	});
-var $author$project$Styles$paddingMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 16);
-var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
-var $mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asRow,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $author$project$Styles$squareMedium = _List_fromArray(
-	[
-		$mdgriffith$elm_ui$Element$width(
-		$mdgriffith$elm_ui$Element$px(140)),
-		$mdgriffith$elm_ui$Element$height(
-		$mdgriffith$elm_ui$Element$px(140))
-	]);
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
-};
-var $author$project$Styles$text = function (str) {
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$Font$size(16)
-			]),
-		$mdgriffith$elm_ui$Element$text(str));
-};
-var $author$project$Review$greyStar = A2(
-	$mdgriffith$elm_ui$Element$image,
-	_List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$width(
-			$mdgriffith$elm_ui$Element$px(72)),
-			$mdgriffith$elm_ui$Element$height(
-			$mdgriffith$elm_ui$Element$px(72))
-		]),
-	{description: 'grey star', src: '/assets/images/grey-star.png'});
-var $author$project$Review$redStar = A2(
-	$mdgriffith$elm_ui$Element$image,
-	_List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$width(
-			$mdgriffith$elm_ui$Element$px(72)),
-			$mdgriffith$elm_ui$Element$height(
-			$mdgriffith$elm_ui$Element$px(72))
-		]),
-	{description: 'red star', src: '/assets/images/red-star.png'});
-var $elm$core$List$repeatHelp = F3(
-	function (result, n, value) {
-		repeatHelp:
-		while (true) {
-			if (n <= 0) {
-				return result;
-			} else {
-				var $temp$result = A2($elm$core$List$cons, value, result),
-					$temp$n = n - 1,
-					$temp$value = value;
-				result = $temp$result;
-				n = $temp$n;
-				value = $temp$value;
-				continue repeatHelp;
-			}
-		}
-	});
-var $elm$core$List$repeat = F2(
-	function (n, value) {
-		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
-	});
-var $author$project$Styles$spacingSmall = $mdgriffith$elm_ui$Element$spacing(4);
-var $author$project$Review$viewNStars = function (n) {
-	return A2(
-		$mdgriffith$elm_ui$Element$row,
-		_List_fromArray(
-			[$author$project$Styles$spacingSmall]),
-		_Utils_ap(
-			A2($elm$core$List$repeat, n, $author$project$Review$redStar),
-			A2($elm$core$List$repeat, 5 - n, $author$project$Review$greyStar)));
-};
-var $author$project$Review$view = function (review) {
-	return A2(
-		$mdgriffith$elm_ui$Element$row,
-		_List_fromArray(
-			[$author$project$Styles$spacingMedium, $author$project$Styles$lightShadow, $author$project$Styles$paddingMedium]),
-		_List_fromArray(
-			[
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[$author$project$Styles$spacingMedium]),
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$image,
-						$author$project$Styles$squareMedium,
-						{
-							description: 'subject picture',
-							src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', review.subject.image)
-						}),
-						A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$author$project$Styles$text(
-								A2($elm$core$Maybe$withDefault, '', review.subject.artist)),
-								$author$project$Styles$text(review.subject.title)
-							]))
-					])),
-				A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[$author$project$Styles$spacingMedium]),
-				_List_fromArray(
-					[
-						A2(
-						$mdgriffith$elm_ui$Element$link,
-						_List_Nil,
-						{
-							label: A2(
-								$mdgriffith$elm_ui$Element$row,
-								_List_Nil,
-								_List_fromArray(
-									[
-										A2(
-										$mdgriffith$elm_ui$Element$image,
-										$author$project$Styles$circleSmall,
-										{
-											description: 'profile picture',
-											src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', review.user.image)
-										}),
-										$author$project$Styles$text('@' + review.user.username)
-									])),
-							url: '/users/' + review.user.username
-						}),
-						A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_fromArray(
-							[$author$project$Styles$spacingMedium]),
-						_List_fromArray(
-							[
-								$author$project$Review$viewNStars(review.stars),
-								A2(
-								$mdgriffith$elm_ui$Element$el,
-								_List_Nil,
-								$author$project$Styles$text(
-									A2($elm$core$Maybe$withDefault, '(this review has no text)', review.text)))
-							]))
-					]))
-			]));
-};
 var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
 	function (a, b, c, d, e) {
 		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
@@ -14333,13 +14531,54 @@ var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 			'border-color',
 			clr));
 };
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		return _Utils_eq(x, y) ? A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(x),
+				x,
+				x,
+				x,
+				x)) : A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+				y,
+				x,
+				y,
+				x));
+	});
 var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 8);
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $mdgriffith$elm_ui$Element$rgb = F3(
 	function (r, g, b) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
 	});
 var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
 var $author$project$Styles$roundedSmall = $mdgriffith$elm_ui$Element$Border$rounded(8);
+var $author$project$Styles$spacingSmall = $mdgriffith$elm_ui$Element$spacing(4);
+var $mdgriffith$elm_ui$Element$text = function (content) {
+	return $mdgriffith$elm_ui$Internal$Model$Text(content);
+};
 var $author$project$Widgets$NewReviewForm$OnTextChanged = function (a) {
 	return {$: 'OnTextChanged', a: a};
 };
@@ -14358,6 +14597,8 @@ var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
+var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 	function (attrs, label, input) {
 		if (label.$ === 'HiddenLabel') {
@@ -14944,6 +15185,7 @@ var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 			'color',
 			fontColor));
 };
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
 		var placeholderAttrs = _v0.a;
@@ -14983,10 +15225,6 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 var $elm$html$Html$Attributes$spellcheck = $elm$html$Html$Attributes$boolProperty('spellcheck');
 var $mdgriffith$elm_ui$Element$Input$spellcheck = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$spellcheck);
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $mdgriffith$elm_ui$Element$Input$value = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$value);
@@ -15297,7 +15535,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 };
 var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
 var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
-var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 'MayPreventDefault', a: a};
@@ -15391,6 +15628,57 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $mdgriffith$elm_ui$Element$image = F2(
+	function (attrs, _v0) {
+		var src = _v0.src;
+		var description = _v0.description;
+		var imageAttributes = A2(
+			$elm$core$List$filter,
+			function (a) {
+				switch (a.$) {
+					case 'Width':
+						return true;
+					case 'Height':
+						return true;
+					default:
+						return false;
+				}
+			},
+			attrs);
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
+				attrs),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[
+						A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asEl,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
+						_Utils_ap(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$src(src)),
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$alt(description))
+								]),
+							imageAttributes),
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
+					])));
+	});
 var $author$project$Widgets$NewReviewForm$greyStar = function (msg) {
 	return A2(
 		$mdgriffith$elm_ui$Element$Input$button,
@@ -15429,6 +15717,45 @@ var $author$project$Widgets$NewReviewForm$redStar = function (msg) {
 			onPress: $elm$core$Maybe$Just(msg)
 		});
 };
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $mdgriffith$elm_ui$Element$row = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asRow,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
 var $author$project$Widgets$NewReviewForm$viewStars = function (form) {
 	var _v0 = form.stars;
 	if (_v0.$ === 'Just') {
@@ -15511,6 +15838,28 @@ var $mdgriffith$elm_ui$Element$paragraph = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $author$project$Styles$squareMedium = _List_fromArray(
+	[
+		$mdgriffith$elm_ui$Element$width(
+		$mdgriffith$elm_ui$Element$px(140)),
+		$mdgriffith$elm_ui$Element$height(
+		$mdgriffith$elm_ui$Element$px(140))
+	]);
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
+var $author$project$Styles$text = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16)
+			]),
+		$mdgriffith$elm_ui$Element$text(str));
+};
 var $author$project$Widgets$NewReviewForm$viewAlbumResult = F2(
 	function (toOuterMsg, album) {
 		return A2(
@@ -15704,32 +16053,671 @@ var $author$project$Widgets$NewReviewForm$view = function (form) {
 				$author$project$Widgets$NewReviewForm$viewSubmitButton(form)
 			]));
 };
-var $author$project$Pages$Feed$view = function (model) {
-	return {
-		body: A2(
-			$mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[$author$project$Styles$spacingMedium]),
+var $author$project$Styles$contentList = function (content) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$author$project$Styles$spacingMedium
+			]),
+		content);
+};
+var $author$project$Widgets$ReviewList$OnCommentSubmit = F2(
+	function (a, b) {
+		return {$: 'OnCommentSubmit', a: a, b: b};
+	});
+var $author$project$Widgets$ReviewList$OnDelete = function (a) {
+	return {$: 'OnDelete', a: a};
+};
+var $author$project$Widgets$ReviewList$OnDislike = function (a) {
+	return {$: 'OnDislike', a: a};
+};
+var $author$project$Widgets$ReviewList$OnLike = function (a) {
+	return {$: 'OnLike', a: a};
+};
+var $author$project$Widgets$ReviewList$OnReviewCommentChanged = F2(
+	function (a, b) {
+		return {$: 'OnReviewCommentChanged', a: a, b: b};
+	});
+var $author$project$Styles$boldText = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16),
+				$mdgriffith$elm_ui$Element$Font$bold
+			]),
+		$mdgriffith$elm_ui$Element$text(str));
+};
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
+var $mdgriffith$elm_ui$Element$link = F2(
+	function (attrs, _v0) {
+		var url = _v0.url;
+		var label = _v0.label;
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$NodeName('a'),
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Attr(
+					$elm$html$Html$Attributes$href(url)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Internal$Model$Attr(
+						$elm$html$Html$Attributes$rel('noopener noreferrer')),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+							A2(
+								$elm$core$List$cons,
+								$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.link)))),
+								attrs))))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
+var $author$project$Styles$comment = function (_v0) {
+	var username = _v0.a;
+	var commentText = _v0.b;
+	return A2(
+		$mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium, $author$project$Styles$paddingSmall]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$link,
+				_List_Nil,
+				{
+					label: $author$project$Styles$boldText('@' + (username + ':')),
+					url: '/users/' + username
+				}),
+				$author$project$Styles$text(commentText)
+			]));
+};
+var $author$project$Styles$commentsBox = function (comments) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		A2($elm$core$List$map, $author$project$Styles$comment, comments));
+};
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
+var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
+	{
+		blur: 15,
+		color: $author$project$Styles$veryLightAlpha,
+		offset: _Utils_Tuple2(0, 0),
+		size: 0
+	});
+var $author$project$Styles$paddingMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 16);
+var $author$project$Styles$outerBox = function (elems) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium, $author$project$Styles$lightShadow, $author$project$Styles$paddingMedium, $author$project$Styles$roundedSmall]),
+		elems);
+};
+var $mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
+var $mdgriffith$elm_ui$Element$alignBottom = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Bottom);
+var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
+var $author$project$Styles$joinAllNice = function (strs) {
+	if (strs.b) {
+		if (strs.b.b) {
+			if (!strs.b.b.b) {
+				var x = strs.a;
+				var _v1 = strs.b;
+				var y = _v1.a;
+				return x + (' & ' + y);
+			} else {
+				var x = strs.a;
+				var _v2 = strs.b;
+				var y = _v2.a;
+				var rest = _v2.b;
+				return x + (', ' + $author$project$Styles$joinAllNice(rest));
+			}
+		} else {
+			var x = strs.a;
+			return x;
+		}
+	} else {
+		return '';
+	}
+};
+var $author$project$Styles$dislikesBox = function (usernames) {
+	return $author$project$Styles$text(
+		function () {
+			if (usernames.b) {
+				return $author$project$Styles$joinAllNice(usernames) + ' disagreed with this';
+			} else {
+				return '';
+			}
+		}());
+};
+var $author$project$Styles$likesBox = function (usernames) {
+	return $author$project$Styles$text(
+		function () {
+			if (usernames.b) {
+				return $author$project$Styles$joinAllNice(usernames) + ' agreed with this!';
+			} else {
+				return '';
+			}
+		}());
+};
+var $author$project$Styles$greyStar = A2(
+	$mdgriffith$elm_ui$Element$image,
+	_List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(52)),
+			$mdgriffith$elm_ui$Element$height(
+			$mdgriffith$elm_ui$Element$px(52))
+		]),
+	{description: 'grey star', src: '/assets/images/grey-star.png'});
+var $author$project$Styles$redStar = A2(
+	$mdgriffith$elm_ui$Element$image,
+	_List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(52)),
+			$mdgriffith$elm_ui$Element$height(
+			$mdgriffith$elm_ui$Element$px(52))
+		]),
+	{description: 'red star', src: '/assets/images/red-star.png'});
+var $author$project$Styles$nStars = function (n) {
+	return A2(
+		$mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[$author$project$Styles$spacingSmall]),
+		_Utils_ap(
+			A2($elm$core$List$repeat, n, $author$project$Styles$redStar),
+			A2($elm$core$List$repeat, 5 - n, $author$project$Styles$greyStar)));
+};
+var $mdgriffith$elm_ui$Element$Font$italic = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.italic);
+var $author$project$Styles$reviewTextBox = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(18),
+				$mdgriffith$elm_ui$Element$Font$italic,
+				$mdgriffith$elm_ui$Element$Font$bold
+			]),
+		A2(
+			$mdgriffith$elm_ui$Element$paragraph,
+			_List_Nil,
 			_List_fromArray(
 				[
-					$author$project$Widgets$NewReviewForm$view(model.nrf),
-					function () {
-					var _v0 = model.reviews;
-					if (_v0.$ === 'Just') {
-						var reviews = _v0.a;
-						return A2(
+					$mdgriffith$elm_ui$Element$text(
+					A2(
+						$elm$core$Maybe$withDefault,
+						'(this review has no text)',
+						A2(
+							$elm$core$Maybe$map,
+							function (x) {
+								return '“' + (x + '”');
+							},
+							str)))
+				])));
+};
+var $author$project$Styles$subjectBox = function (_v0) {
+	var artist = _v0.artist;
+	var title = _v0.title;
+	var image = _v0.image;
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium, $mdgriffith$elm_ui$Element$alignTop]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$image,
+				$author$project$Styles$squareMedium,
+				{
+					description: 'subject picture',
+					src: A2($elm$core$Maybe$withDefault, '/assets/images/default-subject.png', image)
+				}),
+				A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Styles$text(
+						A2($elm$core$Maybe$withDefault, '', artist)),
+						$author$project$Styles$text(title)
+					]))
+			]));
+};
+var $author$project$Styles$userBox = F2(
+	function (username, image) {
+		return A2(
+			$mdgriffith$elm_ui$Element$link,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink)
+				]),
+			{
+				label: A2(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink)
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$image,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(30))
+								]),
+							{
+								description: 'profile picture',
+								src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', image)
+							}),
+							$author$project$Styles$text('@' + username)
+						])),
+				url: '/users/' + username
+			});
+	});
+var $author$project$Styles$reviewBoxGeneric = F2(
+	function (_v0, actions) {
+		var art = _v0.art;
+		var artist = _v0.artist;
+		var title = _v0.title;
+		var username = _v0.username;
+		var picture = _v0.picture;
+		var stars = _v0.stars;
+		var words = _v0.words;
+		var comments = _v0.comments;
+		var likes = _v0.likes;
+		var dislikes = _v0.dislikes;
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					$author$project$Styles$spacingMedium,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
+				]),
+			_List_fromArray(
+				[
+					$author$project$Styles$subjectBox(
+					{artist: artist, image: art, title: title}),
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$author$project$Styles$spacingMedium,
+							$mdgriffith$elm_ui$Element$alignTop,
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
+						]),
+					_List_fromArray(
+						[
+							A2(
 							$mdgriffith$elm_ui$Element$column,
 							_List_fromArray(
-								[$author$project$Styles$spacingMedium]),
-							A2($elm$core$List$map, $author$project$Review$view, reviews));
-					} else {
-						return $mdgriffith$elm_ui$Element$text('loading...');
-					}
-				}()
-				])),
-		title: 'Feed'
-	};
+								[
+									$mdgriffith$elm_ui$Element$alignTop,
+									$author$project$Styles$spacingMedium,
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
+								]),
+							_List_fromArray(
+								[
+									$author$project$Styles$nStars(stars),
+									$author$project$Styles$reviewTextBox(words),
+									$author$project$Styles$likesBox(likes),
+									$author$project$Styles$dislikesBox(dislikes)
+								])),
+							A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_fromArray(
+								[
+									$author$project$Styles$spacingMedium,
+									$mdgriffith$elm_ui$Element$alignBottom,
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(40))
+								]),
+							_Utils_ap(
+								actions,
+								_List_fromArray(
+									[
+										A2(
+										$mdgriffith$elm_ui$Element$el,
+										_List_fromArray(
+											[$mdgriffith$elm_ui$Element$alignRight]),
+										A2($author$project$Styles$userBox, username, picture))
+									])))
+						]))
+				]));
+	});
+var $author$project$Styles$reviewBoxGuest = function (_v0) {
+	var art = _v0.art;
+	var artist = _v0.artist;
+	var title = _v0.title;
+	var username = _v0.username;
+	var picture = _v0.picture;
+	var stars = _v0.stars;
+	var words = _v0.words;
+	var comments = _v0.comments;
+	var likes = _v0.likes;
+	var dislikes = _v0.dislikes;
+	var review = A2(
+		$author$project$Styles$reviewBoxGeneric,
+		{art: art, artist: artist, comments: comments, dislikes: dislikes, likes: likes, picture: picture, stars: stars, title: title, username: username, words: words},
+		_List_Nil);
+	return $author$project$Styles$outerBox(
+		$elm$core$List$isEmpty(comments) ? _List_fromArray(
+			[review]) : _List_fromArray(
+			[
+				review,
+				$author$project$Styles$commentsBox(comments)
+			]));
 };
+var $author$project$Styles$dislikeButton = function (msg) {
+	return A2($author$project$Styles$button, ':(', msg);
+};
+var $author$project$Styles$likeButton = function (msg) {
+	return A2($author$project$Styles$button, '<3', msg);
+};
+var $author$project$Styles$reviewBoxOther = function (_v0) {
+	var art = _v0.art;
+	var artist = _v0.artist;
+	var title = _v0.title;
+	var username = _v0.username;
+	var picture = _v0.picture;
+	var onLike = _v0.onLike;
+	var onDislike = _v0.onDislike;
+	var stars = _v0.stars;
+	var words = _v0.words;
+	var comments = _v0.comments;
+	var likes = _v0.likes;
+	var dislikes = _v0.dislikes;
+	var onCommentChanged = _v0.onCommentChanged;
+	var newComment = _v0.newComment;
+	var onCommentPost = _v0.onCommentPost;
+	var review = A2(
+		$author$project$Styles$reviewBoxGeneric,
+		{art: art, artist: artist, comments: comments, dislikes: dislikes, likes: likes, picture: picture, stars: stars, title: title, username: username, words: words},
+		_List_fromArray(
+			[
+				$author$project$Styles$likeButton(onLike),
+				$author$project$Styles$dislikeButton(onDislike)
+			]));
+	var newCommentBox = A2(
+		$mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$Input$text,
+				_List_Nil,
+				{
+					label: $mdgriffith$elm_ui$Element$Input$labelHidden('comment'),
+					onChange: onCommentChanged,
+					placeholder: $elm$core$Maybe$Just(
+						A2(
+							$mdgriffith$elm_ui$Element$Input$placeholder,
+							_List_Nil,
+							$author$project$Styles$text('leave a comment...'))),
+					text: newComment
+				}),
+				A2(
+				$author$project$Styles$button,
+				'post',
+				$elm$core$Maybe$Just(
+					onCommentPost(newComment)))
+			]));
+	return $author$project$Styles$outerBox(
+		$elm$core$List$isEmpty(comments) ? _List_fromArray(
+			[review, newCommentBox]) : _List_fromArray(
+			[
+				review,
+				newCommentBox,
+				$author$project$Styles$commentsBox(comments)
+			]));
+};
+var $author$project$Styles$deleteButton = function (msg) {
+	return A2($author$project$Styles$button, 'delete', msg);
+};
+var $author$project$Styles$reviewBoxOwn = function (_v0) {
+	var art = _v0.art;
+	var artist = _v0.artist;
+	var title = _v0.title;
+	var username = _v0.username;
+	var picture = _v0.picture;
+	var onDelete = _v0.onDelete;
+	var stars = _v0.stars;
+	var words = _v0.words;
+	var comments = _v0.comments;
+	var likes = _v0.likes;
+	var dislikes = _v0.dislikes;
+	var onCommentChanged = _v0.onCommentChanged;
+	var newComment = _v0.newComment;
+	var onCommentPost = _v0.onCommentPost;
+	var review = A2(
+		$author$project$Styles$reviewBoxGeneric,
+		{art: art, artist: artist, comments: comments, dislikes: dislikes, likes: likes, picture: picture, stars: stars, title: title, username: username, words: words},
+		_List_fromArray(
+			[
+				$author$project$Styles$deleteButton(onDelete)
+			]));
+	var newCommentBox = A2(
+		$mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[$author$project$Styles$spacingMedium]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$Input$text,
+				_List_Nil,
+				{
+					label: $mdgriffith$elm_ui$Element$Input$labelHidden('comment'),
+					onChange: onCommentChanged,
+					placeholder: $elm$core$Maybe$Just(
+						A2(
+							$mdgriffith$elm_ui$Element$Input$placeholder,
+							_List_Nil,
+							$author$project$Styles$text('leave a comment...'))),
+					text: newComment
+				}),
+				A2(
+				$author$project$Styles$button,
+				'post',
+				$elm$core$Maybe$Just(
+					onCommentPost(newComment)))
+			]));
+	return $author$project$Styles$outerBox(
+		$elm$core$List$isEmpty(comments) ? _List_fromArray(
+			[review, newCommentBox]) : _List_fromArray(
+			[
+				review,
+				newCommentBox,
+				$author$project$Styles$commentsBox(comments)
+			]));
+};
+var $author$project$Styles$viewReview = F8(
+	function (maybeUser, review, newComment, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
+		if (maybeUser.$ === 'Just') {
+			var user = maybeUser.a;
+			return _Utils_eq(user, review.user) ? $author$project$Styles$reviewBoxOwn(
+				{
+					art: review.subject.image,
+					artist: review.subject.artist,
+					comments: A2(
+						$elm$core$List$map,
+						function (c) {
+							return _Utils_Tuple2(c.user.username, c.text);
+						},
+						review.comments),
+					dislikes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.dislikes),
+					likes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.likes),
+					newComment: newComment,
+					onCommentChanged: onCommentChanged,
+					onCommentPost: onCommentPost,
+					onDelete: $elm$core$Maybe$Just(onDelete),
+					picture: review.user.image,
+					stars: review.stars,
+					title: review.subject.title,
+					username: review.user.username,
+					words: review.text
+				}) : $author$project$Styles$reviewBoxOther(
+				{
+					art: review.subject.image,
+					artist: review.subject.artist,
+					comments: A2(
+						$elm$core$List$map,
+						function (c) {
+							return _Utils_Tuple2(c.user.username, c.text);
+						},
+						review.comments),
+					dislikes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.dislikes),
+					likes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.likes),
+					newComment: newComment,
+					onCommentChanged: onCommentChanged,
+					onCommentPost: onCommentPost,
+					onDislike: $elm$core$Maybe$Just(onDislike),
+					onLike: $elm$core$Maybe$Just(onLike),
+					picture: review.user.image,
+					stars: review.stars,
+					title: review.subject.title,
+					username: review.user.username,
+					words: review.text
+				});
+		} else {
+			return $author$project$Styles$reviewBoxGuest(
+				{
+					art: review.subject.image,
+					artist: review.subject.artist,
+					comments: A2(
+						$elm$core$List$map,
+						function (c) {
+							return _Utils_Tuple2(c.user.username, c.text);
+						},
+						review.comments),
+					dislikes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.dislikes),
+					likes: A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.username;
+						},
+						review.likes),
+					picture: review.user.image,
+					stars: review.stars,
+					title: review.subject.title,
+					username: review.user.username,
+					words: review.text
+				});
+		}
+	});
+var $author$project$Widgets$ReviewList$viewReviewAndComment = F2(
+	function (session, _v0) {
+		var review = _v0.a;
+		var newComment = _v0.b;
+		return A8(
+			$author$project$Styles$viewReview,
+			A2(
+				$elm$core$Maybe$map,
+				function ($) {
+					return $.user;
+				},
+				session.userAndToken),
+			review,
+			newComment,
+			$author$project$Widgets$ReviewList$OnDelete(review),
+			$author$project$Widgets$ReviewList$OnLike(review),
+			$author$project$Widgets$ReviewList$OnDislike(review),
+			$author$project$Widgets$ReviewList$OnReviewCommentChanged(review),
+			$author$project$Widgets$ReviewList$OnCommentSubmit(review));
+	});
+var $author$project$Widgets$ReviewList$view = F2(
+	function (session, model) {
+		return $author$project$Styles$contentList(
+			A2(
+				$elm$core$List$map,
+				$author$project$Widgets$ReviewList$viewReviewAndComment(session),
+				model));
+	});
+var $author$project$Pages$Feed$view = F2(
+	function (session, model) {
+		return {
+			body: A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[$author$project$Styles$spacingMedium]),
+				_List_fromArray(
+					[
+						$author$project$Widgets$NewReviewForm$view(model.nrf),
+						A2(
+						$mdgriffith$elm_ui$Element$map,
+						$author$project$Pages$Feed$RLMsg,
+						A2($author$project$Widgets$ReviewList$view, session, model.feed))
+					])),
+			title: 'Feed'
+		};
+	});
 var $author$project$Pages$Login$LogInPressed = {$: 'LogInPressed'};
 var $author$project$Pages$Login$PasswordChanged = function (a) {
 	return {$: 'PasswordChanged', a: a};
@@ -15826,13 +16814,7 @@ var $author$project$Pages$Login$view = function (model) {
 	};
 };
 var $author$project$Pages$NotFound$view = {
-	body: A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$text('Not Found!')
-			])),
+	body: $author$project$Styles$text('Not Found!'),
 	title: 'Not Found'
 };
 var $author$project$Pages$Register$PasswordChanged = function (a) {
@@ -15867,20 +16849,39 @@ var $author$project$Pages$Register$view = function (model) {
 				[$author$project$Styles$spacingMedium]),
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$text(''),
+					$author$project$Styles$text(''),
 					A2(
-					$mdgriffith$elm_ui$Element$Input$username,
-					_List_Nil,
-					{
-						label: $author$project$Styles$labelSmall('Username'),
-						onChange: $author$project$Pages$Register$UsernameChanged,
-						placeholder: $elm$core$Maybe$Just(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[$author$project$Styles$spacingMedium]),
+					_List_fromArray(
+						[
 							A2(
-								$mdgriffith$elm_ui$Element$Input$placeholder,
-								_List_Nil,
-								$mdgriffith$elm_ui$Element$text('username'))),
-						text: model.username
-					}),
+							$mdgriffith$elm_ui$Element$Input$username,
+							_List_Nil,
+							{
+								label: $author$project$Styles$labelSmall('Username'),
+								onChange: $author$project$Pages$Register$UsernameChanged,
+								placeholder: $elm$core$Maybe$Just(
+									A2(
+										$mdgriffith$elm_ui$Element$Input$placeholder,
+										_List_Nil,
+										$mdgriffith$elm_ui$Element$text('username'))),
+								text: model.username
+							}),
+							function () {
+							var _v0 = model.usernameAvailable;
+							if (_v0.$ === 'Just') {
+								if (_v0.a) {
+									return $author$project$Styles$text('available!');
+								} else {
+									return $author$project$Styles$text('not available :(');
+								}
+							} else {
+								return $author$project$Styles$text('');
+							}
+						}()
+						])),
 					A2(
 					$mdgriffith$elm_ui$Element$Input$newPassword,
 					_List_Nil,
@@ -15920,70 +16921,109 @@ var $author$project$Pages$Register$view = function (model) {
 					A2(
 					$mdgriffith$elm_ui$Element$column,
 					_List_Nil,
-					A2($elm$core$List$map, $mdgriffith$elm_ui$Element$text, model.problems))
+					A2($elm$core$List$map, $author$project$Styles$text, model.problems))
 				])),
 		title: 'Register'
 	};
 };
-var $author$project$Pages$Review$view = function (model) {
-	return {
-		body: function () {
-			var _v0 = model.review;
-			if (_v0.$ === 'Just') {
-				var review = _v0.a;
-				return $author$project$Review$view(review);
-			} else {
-				return $mdgriffith$elm_ui$Element$text('Loading...');
-			}
-		}(),
-		title: function () {
-			var _v1 = model.review;
-			if (_v1.$ === 'Just') {
-				var review = _v1.a;
-				return review.user.username + '\'s review';
-			} else {
-				return 'Loading';
-			}
-		}()
-	};
+var $author$project$Pages$Review$view = F2(
+	function (session, model) {
+		return {
+			body: A2(
+				$mdgriffith$elm_ui$Element$map,
+				$author$project$Pages$Review$ReviewListMsg,
+				A2($author$project$Widgets$ReviewList$view, session, model.reviewListModel)),
+			title: A2(
+				$elm$core$Maybe$withDefault,
+				'Loading...',
+				A2(
+					$elm$core$Maybe$map,
+					function (x) {
+						return x.user.username + '\'s review';
+					},
+					model.review))
+		};
+	});
+var $author$project$Styles$loading = F2(
+	function (maybeA, showA) {
+		if (maybeA.$ === 'Just') {
+			var a = maybeA.a;
+			return showA(a);
+		} else {
+			return $author$project$Styles$text('Loading...');
+		}
+	});
+var $author$project$Styles$page = function (contents) {
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$author$project$Styles$spacingMedium
+			]),
+		contents);
 };
-var $author$project$Pages$User$view = function (model) {
-	return {
-		body: A2(
-			$mdgriffith$elm_ui$Element$column,
-			_List_Nil,
+var $author$project$Styles$userProfile = F2(
+	function (username, maybeImage) {
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
 				[
-					function () {
-					var _v0 = model.reviews;
-					if (_v0.$ === 'Just') {
-						var reviews = _v0.a;
-						return A2(
-							$mdgriffith$elm_ui$Element$column,
-							_List_Nil,
-							A2($elm$core$List$map, $author$project$Review$view, reviews));
-					} else {
-						return $mdgriffith$elm_ui$Element$text('loading...');
-					}
-				}()
-				])),
-		title: function () {
-			var _v1 = model.user;
-			if (_v1.$ === 'Just') {
-				var user = _v1.a;
-				return user.username;
-			} else {
-				return 'Loading';
-			}
-		}()
-	};
-};
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$author$project$Styles$spacingMedium
+				]),
+			function () {
+				if (maybeImage.$ === 'Just') {
+					var image = maybeImage.a;
+					return _List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$image,
+							$author$project$Styles$squareMedium,
+							{description: 'profile picture', src: image}),
+							$author$project$Styles$text(username)
+						]);
+				} else {
+					return _List_fromArray(
+						[
+							$author$project$Styles$text(username)
+						]);
+				}
+			}());
+	});
+var $author$project$Pages$User$view = F2(
+	function (session, model) {
+		return {
+			body: $author$project$Styles$page(
+				_List_fromArray(
+					[
+						A2(
+						$author$project$Styles$loading,
+						model.user,
+						function (user) {
+							return A2($author$project$Styles$userProfile, user.username, user.image);
+						}),
+						A2(
+						$mdgriffith$elm_ui$Element$map,
+						$author$project$Pages$User$ReviewListMsg,
+						A2($author$project$Widgets$ReviewList$view, session, model.reviewListModel))
+					])),
+			title: function () {
+				var _v0 = model.user;
+				if (_v0.$ === 'Just') {
+					var user = _v0.a;
+					return user.username;
+				} else {
+					return 'Loading';
+				}
+			}()
+		};
+	});
 var $author$project$Widgets$Navbar$OnLoginClicked = {$: 'OnLoginClicked'};
 var $author$project$Widgets$Navbar$OnLogoClicked = {$: 'OnLogoClicked'};
+var $author$project$Widgets$Navbar$OnLogoutClicked = {$: 'OnLogoutClicked'};
 var $author$project$Widgets$Navbar$OnSignupClicked = {$: 'OnSignupClicked'};
 var $author$project$Widgets$Navbar$OnUserClicked = {$: 'OnUserClicked'};
-var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
-var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $author$project$Styles$buttonAlt = F2(
 	function (str, action) {
 		return A2(
@@ -16004,7 +17044,7 @@ var $author$project$Styles$buttonAlt = F2(
 var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
 var $author$project$Widgets$Navbar$view = F2(
-	function (toOuter, maybeUser) {
+	function (toOuter, session) {
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
@@ -16027,8 +17067,14 @@ var $author$project$Widgets$Navbar$view = F2(
 					_List_fromArray(
 						[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
 					function () {
-						if (maybeUser.$ === 'Just') {
-							var user = maybeUser.a;
+						var _v0 = A2(
+							$elm$core$Maybe$map,
+							function ($) {
+								return $.user;
+							},
+							session.userAndToken);
+						if (_v0.$ === 'Just') {
+							var user = _v0.a;
 							return _List_fromArray(
 								[
 									A2(
@@ -16071,7 +17117,11 @@ var $author$project$Widgets$Navbar$view = F2(
 										onPress: $elm$core$Maybe$Just(
 											toOuter($author$project$Widgets$Navbar$OnUserClicked))
 									}),
-									A2($author$project$Styles$buttonAlt, 'Log out', $elm$core$Maybe$Nothing)
+									A2(
+									$author$project$Styles$buttonAlt,
+									'Log out',
+									$elm$core$Maybe$Just(
+										toOuter($author$project$Widgets$Navbar$OnLogoutClicked)))
 								]);
 						} else {
 							return _List_fromArray(
@@ -16091,48 +17141,46 @@ var $author$project$Widgets$Navbar$view = F2(
 					}())
 				]));
 	});
-var $author$project$Main$view = function (page) {
-	var navbar = _Utils_Tuple0;
+var $author$project$Main$view = function (model) {
+	var bar = A2($author$project$Widgets$Navbar$view, $author$project$Main$NavbarMsg, model.session);
 	var _v0 = function () {
-		switch (page.$) {
+		var _v1 = model.page;
+		switch (_v1.$) {
 			case 'Register':
-				var model = page.a;
+				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$RegisterMsg,
-					$author$project$Pages$Register$view(model));
+					$author$project$Pages$Register$view(innerModel));
 			case 'Login':
-				var model = page.a;
+				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$LoginMsg,
-					$author$project$Pages$Login$view(model));
+					$author$project$Pages$Login$view(innerModel));
 			case 'Feed':
-				var model = page.a;
+				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$FeedMsg,
-					$author$project$Pages$Feed$view(model));
+					A2($author$project$Pages$Feed$view, model.session, innerModel));
 			case 'NotFound':
-				var session = page.a;
 				return A2(
 					$author$project$Page$map,
-					function (_v2) {
-						return $author$project$Main$None;
-					},
+					$elm$core$Basics$always($author$project$Main$None),
 					$author$project$Pages$NotFound$view);
 			case 'User':
-				var model = page.a;
+				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$UserMsg,
-					$author$project$Pages$User$view(model));
+					A2($author$project$Pages$User$view, model.session, innerModel));
 			default:
-				var model = page.a;
+				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$ReviewMsg,
-					$author$project$Pages$Review$view(model));
+					A2($author$project$Pages$Review$view, model.session, innerModel));
 		}
 	}();
 	var title = _v0.title;
@@ -16140,39 +17188,7 @@ var $author$project$Main$view = function (page) {
 	return {
 		body: _List_fromArray(
 			[
-				A2(
-				$mdgriffith$elm_ui$Element$layout,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-					]),
-				A2(
-					$mdgriffith$elm_ui$Element$column,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$width(
-							A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill)),
-							$mdgriffith$elm_ui$Element$centerX
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$author$project$Widgets$Navbar$view,
-							$author$project$Main$NavbarMsg,
-							A2(
-								$elm$core$Maybe$map,
-								function ($) {
-									return $.user;
-								},
-								$author$project$Main$getSession(page).userAndToken)),
-							A2(
-							$mdgriffith$elm_ui$Element$el,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$padding(8)
-								]),
-							body)
-						])))
+				A2($author$project$Styles$skeleton, bar, body)
 			]),
 		title: 'SongScore: ' + title
 	};
@@ -16189,4 +17205,50 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+	$elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2(
+				$elm$json$Json$Decode$map,
+				$elm$core$Maybe$Just,
+				A2(
+					$elm$json$Json$Decode$andThen,
+					function (user) {
+						return A2(
+							$elm$json$Json$Decode$andThen,
+							function (token) {
+								return $elm$json$Json$Decode$succeed(
+									{token: token, user: user});
+							},
+							A2($elm$json$Json$Decode$field, 'token', $elm$json$Json$Decode$string));
+					},
+					A2(
+						$elm$json$Json$Decode$field,
+						'user',
+						A2(
+							$elm$json$Json$Decode$andThen,
+							function (username) {
+								return A2(
+									$elm$json$Json$Decode$andThen,
+									function (image) {
+										return A2(
+											$elm$json$Json$Decode$andThen,
+											function (id) {
+												return $elm$json$Json$Decode$succeed(
+													{id: id, image: image, username: username});
+											},
+											A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int));
+									},
+									A2(
+										$elm$json$Json$Decode$field,
+										'image',
+										$elm$json$Json$Decode$oneOf(
+											_List_fromArray(
+												[
+													$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+													A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+												]))));
+							},
+							A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string)))))
+			])))(0)}});}(this));

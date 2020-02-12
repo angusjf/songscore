@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "time"
 )
 
@@ -8,22 +9,71 @@ type ReviewModel struct {
 	ID        int
 	Text      string
 	Stars     int
-	UserId    int
-	SubjectId int
+	UserID    int
+	SubjectID int
+    Likers    []*UserModel `gorm:"many2many:user_likes"`
+    Dislikers []*UserModel `gorm:"many2many:user_dislikes"`
+    Comments  []CommentModel `gorm:"foreignkey:ReviewID"`
     CreatedAt time.Time
     UpdatedAt time.Time
     DeletedAt *time.Time
 }
 
+type CommentModel struct {
+    ID int
+    Text string
+    UserID int
+    ReviewID int
+}
+
+func (s *server) CommentToWeb(model CommentModel) CommentWeb {
+    var user UserModel
+    if s.db.Where("ID = ?", model.UserID).Find(&user).Error != nil {
+        panic("comment conversion can't find user")
+    }
+    return CommentWeb {
+        ID: model.ID,
+        Text: model.Text,
+        ReviewID: model.ReviewID,
+        User: s.UserToWeb(user),
+    }
+}
+
+func (s *server) CommentToModel(web CommentWeb) CommentModel {
+    return CommentModel {
+        ID: web.ID,
+        Text: web.Text,
+        UserID: web.User.ID,
+        ReviewID: web.ReviewID,
+    }
+}
+
 func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
     var user UserModel
-    if s.db.Where("id = ?", model.UserId).Find(&user).Error != nil {
+    if s.db.Where("id = ?", model.UserID).Find(&user).Error != nil {
+        fmt.Printf("no user with id %s", model.UserID)
         panic("User is missing!")
     }
     var subject SubjectModel
-    if s.db.Where("id = ?", model.SubjectId).Find(&subject).Error != nil {
+    if s.db.Where("id = ?", model.SubjectID).Find(&subject).Error != nil {
         panic("Subject is missing!")
     }
+
+    likes := make([]UserWeb, len(model.Likers))
+    for i, user := range model.Likers {
+        likes[i] = s.UserToWeb(*user)
+    }
+
+    dislikes := make([]UserWeb, len(model.Dislikers))
+    for i, user := range model.Dislikers {
+        dislikes[i] = s.UserToWeb(*user)
+    }
+
+    comments := make([]CommentWeb, len(model.Comments))
+    for i, comment := range model.Comments {
+        comments[i] = s.CommentToWeb(comment)
+    }
+
     return ReviewWeb{
         ID: model.ID,
         Text: model.Text,
@@ -31,6 +81,9 @@ func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
         User: s.UserToWeb(user),
         Subject: s.SubjectToWeb(subject),
         CreatedAt: model.CreatedAt,
+        Likes: likes,
+        Dislikes: dislikes,
+        Comments: comments,
     }
 }
 
@@ -38,7 +91,7 @@ func (s *server) NewReviewToModel(web ReviewWeb) ReviewModel {
     model := ReviewModel{
         Text: web.Text,
         Stars: web.Stars,
-        UserId: web.User.ID,
+        UserID: web.User.ID,
     }
 
     subject := s.NewSubjectToModel(web.Subject)
@@ -46,7 +99,7 @@ func (s *server) NewReviewToModel(web ReviewWeb) ReviewModel {
     if err != nil {
         panic(err)
     }
-    model.SubjectId = subject.ID
+    model.SubjectID = subject.ID
 
     return model
 }
@@ -55,11 +108,11 @@ func (s *server) ReviewToModel(web ReviewWeb) ReviewModel {
     model := ReviewModel{
         Text: web.Text,
         Stars: web.Stars,
-        UserId: web.User.ID,
+        UserID: web.User.ID,
     }
 
     model.ID = web.ID
-    model.SubjectId = web.Subject.ID
+    model.SubjectID = web.Subject.ID
 
     return model
 }
@@ -98,13 +151,15 @@ func (s *server) NewSubjectToModel(web SubjectWeb) SubjectModel {
 }
 
 type UserModel struct {
-	ID           int
-    Username     string `gorm:"unique;not null"`
-	Image        string
-    PasswordHash string
-    CreatedAt    time.Time
-    UpdatedAt    time.Time
-    DeletedAt    *time.Time
+	ID              int
+    Username        string `gorm:"unique;not null"`
+	Image           string
+    PasswordHash    string
+    LikedReviews    []*ReviewModel `gorm:"many2many:user_likes"`
+    DislikedReviews []*ReviewModel `gorm:"many2many:user_dislikes"`
+    CreatedAt       time.Time
+    UpdatedAt       time.Time
+    DeletedAt       *time.Time
 }
 
 func (s *server) UserToWeb(model UserModel) UserWeb {

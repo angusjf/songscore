@@ -1,79 +1,62 @@
 package main
 
 import (
-	"encoding/json"
+    "encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
     "strings"
     "context"
-    "time"
 	"github.com/gorilla/mux"
 
 	jwt "github.com/dgrijalva/jwt-go"
     bcrypt "golang.org/x/crypto/bcrypt"
 )
 
-type spaHandler struct {
-    staticPath string
-    indexPath  string
-}
-
-type CredentialsWeb struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
-}
-
-type UserAndTokenWeb struct {
-    User UserWeb `json:"user"`
-    Token string `json:"token"`
-}
-
-type UserWeb struct {
-    ID        int    `json:"id"`
-	Username  string `json:"username"`
-	Image     string `json:"image,omitempty"`
-}
-
-type ReviewWeb struct {
-	ID        int        `json:"id"`
-	Text      string     `json:"text,omitempty"`
-	Stars     int        `json:"stars"`
-	User      UserWeb    `json:"user"`
-	Subject   SubjectWeb `json:"subject"`
-    CreatedAt time.Time  `json:"createdAt"`
-}
-
-type SubjectWeb struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Artist string `json:"artist,omitempty"`
-	Image  string `json:"image,omitempty"`
-	Kind   string `json:"kind,omitempty"`
-}
-
 func (s *server) routes() {
     api := s.router.PathPrefix("/api").Subrouter()
+
     api.Use(s.withAuth)
     api.Use(s.log)
+
 	api.HandleFunc("/feeds/{username}", s.handleFeedGet()).Methods("GET")
-	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
+
 	api.HandleFunc("/reviews", s.handleReviewPost()).Methods("POST")
-	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
+	api.HandleFunc("/reviews/{id}", s.handleReviewDelete()).Methods("DELETE")
+	api.HandleFunc("/reviews/{id}", s.handleReviewGet()).Methods("GET")
+	api.HandleFunc("/reviews/{id}/like", s.handleReviewLikePost()).Methods("POST")
+	api.HandleFunc("/reviews/{id}/dislike", s.handleReviewDisikePost()).Methods("POST")
+	api.HandleFunc("/reviews/{id}/comments", s.handleReviewCommentPost()).Methods("POST")
+
 	api.HandleFunc("/users", s.handleUsersPost()).Methods("POST")
-	api.HandleFunc("/users/{username}", s.handleUserGet()).Methods("Get")
-	api.HandleFunc("/users/{username}/reviews", s.handleUserReviewsGet()).Methods("Get")
+	api.HandleFunc("/users/{username}", s.handleUserGet()).Methods("GET")
+	api.HandleFunc("/users/{username}/reviews", s.handleUserReviewsGet()).Methods("GET")
+	api.HandleFunc("/users/{username}/available", s.handleUsernameAvailableGet()).Methods("GET")
+	api.HandleFunc("/users/{username}/followers", s.handleUserFollowersGet()).Methods("GET")
+	api.HandleFunc("/users/{username}/following", s.handleUserFollowingGet()).Methods("GET")
+	api.HandleFunc("/users/{username}/follow", s.handleUserFollowPost()).Methods("POST")
+
+	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
+
     api.PathPrefix("/").Handler(s.handleApiNotFound())
 
     s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
 }
 
+// FEEDS
+
 func (s *server) handleFeedGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
         // TODO
         var reviews []ReviewModel
-        if s.db.Order("CREATED_AT desc").Find(&reviews).Error != nil {
+        err := s.db.Preload("Dislikers").
+                    Preload("Likers").
+                    Preload("Comments").
+                    Order("CREATED_AT desc").
+                    Find(&reviews).
+                    Error
+        if err != nil {
             s.respond(w, r, "Couldn't find feed", http.StatusBadRequest)
             return
         }
@@ -87,22 +70,7 @@ func (s *server) handleFeedGet() http.HandlerFunc {
     }
 }
 
-func (s *server) handleReviewGet() http.HandlerFunc {
-    return func (w http.ResponseWriter, r *http.Request) {
-        params := mux.Vars(r)
-        id, ok := params["id"]
-        if ok {
-            var review ReviewModel
-            if s.db.Where("ID = ?", id).Find(&review).Error != nil {
-                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
-            } else {
-                s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
-            }
-        } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
-        }
-    }
-}
+// REVIEWS
 
 func (s *server) handleReviewPost() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
@@ -110,7 +78,6 @@ func (s *server) handleReviewPost() http.HandlerFunc {
         err := s.decode(w, r, &review)
         if err != nil {
             s.respond(w, r, "Couldn't decode review", http.StatusBadRequest)
-            fmt.Printf("%v", err)
         } else {
             id, ok := s.getUserId(r)
             if ok {
@@ -128,51 +95,152 @@ func (s *server) handleReviewPost() http.HandlerFunc {
     }
 }
 
-func (s *server) handleAuthLogin() http.HandlerFunc {
+func (s *server) handleReviewDelete() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        var credentials CredentialsWeb
-        decodeErr := s.decode(w, r, &credentials)
-        if decodeErr != nil {
-            s.respond(w, r, "Couldn't decode", http.StatusBadRequest)
-            return
-        }
-
-        var user UserModel
-        if s.db.Where("USERNAME = ?", credentials.Username).Find(&user).Error != nil {
-            s.respond(w, r, "Couldn't find user", http.StatusNotFound)
-            return
-        }
-
-        compareErr := bcrypt.CompareHashAndPassword(
-            []byte(user.PasswordHash),
-            []byte(credentials.Password))
-
-        if compareErr != nil {
-            s.respond(w, r, "Wrong password", http.StatusForbidden)
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            err := s.db.Where("ID = ?", id).
+                        Find(&review).
+                        Error
+            web := s.ReviewToWeb(review)
+            if err != nil || s.db.Where("ID = ?", id).Delete(&ReviewModel{}).Error != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                s.respond(w, r, web, http.StatusOK)
+            }
         } else {
-            tokenString, err := s.getTokenString(user)
-
-            if err != nil {
-                s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
-                return
-            }
-
-            userAndToken := UserAndTokenWeb{
-                User: s.UserToWeb(user),
-                Token: tokenString,
-            }
-
-            s.respond(w, r, userAndToken, http.StatusOK)
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
         }
     }
 }
 
-func (s *server) getTokenString(model UserModel) (string, error) {
-    token := jwt.New(jwt.SigningMethodHS256)
-    claims := token.Claims.(jwt.MapClaims)
-    claims["user_id"] = model.ID
-    return token.SignedString(s.jwtSecretKey)
+func (s *server) handleReviewGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            err := s.db.Preload("Dislikers").
+                        Preload("Likers").
+                        Preload("Comments").
+                        Where("ID = ?", id).
+                        Find(&review).
+                        Error
+            if err != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+            }
+        } else {
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+        }
+    }
 }
+
+func (s * server) handleReviewLikePost() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            err := s.db.Where("ID = ?", id).
+                        Preload("Dislikers").
+                        Preload("Likers").
+                        Preload("Comments").
+                        Find(&review).
+                        Error
+            if err != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                var userModel UserModel
+                userId, ok := s.getUserId(r)
+                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                    s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+                } else {
+                    review.Likers = append(review.Likers, &userModel)
+                    if s.db.Save(&review).Error != nil {
+                        s.respond(w, r, "Could not update review", http.StatusInternalServerError)
+                    }
+                    s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+                }
+            }
+        } else {
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s * server) handleReviewDisikePost() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            err := s.db.Where("ID = ?", id).
+                        Preload("Dislikers").
+                        Preload("Likers").
+                        Preload("Comments").
+                        Find(&review).
+                        Error
+            if err != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                var userModel UserModel
+                userId, ok := s.getUserId(r)
+                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                    s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+                } else {
+                    review.Dislikers = append(review.Dislikers, &userModel)
+                    if s.db.Save(&review).Error != nil {
+                        s.respond(w, r, "Could not update review", http.StatusInternalServerError)
+                    }
+                    s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+                }
+            }
+        } else {
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s *server) handleReviewCommentPost() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        id, ok := params["id"]
+        if ok {
+            var review ReviewModel
+            err := s.db.Where("ID = ?", id).
+                        Preload("Dislikers").
+                        Preload("Likers").
+                        Preload("Comments").
+                        Find(&review).
+                        Error
+            if err != nil {
+                s.respond(w, r, "No review with that ID found", http.StatusNotFound)
+            } else {
+                var userModel UserModel
+                userId, ok := s.getUserId(r)
+                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                    s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+                } else {
+                    var comment CommentWeb
+                    s.decode(w, r, &comment)
+                    review.Comments = append(review.Comments, s.CommentToModel(comment))
+                    if s.db.Save(&review).Error != nil {
+                        s.respond(w, r, "Could not update review", http.StatusInternalServerError)
+                    }
+                    s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
+                }
+            }
+        } else {
+            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+        }
+    }
+}
+
+// USERS
 
 func (s *server) handleUsersPost() http.HandlerFunc {
     type NewUserWeb struct {
@@ -268,6 +336,134 @@ func (s *server) handleUserReviewsGet() http.HandlerFunc {
     }
 }
 
+func (s *server) handleUsernameAvailableGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var count int
+            if s.db.Model(&UserModel{}).Where("USERNAME = ?", username).Count(&count).Error != nil {
+                s.respond(w, r, "Error checking username availabilty", http.StatusInternalServerError)
+            } else {
+                s.respond(w, r, count == 0, http.StatusOK)
+            }
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s *server) handleUserFollowersGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var userModel UserModel
+            if s.db.Where("USERNAME = ?", username).Find(&userModel).Error != nil {
+	            s.respond(w, r, "User not found!", http.StatusNotFound)
+                return
+            }
+            /*
+            followers := make([]UserWeb, 0, len(userModel.Followers))
+            for _, user := range userModel.Followers {
+
+            }
+            s.respond(w, r, followers, http.StatusOK)
+            */
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s *server) handleUserFollowingGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var userModel UserModel
+            if s.db.Where("USERNAME = ?", username).Find(&userModel).Error != nil {
+	            s.respond(w, r, "User not found!", http.StatusNotFound)
+                return
+            }
+            /*
+            s.respond(w, r, , http.StatusOK)
+            */
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+func (s *server) handleUserFollowPost() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        params := mux.Vars(r)
+        username, ok := params["username"]
+        if ok {
+            var userModel UserModel
+            if s.db.Where("USERNAME = ?", username).Find(&userModel).Error != nil {
+	            s.respond(w, r, "User not found!", http.StatusNotFound)
+                return
+            }
+            /*
+            s.respond(w, r, , http.StatusOK)
+            */
+        } else {
+	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+// AUTH
+
+func (s *server) handleAuthLogin() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        var credentials CredentialsWeb
+        decodeErr := s.decode(w, r, &credentials)
+        if decodeErr != nil {
+            s.respond(w, r, "Couldn't decode", http.StatusBadRequest)
+            return
+        }
+
+        var user UserModel
+        if s.db.Where("USERNAME = ?", credentials.Username).Find(&user).Error != nil {
+            s.respond(w, r, "Couldn't find user", http.StatusNotFound)
+            return
+        }
+
+        compareErr := bcrypt.CompareHashAndPassword(
+            []byte(user.PasswordHash),
+            []byte(credentials.Password))
+
+        if compareErr != nil {
+            s.respond(w, r, "Wrong password", http.StatusForbidden)
+        } else {
+            tokenString, err := s.getTokenString(user)
+
+            if err != nil {
+                s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
+                return
+            }
+
+            userAndToken := UserAndTokenWeb{
+                User: s.UserToWeb(user),
+                Token: tokenString,
+            }
+
+            s.respond(w, r, userAndToken, http.StatusOK)
+        }
+    }
+}
+
+func (s *server) getTokenString(model UserModel) (string, error) {
+    token := jwt.New(jwt.SigningMethodHS256)
+    claims := token.Claims.(jwt.MapClaims)
+    claims["user_id"] = model.ID
+    return token.SignedString(s.jwtSecretKey)
+}
+
+// MIDDLEWARE
+
 func (s *server) withAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         auth := r.Header.Get("Authorization")
@@ -306,11 +502,15 @@ func (s *server) log(next http.Handler) http.Handler {
 	})
 }
 
+// NOT FOUND
+
 func (s *server) handleApiNotFound() http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         s.respond(w, r, "Not Found", http.StatusNotFound)
     }
 }
+
+// SINGLE PAGE APPLICATION
 
 func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
@@ -343,6 +543,8 @@ func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
         http.FileServer(http.Dir(staticPath)).ServeHTTP(w, r)
     }
 }
+
+// HELPERS
 
 func (s *server) respond(w http.ResponseWriter, r *http.Request,
                             data interface{}, status int) {
