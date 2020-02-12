@@ -16189,7 +16189,14 @@ var $author$project$Styles$outerBox = function (elems) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
-			[$author$project$Styles$spacingMedium, $author$project$Styles$lightShadow, $author$project$Styles$paddingMedium, $author$project$Styles$roundedSmall]),
+			[
+				$author$project$Styles$spacingMedium,
+				$author$project$Styles$lightShadow,
+				$author$project$Styles$paddingMedium,
+				$author$project$Styles$roundedSmall,
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(550))
+			]),
 		elems);
 };
 var $mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
