@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
     "os"
+    "time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -12,9 +13,13 @@ import (
 )
 
 type server struct {
-    db              *gorm.DB
-    router          *mux.Router
-    jwtSecretKey    []byte
+    db            *gorm.DB
+    router        *mux.Router
+    jwtSecretKey  []byte
+    spotifyToken  []byte
+    spotifyId     string
+    spotifySecret string
+    spotifyExp    time.Time
 }
 
 func main() {
@@ -41,6 +46,23 @@ func run() error {
     if databaseUrl == "" {
         return fmt.Errorf("no database url!")
     }
+
+    s.spotifyId = os.Getenv("SPOTIFY_CLIENT_ID")
+    if s.spotifyId == "" {
+        return fmt.Errorf("set SPOTIFY_CLIENT_ID")
+    }
+
+    s.spotifySecret = os.Getenv("SPOTIFY_CLIENT_SECRET")
+    if s.spotifySecret == "" {
+        return fmt.Errorf("set SPOTIFY_CLIENT_SECRET")
+    }
+
+    var spotifyErr error
+    s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyId, s.spotifySecret)
+    if spotifyErr != nil {
+        return spotifyErr
+    }
+    fmt.Printf("%s\n", s.spotifyToken)
 
     var err error
     s.db, err = gorm.Open("postgres", databaseUrl)

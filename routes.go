@@ -9,6 +9,7 @@ import (
     "strings"
     "context"
 	"github.com/gorilla/mux"
+    "time"
 
 	jwt "github.com/dgrijalva/jwt-go"
     bcrypt "golang.org/x/crypto/bcrypt"
@@ -36,6 +37,8 @@ func (s *server) routes() {
 	api.HandleFunc("/users/{username}/followers", s.handleUserFollowersGet()).Methods("GET")
 	api.HandleFunc("/users/{username}/following", s.handleUserFollowingGet()).Methods("GET")
 	api.HandleFunc("/users/{username}/follow", s.handleUserFollowPost()).Methods("POST")
+
+	api.HandleFunc("/subjects/search", s.handleSubjectsSearchGet()).Methods("GET")
 
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
 
@@ -410,6 +413,31 @@ func (s *server) handleUserFollowPost() http.HandlerFunc {
             */
         } else {
 	        s.respond(w, r, "Param not found!", http.StatusBadRequest)
+        }
+    }
+}
+
+// SUBJECTS
+
+func (s *server) handleSubjectsSearchGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        if time.Now().After(s.spotifyExp) {
+            // get new token
+            var spotifyErr error
+            s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyId, s.spotifySecret)
+            if spotifyErr != nil {
+                s.respond(w, r, "Spotify token not found", http.StatusInternalServerError)
+            }
+        }
+        query := r.URL.Query().Get("q")
+        if query == "" {
+            s.respond(w, r, "query param q not found", http.StatusInternalServerError)
+            return
+        }
+        err := getSpotifyResults(string(s.spotifyToken), query, w)
+        if err != nil {
+            s.respond(w, r, "Spotify API error", http.StatusInternalServerError)
+            return
         }
     }
 }

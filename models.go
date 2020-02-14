@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "time"
+    "strings"
 )
 
 type ReviewModel struct {
@@ -89,7 +90,7 @@ func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
 
 func (s *server) NewReviewToModel(web ReviewWeb) ReviewModel {
     model := ReviewModel{
-        Text: web.Text,
+        Text: strings.Trim(web.Text, " "),
         Stars: web.Stars,
         UserID: web.User.ID,
     }
