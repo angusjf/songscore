@@ -1,9 +1,5 @@
 package main
 
-import (
-    "time"
-)
-
 type spaHandler struct {
     staticPath string
     indexPath  string
@@ -31,7 +27,7 @@ type ReviewWeb struct {
 	Stars     int          `json:"stars"`
 	User      UserWeb      `json:"user"`
 	Subject   SubjectWeb   `json:"subject"`
-    CreatedAt time.Time    `json:"createdAt"`
+    CreatedAt int64        `json:"createdAt"`
     Likes     []UserWeb    `json:"likes"`
     Dislikes  []UserWeb    `json:"dislikes"`
     Comments  []CommentWeb `json:"comments"`

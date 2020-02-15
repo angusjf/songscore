@@ -6396,9 +6396,9 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
 var $author$project$Api$apiRoot = '/api';
-var $author$project$Review$Review = F8(
-	function (id, text, stars, user, subject, comments, likes, dislikes) {
-		return {comments: comments, dislikes: dislikes, id: id, likes: likes, stars: stars, subject: subject, text: text, user: user};
+var $author$project$Review$Review = F9(
+	function (id, text, stars, user, subject, comments, likes, dislikes, createdAt) {
+		return {comments: comments, createdAt: createdAt, dislikes: dislikes, id: id, likes: likes, stars: stars, subject: subject, text: text, user: user};
 	});
 var $author$project$Review$Comment = F3(
 	function (id, user, text) {
@@ -6525,38 +6525,42 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 	});
 var $author$project$Review$decoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'dislikes',
-	$elm$json$Json$Decode$list($author$project$User$decoder),
+	'createdAt',
+	$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'likes',
+		'dislikes',
 		$elm$json$Json$Decode$list($author$project$User$decoder),
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'comments',
-			$elm$json$Json$Decode$list($author$project$Review$decodeComment),
+			'likes',
+			$elm$json$Json$Decode$list($author$project$User$decoder),
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'subject',
-				$author$project$Subject$decoder,
+				'comments',
+				$elm$json$Json$Decode$list($author$project$Review$decodeComment),
 				A3(
 					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'user',
-					$author$project$User$decoder,
+					'subject',
+					$author$project$Subject$decoder,
 					A3(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'stars',
-						$elm$json$Json$Decode$int,
-						A4(
-							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
-							'text',
-							$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string),
-							$elm$core$Maybe$Nothing,
-							A3(
-								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-								'id',
-								$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
-								$elm$json$Json$Decode$succeed($author$project$Review$Review)))))))));
+						'user',
+						$author$project$User$decoder,
+						A3(
+							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+							'stars',
+							$elm$json$Json$Decode$int,
+							A4(
+								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+								'text',
+								$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string),
+								$elm$core$Maybe$Nothing,
+								A3(
+									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+									'id',
+									$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
+									$elm$json$Json$Decode$succeed($author$project$Review$Review))))))))));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -7262,7 +7266,7 @@ var $author$project$Widgets$NewReviewForm$convertToReview = F2(
 			var stars = _v0.a.a;
 			var subject = _v0.b.a;
 			return $elm$core$Maybe$Just(
-				{comments: _List_Nil, dislikes: _List_Nil, id: $elm$core$Maybe$Nothing, likes: _List_Nil, stars: stars, subject: subject, text: form.text, user: user});
+				{comments: _List_Nil, createdAt: $elm$core$Maybe$Nothing, dislikes: _List_Nil, id: $elm$core$Maybe$Nothing, likes: _List_Nil, stars: stars, subject: subject, text: form.text, user: user});
 		} else {
 			return $elm$core$Maybe$Nothing;
 		}
@@ -7376,19 +7380,28 @@ var $elm$json$Json$Encode$list = F2(
 	});
 var $author$project$Review$encode = function (review) {
 	var text = function () {
-		var _v1 = review.text;
-		if (_v1.$ === 'Just') {
-			var x = _v1.a;
+		var _v2 = review.text;
+		if (_v2.$ === 'Just') {
+			var x = _v2.a;
 			return $elm$json$Json$Encode$string(x);
 		} else {
 			return $elm$json$Json$Encode$null;
 		}
 	}();
 	var id = function () {
-		var _v0 = review.id;
-		if (_v0.$ === 'Just') {
-			var x = _v0.a;
+		var _v1 = review.id;
+		if (_v1.$ === 'Just') {
+			var x = _v1.a;
 			return $elm$json$Json$Encode$int(x);
+		} else {
+			return $elm$json$Json$Encode$null;
+		}
+	}();
+	var createdAt = function () {
+		var _v0 = review.createdAt;
+		if (_v0.$ === 'Just') {
+			var c = _v0.a;
+			return $elm$json$Json$Encode$int(c);
 		} else {
 			return $elm$json$Json$Encode$null;
 		}
@@ -7415,7 +7428,8 @@ var $author$project$Review$encode = function (review) {
 				A2($elm$json$Json$Encode$list, $author$project$User$encode, review.dislikes)),
 				_Utils_Tuple2(
 				'comment',
-				A2($elm$json$Json$Encode$list, $author$project$Review$encodeComment, review.comments))
+				A2($elm$json$Json$Encode$list, $author$project$Review$encodeComment, review.comments)),
+				_Utils_Tuple2('createdAt', createdAt)
 			]));
 };
 var $elm$http$Http$jsonBody = function (value) {
@@ -7711,7 +7725,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 						{subjectQuery: _new}),
 					A3(
 						$author$project$Api$searchSubjects,
-						model.subjectQuery,
+						_new,
 						$author$project$Widgets$NewReviewForm$resultsLimit,
 						function (x) {
 							return model.toOuterMsg(
@@ -7719,9 +7733,8 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 						}));
 			case 'GotResults':
 				var res = msg.a;
-				var _v1 = A2($elm$core$Debug$log, 'GotResults', res);
-				if (_v1.$ === 'Ok') {
-					var results = _v1.a;
+				if (res.$ === 'Ok') {
+					var results = res.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -7730,7 +7743,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var results = _v1.a;
+					var results = res.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnResultClicked':
@@ -16455,6 +16468,9 @@ var $author$project$Styles$likesBox = function (usernames) {
 				}())
 			]));
 };
+var $author$project$Styles$longAgo = function (millis) {
+	return $elm$core$String$fromFloat(((millis / 60) / 60) / 1000) + ' hours ago';
+};
 var $author$project$Styles$greyStar = A2(
 	$mdgriffith$elm_ui$Element$image,
 	_List_fromArray(
@@ -16634,7 +16650,12 @@ var $author$project$Styles$viewReview = F8(
 			_List_fromArray(
 				[
 					A2($author$project$Styles$userBox, review.user.username, review.user.image),
-					$author$project$Styles$reviewTextBox(review.text)
+					$author$project$Styles$reviewTextBox(review.text),
+					$author$project$Styles$text(
+					A2(
+						$elm$core$Maybe$withDefault,
+						'',
+						A2($elm$core$Maybe$map, $author$project$Styles$longAgo, review.createdAt)))
 				]));
 		var likes = A2(
 			$elm$core$List$map,
