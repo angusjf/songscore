@@ -57,6 +57,7 @@ func (s *server) handleFeedGet() http.HandlerFunc {
                     Preload("Likers").
                     Preload("Comments").
                     Order("CREATED_AT desc").
+                    Limit(16).
                     Find(&reviews).
                     Error
         if err != nil {
@@ -85,6 +86,7 @@ func (s *server) handleReviewPost() http.HandlerFunc {
             id, ok := s.getUserId(r)
             if ok {
                 if review.User.ID == id {
+                    fmt.Printf("%s ->>>>>>>>>>>>>>>>", review.Subject.SpotifyID)
                     model := s.NewReviewToModel(review)
                     s.db.Create(&model)
                     s.respond(w, r, s.ReviewToWeb(model), http.StatusCreated)
@@ -421,6 +423,7 @@ func (s *server) handleUserFollowPost() http.HandlerFunc {
 
 func (s *server) handleSubjectsSearchGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
+        fmt.Printf("%s < %s", time.Now(), s.spotifyExp)
         if time.Now().After(s.spotifyExp) {
             // get new token
             var spotifyErr error

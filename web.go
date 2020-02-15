@@ -47,7 +47,8 @@ type CommentWeb struct {
 type SubjectWeb struct {
 	ID     int    `json:"id"`
 	Title  string `json:"title"`
-	Artist string `json:"artist,omitempty"`
-	Image  string `json:"image,omitempty"`
-	Kind   string `json:"kind,omitempty"`
+	Artist string `json:"artist"`
+	Image  string `json:"image"`
+	Kind   string `json:"kind"`
+    SpotifyID string `json:"spotifyId"`
 }

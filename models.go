@@ -131,6 +131,7 @@ func (s *server) SubjectToModel(web SubjectWeb) SubjectModel {
         Artist: web.Artist,
         Image: web.Image,
         Kind: kind,
+        SpotifyID: web.SpotifyID,
     }
 }
 
@@ -148,6 +149,7 @@ func (s *server) NewSubjectToModel(web SubjectWeb) SubjectModel {
         Artist: web.Artist,
         Image: internalImage,
         Kind: kind,
+        SpotifyID: web.SpotifyID,
     }
 }
 
@@ -180,6 +182,7 @@ type SubjectModel struct {
     CreatedAt time.Time
     UpdatedAt time.Time
     DeletedAt *time.Time
+    SpotifyID string
 }
 
 func (s *server) SubjectToWeb(model SubjectModel) SubjectWeb {
@@ -195,6 +198,7 @@ func (s *server) SubjectToWeb(model SubjectModel) SubjectWeb {
         Artist: model.Artist,
         Image: model.Image,
         Kind: kind,
+        SpotifyID: model.SpotifyID,
     }
 }
 
