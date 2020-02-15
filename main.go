@@ -10,6 +10,7 @@ import (
 	"github.com/rs/cors"
     "github.com/jinzhu/gorm"
     _ "github.com/jinzhu/gorm/dialects/postgres"
+    heroku "github.com/jonahgeorge/force-ssl-heroku"
 )
 
 type server struct {
@@ -81,5 +82,5 @@ func run() error {
 
 	handler := cors.AllowAll().Handler(s.router)
 
-	return http.ListenAndServe(":" + port, handler)
+	return http.ListenAndServe(":" + port, heroku.ForceSsl(handler))
 }

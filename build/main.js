@@ -7700,7 +7700,7 @@ var $author$project$Widgets$NewReviewForm$update = F2(
 			case 'OnSubjectQueryChanged':
 				var _new = msg.a;
 				return (_Utils_cmp(
-					$elm$core$String$length(model.subjectQuery),
+					$elm$core$String$length(_new),
 					$author$project$Widgets$NewReviewForm$minSearchLength) < 0) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -16202,8 +16202,6 @@ var $author$project$Styles$Mine = {$: 'Mine'};
 var $author$project$Styles$Yours = {$: 'Yours'};
 var $mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
 var $mdgriffith$elm_ui$Element$alignBottom = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Bottom);
-var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
-var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $mdgriffith$elm_ui$Element$Border$widthXY = F2(
 	function (x, y) {
 		return A2(
@@ -16282,8 +16280,48 @@ var $mdgriffith$elm_ui$Element$link = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
+var $author$project$Styles$userBox = F2(
+	function (username, image) {
+		return A2(
+			$mdgriffith$elm_ui$Element$link,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$veryLightAlpha),
+					$mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 0, left: 0, right: 6, top: 0}),
+					$author$project$Styles$roundedSmall
+				]),
+			{
+				label: A2(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+							$author$project$Styles$spacingSmall
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$image,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(30))
+								]),
+							{
+								description: 'profile picture',
+								src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', image)
+							}),
+							$author$project$Styles$boldText('@' + username)
+						])),
+				url: '/users/' + username
+			});
+	});
 var $author$project$Styles$comment = function (_v0) {
-	var username = _v0.a;
+	var user = _v0.a;
 	var commentText = _v0.b;
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
@@ -16291,20 +16329,31 @@ var $author$project$Styles$comment = function (_v0) {
 			[$author$project$Styles$spacingMedium, $author$project$Styles$paddingSmall]),
 		_List_fromArray(
 			[
+				A2($author$project$Styles$userBox, user.username, user.image),
 				A2(
-				$mdgriffith$elm_ui$Element$link,
-				_List_Nil,
-				{
-					label: $author$project$Styles$boldText('@' + (username + ':')),
-					url: '/users/' + username
-				}),
-				$author$project$Styles$text(commentText)
+				$mdgriffith$elm_ui$Element$paragraph,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						$author$project$Styles$text(commentText)
+					]))
 			]));
 };
+var $author$project$Styles$topLine = $mdgriffith$elm_ui$Element$Border$widthEach(
+	{bottom: 0, left: 0, right: 0, top: 1});
 var $author$project$Styles$commentsBox = function (comments) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha),
+				$author$project$Styles$topLine,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$author$project$Styles$paddingSmall
+			]),
 		A2($elm$core$List$map, $author$project$Styles$comment, comments));
 };
 var $author$project$Styles$deleteButton = function (msg) {
@@ -16391,14 +16440,20 @@ var $author$project$Styles$likeButton = function (msg) {
 	return A2($author$project$Styles$button, '<3', msg);
 };
 var $author$project$Styles$likesBox = function (usernames) {
-	return $author$project$Styles$text(
-		function () {
-			if (usernames.b) {
-				return $author$project$Styles$joinAllNice(usernames) + ' agreed with this!';
-			} else {
-				return '';
-			}
-		}());
+	return A2(
+		$mdgriffith$elm_ui$Element$paragraph,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$author$project$Styles$text(
+				function () {
+					if (usernames.b) {
+						return $author$project$Styles$joinAllNice(usernames) + ' agreed with this!';
+					} else {
+						return '';
+					}
+				}())
+			]));
 };
 var $author$project$Styles$greyStar = A2(
 	$mdgriffith$elm_ui$Element$image,
@@ -16453,7 +16508,6 @@ var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
 			'box-shadow',
 			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
 };
-var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
 var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
 	{
 		blur: 15,
@@ -16466,7 +16520,6 @@ var $author$project$Styles$outerBox = function (elems) {
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				$author$project$Styles$spacingMedium,
 				$author$project$Styles$lightShadow,
 				$author$project$Styles$roundedSmall,
 				$mdgriffith$elm_ui$Element$width(
@@ -16479,9 +16532,8 @@ var $author$project$Styles$reviewTextBox = function (str) {
 		$mdgriffith$elm_ui$Element$el,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$Font$size(18),
-				$mdgriffith$elm_ui$Element$Font$italic,
-				$mdgriffith$elm_ui$Element$Font$bold
+				$mdgriffith$elm_ui$Element$Font$size(16),
+				$mdgriffith$elm_ui$Element$Font$italic
 			]),
 		A2(
 			$mdgriffith$elm_ui$Element$paragraph,
@@ -16491,7 +16543,7 @@ var $author$project$Styles$reviewTextBox = function (str) {
 					$mdgriffith$elm_ui$Element$text(
 					A2(
 						$elm$core$Maybe$withDefault,
-						'(this review has no text)',
+						'',
 						A2(
 							$elm$core$Maybe$map,
 							function (x) {
@@ -16535,60 +16587,38 @@ var $author$project$Styles$spotifyLink = function (spotifyId) {
 			url: 'https://open.spotify.com/track/' + spotifyId
 		});
 };
-var $author$project$Styles$userBox = F2(
-	function (username, image) {
-		return A2(
-			$mdgriffith$elm_ui$Element$link,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink)
-				]),
-			{
-				label: A2(
-					$mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink)
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$mdgriffith$elm_ui$Element$image,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-									$mdgriffith$elm_ui$Element$width(
-									$mdgriffith$elm_ui$Element$px(30))
-								]),
-							{
-								description: 'profile picture',
-								src: A2($elm$core$Maybe$withDefault, '/assets/images/default-user.png', image)
-							}),
-							$author$project$Styles$text('@' + username)
-						])),
-				url: '/users/' + username
-			});
-	});
 var $author$project$Styles$viewReview = F8(
 	function (maybeUser, review, newComment, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
 		var spotify = $author$project$Styles$spotifyLink(review.subject.spotifyId);
 		var newCommentBox = A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
-				[$author$project$Styles$spacingMedium]),
+				[
+					$author$project$Styles$paddingSmall,
+					$author$project$Styles$spacingMedium,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
 			_List_fromArray(
 				[
 					A2(
 					$mdgriffith$elm_ui$Element$Input$text,
-					_List_Nil,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$height(
+							$mdgriffith$elm_ui$Element$px(38))
+						]),
 					{
 						label: $mdgriffith$elm_ui$Element$Input$labelHidden('comment'),
 						onChange: onCommentChanged,
 						placeholder: $elm$core$Maybe$Just(
 							A2(
 								$mdgriffith$elm_ui$Element$Input$placeholder,
-								_List_Nil,
-								$author$project$Styles$text('leave a comment...'))),
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$Font$size(14)
+									]),
+								$mdgriffith$elm_ui$Element$text('leave a comment...'))),
 						text: newComment
 					}),
 					A2(
@@ -16596,6 +16626,15 @@ var $author$project$Styles$viewReview = F8(
 					'post',
 					$elm$core$Maybe$Just(
 						onCommentPost(newComment)))
+				]));
+		var nameAndText = A2(
+			$mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[$mdgriffith$elm_ui$Element$alignTop, $author$project$Styles$spacingMedium]),
+			_List_fromArray(
+				[
+					A2($author$project$Styles$userBox, review.user.username, review.user.image),
+					$author$project$Styles$reviewTextBox(review.text)
 				]));
 		var likes = A2(
 			$elm$core$List$map,
@@ -16620,7 +16659,7 @@ var $author$project$Styles$viewReview = F8(
 		var comments = A2(
 			$elm$core$List$map,
 			function (c) {
-				return _Utils_Tuple2(c.user.username, c.text);
+				return _Utils_Tuple2(c.user, c.text);
 			},
 			review.comments);
 		var actions = function () {
@@ -16648,7 +16687,9 @@ var $author$project$Styles$viewReview = F8(
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$author$project$Styles$bottomLine,
+					$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha)
 				]),
 			_List_fromArray(
 				[
@@ -16662,9 +16703,7 @@ var $author$project$Styles$viewReview = F8(
 							$mdgriffith$elm_ui$Element$alignTop,
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-							$author$project$Styles$bottomLine,
-							$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha),
-							$author$project$Styles$paddingSmall
+							$author$project$Styles$paddingMedium
 						]),
 					_List_fromArray(
 						[
@@ -16685,13 +16724,13 @@ var $author$project$Styles$viewReview = F8(
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
-												$author$project$Styles$reviewTextBox(review.text)
+												nameAndText
 											]);
 									} else {
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
-												$author$project$Styles$reviewTextBox(review.text),
+												nameAndText,
 												$author$project$Styles$dislikesBox(dislikes)
 											]);
 									}
@@ -16700,14 +16739,14 @@ var $author$project$Styles$viewReview = F8(
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
-												$author$project$Styles$reviewTextBox(review.text),
+												nameAndText,
 												$author$project$Styles$likesBox(likes)
 											]);
 									} else {
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
-												$author$project$Styles$reviewTextBox(review.text),
+												nameAndText,
 												$author$project$Styles$likesBox(likes),
 												$author$project$Styles$dislikesBox(dislikes)
 											]);
@@ -16721,19 +16760,13 @@ var $author$project$Styles$viewReview = F8(
 									$author$project$Styles$spacingMedium,
 									$mdgriffith$elm_ui$Element$alignBottom,
 									$mdgriffith$elm_ui$Element$height(
-									$mdgriffith$elm_ui$Element$px(40))
+									$mdgriffith$elm_ui$Element$px(40)),
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 								]),
 							_Utils_ap(
 								actions,
 								_List_fromArray(
-									[
-										spotify,
-										A2(
-										$mdgriffith$elm_ui$Element$el,
-										_List_fromArray(
-											[$mdgriffith$elm_ui$Element$alignRight]),
-										A2($author$project$Styles$userBox, review.user.username, review.user.image))
-									])))
+									[spotify])))
 						]))
 				]));
 		return $author$project$Styles$outerBox(
@@ -17104,6 +17137,8 @@ var $author$project$Widgets$Navbar$OnLogoClicked = {$: 'OnLogoClicked'};
 var $author$project$Widgets$Navbar$OnLogoutClicked = {$: 'OnLogoutClicked'};
 var $author$project$Widgets$Navbar$OnSignupClicked = {$: 'OnSignupClicked'};
 var $author$project$Widgets$Navbar$OnUserClicked = {$: 'OnUserClicked'};
+var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $author$project$Styles$buttonAlt = F2(
 	function (str, action) {
 		return A2(
