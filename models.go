@@ -81,7 +81,7 @@ func (s *server) ReviewToWeb(model ReviewModel) ReviewWeb {
         Stars: model.Stars,
         User: s.UserToWeb(user),
         Subject: s.SubjectToWeb(subject),
-        CreatedAt: time.Now().Sub(model.CreatedAt).Milliseconds(),
+        CreatedAt: model.CreatedAt.Unix() * 1000,
         Likes: likes,
         Dislikes: dislikes,
         Comments: comments,

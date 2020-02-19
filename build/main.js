@@ -4550,6 +4550,52 @@ function _Http_track(router, xhr, tracker)
 }
 
 
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2($elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = $elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = $elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
+
+
+
 // DECODER
 
 var _File_decoder = _Json_decodePrim(function(value) {
@@ -6395,6 +6441,10 @@ var $author$project$Pages$Feed$NRFMsg = function (a) {
 	return {$: 'NRFMsg', a: a};
 };
 var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
+var $author$project$Pages$Feed$RLMsg = function (a) {
+	return {$: 'RLMsg', a: a};
+};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$Api$apiRoot = '/api';
 var $author$project$Review$Review = F9(
 	function (id, text, stars, user, subject, comments, likes, dislikes, createdAt) {
@@ -6924,8 +6974,25 @@ var $author$project$Widgets$NewReviewForm$init = F2(
 	function (toOuterMsg, onPress) {
 		return {onPress: onPress, results: _List_Nil, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: '', text: $elm$core$Maybe$Nothing, toOuterMsg: toOuterMsg};
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Widgets$ReviewList$GotTime = function (a) {
+	return {$: 'GotTime', a: a};
+};
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $author$project$Widgets$ReviewList$setReviews = function (reviews) {
 	return A2(
 		$elm$core$List$map,
@@ -6937,13 +7004,19 @@ var $author$project$Widgets$ReviewList$setReviews = function (reviews) {
 var $author$project$Widgets$ReviewList$init = F2(
 	function (session, reviews) {
 		return _Utils_Tuple3(
-			$author$project$Widgets$ReviewList$setReviews(reviews),
+			{
+				currentTime: $elm$core$Maybe$Nothing,
+				reviews: $author$project$Widgets$ReviewList$setReviews(reviews)
+			},
 			session,
-			$elm$core$Platform$Cmd$none);
+			A2($elm$core$Task$perform, $author$project$Widgets$ReviewList$GotTime, $elm$time$Time$now));
 	});
+var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$Pages$Feed$init = function (session) {
 	var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
 	var rl = _v0.a;
+	var rlSession = _v0.b;
+	var rlCmd = _v0.c;
 	var model = {
 		feed: rl,
 		nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed)
@@ -6954,7 +7027,12 @@ var $author$project$Pages$Feed$init = function (session) {
 		return _Utils_Tuple3(
 			model,
 			session,
-			A2($author$project$Api$getFeed, uAndT, $author$project$Pages$Feed$GotFeed));
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						A2($author$project$Api$getFeed, uAndT, $author$project$Pages$Feed$GotFeed),
+						A2($elm$core$Platform$Cmd$map, $author$project$Pages$Feed$RLMsg, rlCmd)
+					])));
 	} else {
 		return _Utils_Tuple3(
 			model,
@@ -6962,6 +7040,7 @@ var $author$project$Pages$Feed$init = function (session) {
 			A2($author$project$Route$goTo, session.key, $author$project$Route$Login));
 	}
 };
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Pages$Login$init = function (session) {
 	var model = {password: '', problems: _List_Nil, username: ''};
 	return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
@@ -6972,6 +7051,9 @@ var $author$project$Pages$Register$init = function (session) {
 };
 var $author$project$Pages$Review$GotReview = function (a) {
 	return {$: 'GotReview', a: a};
+};
+var $author$project$Pages$Review$ReviewListMsg = function (a) {
+	return {$: 'ReviewListMsg', a: a};
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
@@ -6999,14 +7081,24 @@ var $author$project$Pages$Review$init = F3(
 	function (session, username, id) {
 		var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
 		var reviewListModel = _v0.a;
+		var rlSession = _v0.b;
+		var rlCmd = _v0.c;
 		var model = {review: $elm$core$Maybe$Nothing, reviewListModel: reviewListModel};
 		return _Utils_Tuple3(
 			model,
-			session,
-			A3($author$project$Api$getReview, session.userAndToken, id, $author$project$Pages$Review$GotReview));
+			rlSession,
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						A3($author$project$Api$getReview, session.userAndToken, id, $author$project$Pages$Review$GotReview),
+						A2($elm$core$Platform$Cmd$map, $author$project$Pages$Review$ReviewListMsg, rlCmd)
+					])));
 	});
 var $author$project$Pages$User$GotUser = function (a) {
 	return {$: 'GotUser', a: a};
+};
+var $author$project$Pages$User$ReviewListMsg = function (a) {
+	return {$: 'ReviewListMsg', a: a};
 };
 var $author$project$Api$getUser = F3(
 	function (userAndToken, username, msg) {
@@ -7022,11 +7114,18 @@ var $author$project$Pages$User$init = F2(
 	function (session, username) {
 		var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
 		var reviewListModel = _v0.a;
+		var rlSession = _v0.b;
+		var rlCmd = _v0.c;
 		var model = {reviewListModel: reviewListModel, user: $elm$core$Maybe$Nothing};
 		return _Utils_Tuple3(
 			model,
-			session,
-			A3($author$project$Api$getUser, session.userAndToken, username, $author$project$Pages$User$GotUser));
+			rlSession,
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						A3($author$project$Api$getUser, session.userAndToken, username, $author$project$Pages$User$GotUser),
+						A2($elm$core$Platform$Cmd$map, $author$project$Pages$User$ReviewListMsg, rlCmd)
+					])));
 	});
 var $author$project$Main$Feed = function (a) {
 	return {$: 'Feed', a: a};
@@ -7034,7 +7133,6 @@ var $author$project$Main$Feed = function (a) {
 var $author$project$Main$FeedMsg = function (a) {
 	return {$: 'FeedMsg', a: a};
 };
-var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$Main$stepFeed = F2(
 	function (model, _v0) {
 		var feedModel = _v0.a;
@@ -7191,6 +7289,9 @@ var $author$project$Main$init = F3(
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Main$subscriptions = function (_v0) {
+	return $elm$core$Platform$Sub$none;
+};
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $author$project$Main$stepNavbar = F2(
 	function (model, _v0) {
@@ -7248,9 +7349,6 @@ var $elm$url$Url$toString = function (url) {
 };
 var $author$project$Pages$Feed$GotNewReview = function (a) {
 	return {$: 'GotNewReview', a: a};
-};
-var $author$project$Pages$Feed$RLMsg = function (a) {
-	return {$: 'RLMsg', a: a};
 };
 var $author$project$Widgets$ReviewList$addReview = F2(
 	function (review, model) {
@@ -7935,9 +8033,10 @@ var $author$project$Widgets$ReviewList$updateReview = F2(
 	});
 var $author$project$Widgets$ReviewList$update = F3(
 	function (msg, model, session) {
-		switch (msg.$) {
+		var _v0 = A2($elm$core$Debug$log, 'update: ', msg);
+		switch (_v0.$) {
 			case 'OnDelete':
-				var review = msg.a;
+				var review = _v0.a;
 				var _v1 = session.userAndToken;
 				if (_v1.$ === 'Just') {
 					var uAndT = _v1.a;
@@ -7949,7 +8048,7 @@ var $author$project$Widgets$ReviewList$update = F3(
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnLike':
-				var review = msg.a;
+				var review = _v0.a;
 				var _v2 = session.userAndToken;
 				if (_v2.$ === 'Just') {
 					var uAndT = _v2.a;
@@ -7961,7 +8060,7 @@ var $author$project$Widgets$ReviewList$update = F3(
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnDislike':
-				var review = msg.a;
+				var review = _v0.a;
 				var _v3 = session.userAndToken;
 				if (_v3.$ === 'Just') {
 					var uAndT = _v3.a;
@@ -7973,8 +8072,8 @@ var $author$project$Widgets$ReviewList$update = F3(
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnCommentSubmit':
-				var review = msg.a;
-				var comment = msg.b;
+				var review = _v0.a;
+				var comment = _v0.b;
 				var _v4 = session.userAndToken;
 				if (_v4.$ === 'Just') {
 					var uAndT = _v4.a;
@@ -7986,54 +8085,84 @@ var $author$project$Widgets$ReviewList$update = F3(
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'ReviewDeleted':
-				var result = msg.a;
+				var result = _v0.a;
 				if (result.$ === 'Ok') {
 					var review = result.a;
 					return _Utils_Tuple3(
-						A2($author$project$Widgets$ReviewList$deleteReview, review, model),
+						_Utils_update(
+							model,
+							{
+								reviews: A2($author$project$Widgets$ReviewList$deleteReview, review, model.reviews)
+							}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'ReviewLiked':
-				var result = msg.a;
+				var result = _v0.a;
 				if (result.$ === 'Ok') {
 					var review = result.a;
 					return _Utils_Tuple3(
-						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						_Utils_update(
+							model,
+							{
+								reviews: A2($author$project$Widgets$ReviewList$updateReview, review, model.reviews)
+							}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'ReviewDisliked':
-				var result = msg.a;
+				var result = _v0.a;
 				if (result.$ === 'Ok') {
 					var review = result.a;
 					return _Utils_Tuple3(
-						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						_Utils_update(
+							model,
+							{
+								reviews: A2($author$project$Widgets$ReviewList$updateReview, review, model.reviews)
+							}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'CommentSubmitted':
-				var result = msg.a;
+				var result = _v0.a;
 				if (result.$ === 'Ok') {
 					var review = result.a;
 					return _Utils_Tuple3(
-						A2($author$project$Widgets$ReviewList$updateReview, review, model),
+						_Utils_update(
+							model,
+							{
+								reviews: A2($author$project$Widgets$ReviewList$updateReview, review, model.reviews)
+							}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
-			default:
-				var review = msg.a;
-				var newComment = msg.b;
+			case 'OnReviewCommentChanged':
+				var review = _v0.a;
+				var newComment = _v0.b;
 				return _Utils_Tuple3(
-					A3($author$project$Widgets$ReviewList$setComment, review, newComment, model),
+					_Utils_update(
+						model,
+						{
+							reviews: A3($author$project$Widgets$ReviewList$setComment, review, newComment, model.reviews)
+						}),
+					session,
+					$elm$core$Platform$Cmd$none);
+			default:
+				var posix = _v0.a;
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{
+							currentTime: $elm$core$Maybe$Just(posix)
+						}),
 					session,
 					$elm$core$Platform$Cmd$none);
 		}
@@ -8065,11 +8194,17 @@ var $author$project$Pages$Feed$update = F3(
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var review = result.a;
+					var feed = model.feed;
+					var newFeed = _Utils_update(
+						feed,
+						{
+							reviews: A2($author$project$Widgets$ReviewList$addReview, review, model.feed.reviews)
+						});
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
 							{
-								feed: A2($author$project$Widgets$ReviewList$addReview, review, model.feed),
+								feed: newFeed,
 								nrf: A2($author$project$Widgets$NewReviewForm$init, $author$project$Pages$Feed$NRFMsg, $author$project$Pages$Feed$OnNRFSubmitPressed)
 							}),
 						session,
@@ -8081,12 +8216,16 @@ var $author$project$Pages$Feed$update = F3(
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var reviews = result.a;
+					var feed = model.feed;
+					var newFeed = _Utils_update(
+						feed,
+						{
+							reviews: $author$project$Widgets$ReviewList$setReviews(reviews)
+						});
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
-							{
-								feed: $author$project$Widgets$ReviewList$setReviews(reviews)
-							}),
+							{feed: newFeed}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -8286,10 +8425,6 @@ var $author$project$Pages$Register$ImageDecoded = function (a) {
 var $author$project$Pages$Register$OnImageSelected = function (a) {
 	return {$: 'OnImageSelected', a: a};
 };
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
 		return A2(
@@ -8455,9 +8590,6 @@ var $author$project$Pages$Register$update = F3(
 				}
 		}
 	});
-var $author$project$Pages$Review$ReviewListMsg = function (a) {
-	return {$: 'ReviewListMsg', a: a};
-};
 var $author$project$Pages$Review$stepReviewList = F2(
 	function (model, _v0) {
 		var reviewListModel = _v0.a;
@@ -8476,14 +8608,20 @@ var $author$project$Pages$Review$update = F3(
 			var result = msg.a;
 			if (result.$ === 'Ok') {
 				var review = result.a;
+				var reviewListModel = model.reviewListModel;
+				var newRLM = _Utils_update(
+					reviewListModel,
+					{
+						reviews: $author$project$Widgets$ReviewList$setReviews(
+							_List_fromArray(
+								[review]))
+					});
 				return _Utils_Tuple3(
 					_Utils_update(
 						model,
 						{
 							review: $elm$core$Maybe$Just(review),
-							reviewListModel: $author$project$Widgets$ReviewList$setReviews(
-								_List_fromArray(
-									[review]))
+							reviewListModel: newRLM
 						}),
 					session,
 					$elm$core$Platform$Cmd$none);
@@ -8514,9 +8652,6 @@ var $author$project$Api$getUserReviews = F3(
 				url: $author$project$Api$apiRoot + ('/users/' + (user.username + '/reviews'))
 			});
 	});
-var $author$project$Pages$User$ReviewListMsg = function (a) {
-	return {$: 'ReviewListMsg', a: a};
-};
 var $author$project$Pages$User$stepReviewList = F2(
 	function (model, _v0) {
 		var reviewListModel = _v0.a;
@@ -8534,14 +8669,19 @@ var $author$project$Pages$User$update = F3(
 		switch (msg.$) {
 			case 'GotReviews':
 				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var reviews = result.a;
+				var _v1 = A2($elm$core$Debug$log, 'GotResult', result);
+				if (_v1.$ === 'Ok') {
+					var reviews = _v1.a;
+					var reviewListModel = model.reviewListModel;
+					var newRLM = _Utils_update(
+						reviewListModel,
+						{
+							reviews: $author$project$Widgets$ReviewList$setReviews(reviews)
+						});
 					return _Utils_Tuple3(
 						_Utils_update(
 							model,
-							{
-								reviewListModel: $author$project$Widgets$ReviewList$setReviews(reviews)
-							}),
+							{reviewListModel: newRLM}),
 						session,
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -16468,9 +16608,154 @@ var $author$project$Styles$likesBox = function (usernames) {
 				}())
 			]));
 };
-var $author$project$Styles$longAgo = function (millis) {
-	return $elm$core$String$fromFloat(((millis / 60) / 60) / 1000) + ' hours ago';
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeDays = function (days) {
+	return (days < 2) ? 'tomorrow' : ('in ' + ($elm$core$String$fromInt(days) + ' days'));
 };
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeHours = function (hours) {
+	return (hours < 2) ? 'in an hour' : ('in ' + ($elm$core$String$fromInt(hours) + ' hours'));
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeMinutes = function (minutes) {
+	return (minutes < 2) ? 'in a minute' : ('in ' + ($elm$core$String$fromInt(minutes) + ' minutes'));
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeMonths = function (months) {
+	return (months < 2) ? 'in a month' : ('in ' + ($elm$core$String$fromInt(months) + ' months'));
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeSeconds = function (seconds) {
+	return (seconds < 30) ? 'in a few seconds' : ('in ' + ($elm$core$String$fromInt(seconds) + ' seconds'));
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultInSomeYears = function (years) {
+	return (years < 2) ? 'in a year' : ('in ' + ($elm$core$String$fromInt(years) + ' years'));
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultRightNow = 'right now';
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeDaysAgo = function (days) {
+	return (days < 2) ? 'yesterday' : ($elm$core$String$fromInt(days) + ' days ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeHoursAgo = function (hours) {
+	return (hours < 2) ? 'an hour ago' : ($elm$core$String$fromInt(hours) + ' hours ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeMinutesAgo = function (minutes) {
+	return (minutes < 2) ? 'a minute ago' : ($elm$core$String$fromInt(minutes) + ' minutes ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeMonthsAgo = function (months) {
+	return (months < 2) ? 'last month' : ($elm$core$String$fromInt(months) + ' months ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeSecondsAgo = function (seconds) {
+	return (seconds < 30) ? 'just now' : ($elm$core$String$fromInt(seconds) + ' seconds ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultSomeYearsAgo = function (years) {
+	return (years < 2) ? 'last year' : ($elm$core$String$fromInt(years) + ' years ago');
+};
+var $ryannhg$date_format$DateFormat$Relative$defaultRelativeOptions = {inSomeDays: $ryannhg$date_format$DateFormat$Relative$defaultInSomeDays, inSomeHours: $ryannhg$date_format$DateFormat$Relative$defaultInSomeHours, inSomeMinutes: $ryannhg$date_format$DateFormat$Relative$defaultInSomeMinutes, inSomeMonths: $ryannhg$date_format$DateFormat$Relative$defaultInSomeMonths, inSomeSeconds: $ryannhg$date_format$DateFormat$Relative$defaultInSomeSeconds, inSomeYears: $ryannhg$date_format$DateFormat$Relative$defaultInSomeYears, rightNow: $ryannhg$date_format$DateFormat$Relative$defaultRightNow, someDaysAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeDaysAgo, someHoursAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeHoursAgo, someMinutesAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeMinutesAgo, someMonthsAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeMonthsAgo, someSecondsAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeSecondsAgo, someYearsAgo: $ryannhg$date_format$DateFormat$Relative$defaultSomeYearsAgo};
+var $ryannhg$date_format$DateFormat$Relative$RelativeTimeFunctions = F6(
+	function (seconds, minutes, hours, days, months, years) {
+		return {days: days, hours: hours, minutes: minutes, months: months, seconds: seconds, years: years};
+	});
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $ryannhg$date_format$DateFormat$Relative$relativeTimeWithFunctions = F3(
+	function (zone, millis, functions) {
+		var seconds = (millis / 1000) | 0;
+		var posix = $elm$time$Time$millisToPosix(millis);
+		var minutes = (seconds / 60) | 0;
+		var hours = (minutes / 60) | 0;
+		var days = (hours / 24) | 0;
+		return (minutes < 1) ? functions.seconds(
+			A2($elm$time$Time$toSecond, zone, posix)) : ((hours < 1) ? functions.minutes(
+			A2($elm$time$Time$toMinute, zone, posix)) : ((hours < 24) ? functions.hours(
+			A2($elm$time$Time$toHour, zone, posix)) : ((days < 30) ? functions.days(days) : ((days < 365) ? functions.months((days / 30) | 0) : functions.years((days / 365) | 0)))));
+	});
+var $ryannhg$date_format$DateFormat$Relative$toMilliseconds = $elm$time$Time$posixToMillis;
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
+var $ryannhg$date_format$DateFormat$Relative$relativeTimeWithOptions = F3(
+	function (options, start, end) {
+		var differenceInMilliseconds = $ryannhg$date_format$DateFormat$Relative$toMilliseconds(end) - $ryannhg$date_format$DateFormat$Relative$toMilliseconds(start);
+		return (!differenceInMilliseconds) ? options.rightNow : A3(
+			$ryannhg$date_format$DateFormat$Relative$relativeTimeWithFunctions,
+			$elm$time$Time$utc,
+			$elm$core$Basics$abs(differenceInMilliseconds),
+			(differenceInMilliseconds < 0) ? A6($ryannhg$date_format$DateFormat$Relative$RelativeTimeFunctions, options.someSecondsAgo, options.someMinutesAgo, options.someHoursAgo, options.someDaysAgo, options.someMonthsAgo, options.someYearsAgo) : A6($ryannhg$date_format$DateFormat$Relative$RelativeTimeFunctions, options.inSomeSeconds, options.inSomeMinutes, options.inSomeHours, options.inSomeDays, options.inSomeMonths, options.inSomeYears));
+	});
+var $ryannhg$date_format$DateFormat$Relative$relativeTime = $ryannhg$date_format$DateFormat$Relative$relativeTimeWithOptions($ryannhg$date_format$DateFormat$Relative$defaultRelativeOptions);
+var $author$project$Styles$longAgo = F2(
+	function (now, createdAt) {
+		return A2(
+			$ryannhg$date_format$DateFormat$Relative$relativeTime,
+			now,
+			$elm$time$Time$millisToPosix(createdAt));
+	});
 var $author$project$Styles$greyStar = A2(
 	$mdgriffith$elm_ui$Element$image,
 	_List_fromArray(
@@ -16603,8 +16888,8 @@ var $author$project$Styles$spotifyLink = function (spotifyId) {
 			url: 'https://open.spotify.com/track/' + spotifyId
 		});
 };
-var $author$project$Styles$viewReview = F8(
-	function (maybeUser, review, newComment, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
+var $author$project$Styles$viewReview = F9(
+	function (maybeUser, review, newComment, now, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
 		var spotify = $author$project$Styles$spotifyLink(review.subject.spotifyId);
 		var newCommentBox = A2(
 			$mdgriffith$elm_ui$Element$row,
@@ -16655,7 +16940,10 @@ var $author$project$Styles$viewReview = F8(
 					A2(
 						$elm$core$Maybe$withDefault,
 						'',
-						A2($elm$core$Maybe$map, $author$project$Styles$longAgo, review.createdAt)))
+						A2(
+							$elm$core$Maybe$map,
+							$author$project$Styles$longAgo(now),
+							review.createdAt)))
 				]));
 		var likes = A2(
 			$elm$core$List$map,
@@ -16799,11 +17087,11 @@ var $author$project$Styles$viewReview = F8(
 					$author$project$Styles$commentsBox(comments)
 				]));
 	});
-var $author$project$Widgets$ReviewList$viewReviewAndComment = F2(
-	function (session, _v0) {
+var $author$project$Widgets$ReviewList$viewReviewAndComment = F3(
+	function (session, now, _v0) {
 		var review = _v0.a;
 		var newComment = _v0.b;
-		return A8(
+		return A9(
 			$author$project$Styles$viewReview,
 			A2(
 				$elm$core$Maybe$map,
@@ -16813,6 +17101,7 @@ var $author$project$Widgets$ReviewList$viewReviewAndComment = F2(
 				session.userAndToken),
 			review,
 			newComment,
+			now,
 			$author$project$Widgets$ReviewList$OnDelete(review),
 			$author$project$Widgets$ReviewList$OnLike(review),
 			$author$project$Widgets$ReviewList$OnDislike(review),
@@ -16821,11 +17110,21 @@ var $author$project$Widgets$ReviewList$viewReviewAndComment = F2(
 	});
 var $author$project$Widgets$ReviewList$view = F2(
 	function (session, model) {
-		return $author$project$Styles$contentList(
-			A2(
-				$elm$core$List$map,
-				$author$project$Widgets$ReviewList$viewReviewAndComment(session),
-				model));
+		var _v0 = model.currentTime;
+		if (_v0.$ === 'Just') {
+			var now = _v0.a;
+			return $author$project$Styles$contentList(
+				A2(
+					$elm$core$List$map,
+					A2($author$project$Widgets$ReviewList$viewReviewAndComment, session, now),
+					model.reviews));
+		} else {
+			return $author$project$Styles$contentList(
+				_List_fromArray(
+					[
+						$author$project$Styles$text('loading time...')
+					]));
+		}
 	});
 var $author$project$Pages$Feed$view = F2(
 	function (session, model) {
@@ -17330,16 +17629,7 @@ var $author$project$Main$view = function (model) {
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{
-		init: $author$project$Main$init,
-		onUrlChange: $author$project$Main$UrlChanged,
-		onUrlRequest: $author$project$Main$LinkClicked,
-		subscriptions: function (_v0) {
-			return $elm$core$Platform$Sub$none;
-		},
-		update: $author$project$Main$update,
-		view: $author$project$Main$view
-	});
+	{init: $author$project$Main$init, onUrlChange: $author$project$Main$UrlChanged, onUrlRequest: $author$project$Main$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$oneOf(
 		_List_fromArray(
