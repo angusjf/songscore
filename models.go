@@ -173,6 +173,14 @@ func (s *server) UserToWeb(model UserModel) UserWeb {
     }
 }
 
+func (s *server) UserToModel(web UserWeb) UserModel {
+    return UserModel{
+        ID: web.ID,
+        Username: web.Username,
+        Image: web.Image,
+    }
+}
+
 type SubjectModel struct {
 	ID     int
 	Title  string

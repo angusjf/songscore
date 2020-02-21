@@ -31,6 +31,7 @@ func (s *server) routes() {
 	api.HandleFunc("/reviews/{id}/comments", s.handleReviewCommentPost()).Methods("POST")
 
 	api.HandleFunc("/users", s.handleUsersPost()).Methods("POST")
+	api.HandleFunc("/users", s.handleUsersPut()).Methods("PUT")
 	api.HandleFunc("/users/{username}", s.handleUserGet()).Methods("GET")
 	api.HandleFunc("/users/{username}/reviews", s.handleUserReviewsGet()).Methods("GET")
 	api.HandleFunc("/users/{username}/available", s.handleUsernameAvailableGet()).Methods("GET")
@@ -86,7 +87,6 @@ func (s *server) handleReviewPost() http.HandlerFunc {
             id, ok := s.getUserId(r)
             if ok {
                 if review.User.ID == id {
-                    fmt.Printf("%s ->>>>>>>>>>>>>>>>", review.Subject.SpotifyID)
                     model := s.NewReviewToModel(review)
                     s.db.Create(&model)
                     s.respond(w, r, s.ReviewToWeb(model), http.StatusCreated)
@@ -297,6 +297,49 @@ func (s *server) handleUsersPost() http.HandlerFunc {
     }
 }
 
+func (s *server) handleUsersPut() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        var patchedUser UserWeb
+        err := s.decode(w, r, &patchedUser)
+        if err != nil {
+            s.respond(w, r, "Couldn't decode user", http.StatusBadRequest)
+            return
+        }
+
+        id, ok := s.getUserId(r)
+        if !ok || id != patchedUser.ID {
+            s.respond(w, r, "Not authorized", http.StatusForbidden)
+            return
+        }
+
+        user := s.UserToModel(patchedUser)
+        if s.db.Find(&user).Error != nil {
+            s.respond(w, r, "Could not update user", http.StatusBadRequest)
+            return
+        }
+
+        user.Username = patchedUser.Username
+        user.Image = patchedUser.Image
+
+        if s.db.Save(&user).Error != nil {
+            s.respond(w, r, "Could not update user", http.StatusBadRequest)
+        } else {
+            tokenString, err := s.getTokenString(user)
+
+            if err != nil {
+                s.respond(w, r, "Couldn't sign token", http.StatusBadRequest)
+                return
+            }
+
+            userAndToken := UserAndTokenWeb{
+                User: s.UserToWeb(user),
+                Token: tokenString,
+            }
+            s.respond(w, r, userAndToken, http.StatusOK)
+        }
+    }
+}
+
 func (s *server) handleUserGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
         params := mux.Vars(r)
@@ -423,7 +466,6 @@ func (s *server) handleUserFollowPost() http.HandlerFunc {
 
 func (s *server) handleSubjectsSearchGet() http.HandlerFunc {
     return func (w http.ResponseWriter, r *http.Request) {
-        fmt.Printf("%s < %s", time.Now(), s.spotifyExp)
         if time.Now().After(s.spotifyExp) {
             // get new token
             var spotifyErr error

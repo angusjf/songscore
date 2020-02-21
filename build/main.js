@@ -6252,6 +6252,7 @@ var $author$project$Route$Review = F2(
 		return {$: 'Review', a: a, b: b};
 	});
 var $author$project$Route$Root = {$: 'Root'};
+var $author$project$Route$Settings = {$: 'Settings'};
 var $author$project$Route$User = function (a) {
 	return {$: 'User', a: a};
 };
@@ -6431,7 +6432,11 @@ var $author$project$Route$routeParser = $elm$url$Url$Parser$oneOf(
 			A2(
 				$elm$url$Url$Parser$slash,
 				$elm$url$Url$Parser$s('users'),
-				$elm$url$Url$Parser$string))
+				$elm$url$Url$Parser$string)),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Settings,
+			$elm$url$Url$Parser$s('settings'))
 		]));
 var $author$project$Route$fromUrl = $elm$url$Url$Parser$parse($author$project$Route$routeParser);
 var $author$project$Pages$Feed$GotFeed = function (a) {
@@ -6952,9 +6957,12 @@ var $author$project$Route$routeToPieces = function (route) {
 		case 'Login':
 			return _List_fromArray(
 				['login']);
-		default:
+		case 'Root':
 			return _List_fromArray(
 				['']);
+		default:
+			return _List_fromArray(
+				['settings']);
 	}
 };
 var $author$project$Route$routeToString = function (route) {
@@ -7094,6 +7102,61 @@ var $author$project$Pages$Review$init = F3(
 						A2($elm$core$Platform$Cmd$map, $author$project$Pages$Review$ReviewListMsg, rlCmd)
 					])));
 	});
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Pages$Settings$init = function (session) {
+	var oldUsername = A2(
+		$elm$core$Maybe$withDefault,
+		'not logged in :(',
+		A2(
+			$elm$core$Maybe$map,
+			function (x) {
+				return x.user.username;
+			},
+			session.userAndToken));
+	var model = {
+		feedback: '',
+		newUsername: oldUsername,
+		oldUsername: oldUsername,
+		profilePicture: A2(
+			$elm$core$Maybe$withDefault,
+			'/assets/images/default-user.png',
+			A2(
+				$elm$core$Maybe$andThen,
+				function (x) {
+					return x.user.image;
+				},
+				session.userAndToken)),
+		usernameAvailable: $elm$core$Maybe$Nothing
+	};
+	return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+};
 var $author$project$Pages$User$GotUser = function (a) {
 	return {$: 'GotUser', a: a};
 };
@@ -7199,6 +7262,24 @@ var $author$project$Main$stepReview = F2(
 			},
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$ReviewMsg, reviewCmd));
 	});
+var $author$project$Main$Settings = function (a) {
+	return {$: 'Settings', a: a};
+};
+var $author$project$Main$SettingsMsg = function (a) {
+	return {$: 'SettingsMsg', a: a};
+};
+var $author$project$Main$stepSettings = F2(
+	function (model, _v0) {
+		var settingsModel = _v0.a;
+		var session = _v0.b;
+		var settingsCmd = _v0.c;
+		return _Utils_Tuple2(
+			{
+				page: $author$project$Main$Settings(settingsModel),
+				session: session
+			},
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$SettingsMsg, settingsCmd));
+	});
 var $author$project$Main$User = function (a) {
 	return {$: 'User', a: a};
 };
@@ -7266,7 +7347,7 @@ var $author$project$Main$stepUrl = F2(
 						$author$project$Main$stepUser,
 						model,
 						A2($author$project$Pages$User$init, model.session, username));
-				default:
+				case 'Review':
 					var _v6 = _v0.a;
 					var username = _v6.a;
 					var id = _v6.b;
@@ -7274,6 +7355,12 @@ var $author$project$Main$stepUrl = F2(
 						$author$project$Main$stepReview,
 						model,
 						A3($author$project$Pages$Review$init, model.session, username, id));
+				default:
+					var _v7 = _v0.a;
+					return A2(
+						$author$project$Main$stepSettings,
+						model,
+						$author$project$Pages$Settings$init(model.session));
 			}
 		}
 	});
@@ -7885,25 +7972,6 @@ var $simonh1000$elm_jwt$Jwt$Http$delete = F2(
 			'DELETE',
 			token,
 			{body: $elm$http$Http$emptyBody, expect: expect, url: url});
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
 	});
 var $author$project$Api$deleteReview = F3(
 	function (uAndT, review, msg) {
@@ -8636,6 +8704,137 @@ var $author$project$Pages$Review$update = F3(
 				A3($author$project$Widgets$ReviewList$update, rlMsg, model.reviewListModel, session));
 		}
 	});
+var $author$project$Pages$Settings$GotChangedUser = function (a) {
+	return {$: 'GotChangedUser', a: a};
+};
+var $author$project$Pages$Settings$GotUsernameAvailable = function (a) {
+	return {$: 'GotUsernameAvailable', a: a};
+};
+var $author$project$Pages$Settings$ImageDecoded = function (a) {
+	return {$: 'ImageDecoded', a: a};
+};
+var $author$project$Pages$Settings$OnImageSelected = function (a) {
+	return {$: 'OnImageSelected', a: a};
+};
+var $simonh1000$elm_jwt$Jwt$Http$put = $simonh1000$elm_jwt$Jwt$Http$createRequest('PUT');
+var $author$project$Api$putUser = F3(
+	function (uAndT, user, msg) {
+		var body = $elm$http$Http$jsonBody(
+			$author$project$User$encode(user));
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$put,
+			uAndT.token,
+			{
+				body: body,
+				expect: A2($elm$http$Http$expectJson, msg, $author$project$Api$userAndTokenDecoder),
+				url: $author$project$Api$apiRoot + '/users'
+			});
+	});
+var $author$project$Pages$Settings$update = F3(
+	function (msg, model, session) {
+		switch (msg.$) {
+			case 'UsernameChanged':
+				var _new = msg.a;
+				return (!_Utils_eq(_new, model.oldUsername)) ? _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{newUsername: _new, usernameAvailable: $elm$core$Maybe$Nothing}),
+					session,
+					A2($author$project$Api$getUsernameAvailability, _new, $author$project$Pages$Settings$GotUsernameAvailable)) : _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{newUsername: _new, usernameAvailable: $elm$core$Maybe$Nothing}),
+					session,
+					$elm$core$Platform$Cmd$none);
+			case 'SaveClicked':
+				var cmd = function () {
+					var _v1 = session.userAndToken;
+					if (_v1.$ === 'Just') {
+						var uAndT = _v1.a;
+						var oldUser = uAndT.user;
+						var newUser = _Utils_update(
+							oldUser,
+							{
+								image: $elm$core$Maybe$Just(model.profilePicture),
+								username: model.newUsername
+							});
+						return A3($author$project$Api$putUser, uAndT, newUser, $author$project$Pages$Settings$GotChangedUser);
+					} else {
+						return $elm$core$Platform$Cmd$none;
+					}
+				}();
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{feedback: 'Saving...'}),
+					session,
+					cmd);
+			case 'GotChangedUser':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var changedUAndT = result.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{feedback: 'Saved!'}),
+						_Utils_update(
+							session,
+							{
+								userAndToken: $elm$core$Maybe$Just(changedUAndT)
+							}),
+						$author$project$Session$store(
+							$elm$core$Maybe$Just(changedUAndT)));
+				} else {
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{feedback: 'error saving :('}),
+						session,
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'GotUsernameAvailable':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var bool = result.a;
+					return _Utils_Tuple3(
+						_Utils_update(
+							model,
+							{
+								usernameAvailable: $elm$core$Maybe$Just(bool)
+							}),
+						session,
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+				}
+			case 'ProfilePicturePressed':
+				return _Utils_Tuple3(
+					model,
+					session,
+					A2(
+						$elm$file$File$Select$file,
+						_List_fromArray(
+							['image/jpeg', 'image/png']),
+						$author$project$Pages$Settings$OnImageSelected));
+			case 'OnImageSelected':
+				var file = msg.a;
+				return _Utils_Tuple3(
+					model,
+					session,
+					A2(
+						$elm$core$Task$perform,
+						$author$project$Pages$Settings$ImageDecoded,
+						$elm$file$File$toUrl(file)));
+			default:
+				var url = msg.a;
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{profilePicture: url}),
+					session,
+					$elm$core$Platform$Cmd$none);
+		}
+	});
 var $author$project$Pages$User$GotReviews = function (a) {
 	return {$: 'GotReviews', a: a};
 };
@@ -8738,7 +8937,7 @@ var $author$project$Widgets$Navbar$update = F2(
 				} else {
 					return _Utils_Tuple2(session, $elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'OnLogoutClicked':
 				return _Utils_Tuple2(
 					_Utils_update(
 						session,
@@ -8749,6 +8948,10 @@ var $author$project$Widgets$Navbar$update = F2(
 								A2($author$project$Route$goTo, session.key, $author$project$Route$Root),
 								$author$project$Session$store($elm$core$Maybe$Nothing)
 							])));
+			default:
+				return _Utils_Tuple2(
+					session,
+					A2($author$project$Route$goTo, session.key, $author$project$Route$Settings));
 		}
 	});
 var $author$project$Main$update = F2(
@@ -8832,6 +9035,18 @@ var $author$project$Main$update = F2(
 						$author$project$Main$stepReview,
 						model,
 						A3($author$project$Pages$Review$update, msg, innerModel, model.session));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'SettingsMsg':
+				var msg = message.a;
+				var _v7 = model.page;
+				if (_v7.$ === 'Settings') {
+					var innerModel = _v7.a;
+					return A2(
+						$author$project$Main$stepSettings,
+						model,
+						A3($author$project$Pages$Settings$update, msg, innerModel, model.session));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -16444,7 +16659,8 @@ var $author$project$Styles$userBox = F2(
 					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$veryLightAlpha),
 					$mdgriffith$elm_ui$Element$paddingEach(
 					{bottom: 0, left: 0, right: 6, top: 0}),
-					$author$project$Styles$roundedSmall
+					$author$project$Styles$roundedSmall,
+					$mdgriffith$elm_ui$Element$alignTop
 				]),
 			{
 				label: A2(
@@ -17370,6 +17586,80 @@ var $author$project$Pages$Review$view = F2(
 					model.review))
 		};
 	});
+var $author$project$Pages$Settings$ProfilePicturePressed = {$: 'ProfilePicturePressed'};
+var $author$project$Pages$Settings$SaveClicked = {$: 'SaveClicked'};
+var $author$project$Pages$Settings$UsernameChanged = function (a) {
+	return {$: 'UsernameChanged', a: a};
+};
+var $author$project$Pages$Settings$view = F2(
+	function (session, model) {
+		return {
+			body: A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[$author$project$Styles$spacingMedium]),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$row,
+						_List_fromArray(
+							[$author$project$Styles$spacingMedium]),
+						_List_fromArray(
+							[
+								A2(
+								$mdgriffith$elm_ui$Element$Input$username,
+								_List_Nil,
+								{
+									label: $author$project$Styles$labelSmall('change your username'),
+									onChange: $author$project$Pages$Settings$UsernameChanged,
+									placeholder: $elm$core$Maybe$Just(
+										A2(
+											$mdgriffith$elm_ui$Element$Input$placeholder,
+											_List_Nil,
+											$mdgriffith$elm_ui$Element$text('new username ...'))),
+									text: model.newUsername
+								}),
+								function () {
+								var _v0 = model.usernameAvailable;
+								if (_v0.$ === 'Just') {
+									if (_v0.a) {
+										return $author$project$Styles$text('available!');
+									} else {
+										return $author$project$Styles$text('not available :(');
+									}
+								} else {
+									return $author$project$Styles$text('');
+								}
+							}()
+							])),
+						A2(
+						$mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[$author$project$Styles$spacingMedium]),
+						_List_fromArray(
+							[
+								A2(
+								$mdgriffith$elm_ui$Element$image,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$width(
+										$mdgriffith$elm_ui$Element$px(128))
+									]),
+								{description: 'profile picture', src: model.profilePicture}),
+								A2(
+								$author$project$Styles$button,
+								'upload new picture',
+								$elm$core$Maybe$Just($author$project$Pages$Settings$ProfilePicturePressed))
+							])),
+						A2(
+						$author$project$Styles$button,
+						'save!',
+						$elm$core$Maybe$Just($author$project$Pages$Settings$SaveClicked)),
+						$author$project$Styles$text(model.feedback)
+					])),
+			title: 'Settings'
+		};
+	});
 var $author$project$Styles$loading = F2(
 	function (maybeA, showA) {
 		if (maybeA.$ === 'Just') {
@@ -17455,6 +17745,7 @@ var $author$project$Pages$User$view = F2(
 var $author$project$Widgets$Navbar$OnLoginClicked = {$: 'OnLoginClicked'};
 var $author$project$Widgets$Navbar$OnLogoClicked = {$: 'OnLogoClicked'};
 var $author$project$Widgets$Navbar$OnLogoutClicked = {$: 'OnLogoutClicked'};
+var $author$project$Widgets$Navbar$OnSettingsClicked = {$: 'OnSettingsClicked'};
 var $author$project$Widgets$Navbar$OnSignupClicked = {$: 'OnSignupClicked'};
 var $author$project$Widgets$Navbar$OnUserClicked = {$: 'OnUserClicked'};
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
@@ -17554,6 +17845,11 @@ var $author$project$Widgets$Navbar$view = F2(
 									}),
 									A2(
 									$author$project$Styles$buttonAlt,
+									'Settings',
+									$elm$core$Maybe$Just(
+										toOuter($author$project$Widgets$Navbar$OnSettingsClicked))),
+									A2(
+									$author$project$Styles$buttonAlt,
 									'Log out',
 									$elm$core$Maybe$Just(
 										toOuter($author$project$Widgets$Navbar$OnLogoutClicked)))
@@ -17610,12 +17906,18 @@ var $author$project$Main$view = function (model) {
 					$author$project$Page$map,
 					$author$project$Main$UserMsg,
 					A2($author$project$Pages$User$view, model.session, innerModel));
-			default:
+			case 'Review':
 				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$ReviewMsg,
 					A2($author$project$Pages$Review$view, model.session, innerModel));
+			default:
+				var innerModel = _v1.a;
+				return A2(
+					$author$project$Page$map,
+					$author$project$Main$SettingsMsg,
+					A2($author$project$Pages$Settings$view, model.session, innerModel));
 		}
 	}();
 	var title = _v0.title;
