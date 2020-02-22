@@ -14741,6 +14741,9 @@ var $mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
+var $mdgriffith$elm_ui$Element$explain = function (_v0) {
+	return $mdgriffith$elm_ui$Internal$Model$htmlClass('explain');
+};
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
@@ -15002,13 +15005,13 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var $mdgriffith$elm_ui$Internal$Model$Max = F2(
+var $mdgriffith$elm_ui$Internal$Model$Min = F2(
 	function (a, b) {
-		return {$: 'Max', a: a, b: b};
+		return {$: 'Min', a: a, b: b};
 	});
-var $mdgriffith$elm_ui$Element$maximum = F2(
+var $mdgriffith$elm_ui$Element$minimum = F2(
 	function (i, l) {
-		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
+		return A2($mdgriffith$elm_ui$Internal$Model$Min, i, l);
 	});
 var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
@@ -15027,6 +15030,11 @@ var $mdgriffith$elm_ui$Element$padding = function (x) {
 			x,
 			x));
 };
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Styles$skeleton = F2(
 	function (bar, body) {
 		return A2(
@@ -15040,7 +15048,15 @@ var $author$project$Styles$skeleton = F2(
 				$mdgriffith$elm_ui$Element$column,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						$mdgriffith$elm_ui$Element$width(
+						A2($mdgriffith$elm_ui$Element$minimum, 530, $mdgriffith$elm_ui$Element$fill)),
+						$mdgriffith$elm_ui$Element$explain(
+						_Debug_todo(
+							'Styles',
+							{
+								start: {line: 141, column: 19},
+								end: {line: 141, column: 29}
+							}))
 					]),
 				_List_fromArray(
 					[
@@ -15052,7 +15068,7 @@ var $author$project$Styles$skeleton = F2(
 								$mdgriffith$elm_ui$Element$padding(8),
 								$mdgriffith$elm_ui$Element$centerX,
 								$mdgriffith$elm_ui$Element$width(
-								A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill))
+								$mdgriffith$elm_ui$Element$px(550))
 							]),
 						body)
 					])));
@@ -15128,10 +15144,6 @@ var $mdgriffith$elm_ui$Element$paddingXY = F2(
 				x));
 	});
 var $author$project$Styles$paddingSmall = A2($mdgriffith$elm_ui$Element$paddingXY, 8, 8);
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $author$project$Styles$red = A3($mdgriffith$elm_ui$Element$rgb, 1.0, 0.4, 0.4);
 var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
 var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
