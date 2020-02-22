@@ -568,6 +568,7 @@ func (s * server) handleNotificationsGet() http.HandlerFunc {
             var notifModels []NotificationModel
 
             err := s.db.
+                    Where("USER_ID = ?", userID).
                     Order("CREATED_AT desc").
                     Limit(16).
                     Find(&notifModels).

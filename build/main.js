@@ -16525,7 +16525,7 @@ var $mdgriffith$elm_ui$Element$Font$shadow = function (shade) {
 			'text-shadow',
 			$mdgriffith$elm_ui$Internal$Model$formatTextShadow(shade)));
 };
-var $author$project$Styles$subjectBox = function (_v0) {
+var $author$project$Styles$subjectResult = function (_v0) {
 	var artist = _v0.artist;
 	var title = _v0.title;
 	var image = _v0.image;
@@ -16717,7 +16717,7 @@ var $author$project$Widgets$NewReviewForm$viewSubjectForm = function (form) {
 				]),
 			_List_fromArray(
 				[
-					$author$project$Styles$subjectBox(
+					$author$project$Styles$subjectResult(
 					{artist: subject.artist, image: subject.image, title: subject.title}),
 					A2(
 					$author$project$Styles$button,
@@ -16876,7 +16876,7 @@ var $mdgriffith$elm_ui$Element$link = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1);
+var $author$project$Styles$veryLightAlpha = A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.15);
 var $author$project$Styles$userBox = F2(
 	function (username, image) {
 		return A2(
@@ -16948,7 +16948,6 @@ var $author$project$Styles$commentsBox = function (comments) {
 			[
 				$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha),
 				$author$project$Styles$topLine,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$author$project$Styles$paddingSmall
 			]),
 		A2($elm$core$List$map, $author$project$Styles$comment, comments));
@@ -17033,6 +17032,40 @@ var $author$project$Styles$dislikesBox = function (usernames) {
 			}
 		}());
 };
+var $mdgriffith$elm_ui$Element$explain = function (_v0) {
+	return $mdgriffith$elm_ui$Internal$Model$htmlClass('explain');
+};
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
+	{
+		blur: 15,
+		color: $author$project$Styles$veryLightAlpha,
+		offset: _Utils_Tuple2(0, 0),
+		size: 0
+	});
 var $author$project$Styles$likeButton = function (msg) {
 	return A2($author$project$Styles$button, '<3', msg);
 };
@@ -17229,49 +17262,6 @@ var $author$project$Styles$nStars = function (n) {
 			A2($elm$core$List$repeat, n, $author$project$Styles$redStar),
 			A2($elm$core$List$repeat, 5 - n, $author$project$Styles$greyStar)));
 };
-var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
-	return $elm$core$String$concat(
-		_List_fromArray(
-			[
-				shadow.inset ? 'box-inset' : 'box-',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
-			]));
-};
-var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
-var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
-	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$shadows,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
-			'box-shadow',
-			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
-};
-var $author$project$Styles$lightShadow = $mdgriffith$elm_ui$Element$Border$shadow(
-	{
-		blur: 15,
-		color: $author$project$Styles$veryLightAlpha,
-		offset: _Utils_Tuple2(0, 0),
-		size: 0
-	});
-var $author$project$Styles$outerBox = function (elems) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$author$project$Styles$lightShadow,
-				$author$project$Styles$roundedSmall,
-				$mdgriffith$elm_ui$Element$width(
-				$mdgriffith$elm_ui$Element$px(550))
-			]),
-		elems);
-};
 var $author$project$Styles$reviewTextBox = function (str) {
 	return A2(
 		$mdgriffith$elm_ui$Element$el,
@@ -17297,22 +17287,25 @@ var $author$project$Styles$reviewTextBox = function (str) {
 							str)))
 				])));
 };
+var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
+var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $elm$html$Html$i = _VirtualDom_node('i');
+var $author$project$Styles$icon = function (str) {
+	return $mdgriffith$elm_ui$Element$html(
+		A2(
+			$elm$html$Html$i,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$attribute, 'class', str)
+				]),
+			_List_Nil));
+};
 var $mdgriffith$elm_ui$Element$rgb255 = F3(
 	function (red, green, blue) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
 	});
 var $author$project$Styles$spotifyGreen = A3($mdgriffith$elm_ui$Element$rgb255, 18, 208, 88);
-var $author$project$Styles$textAlt = function (str) {
-	return A2(
-		$mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$Font$size(16),
-				$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
-				$mdgriffith$elm_ui$Element$Font$bold
-			]),
-		$mdgriffith$elm_ui$Element$text(str));
-};
 var $author$project$Styles$spotifyLink = function (spotifyId) {
 	return A2(
 		$mdgriffith$elm_ui$Element$link,
@@ -17326,23 +17319,116 @@ var $author$project$Styles$spotifyLink = function (spotifyId) {
 						$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
 						$mdgriffith$elm_ui$Element$Font$bold,
 						$author$project$Styles$paddingSmall,
-						$author$project$Styles$roundedSmall
+						$author$project$Styles$roundedSmall,
+						$author$project$Styles$lightShadow
 					]),
-				$author$project$Styles$textAlt('spotify!')),
+				A2(
+					$mdgriffith$elm_ui$Element$row,
+					_List_fromArray(
+						[$author$project$Styles$spacingMedium]),
+					_List_fromArray(
+						[
+							$author$project$Styles$icon('fab fa-spotify'),
+							$author$project$Styles$text(' spotify')
+						]))),
 			url: 'https://open.spotify.com/track/' + spotifyId
 		});
 };
+var $author$project$Styles$subjectBox = function (_v0) {
+	var artist = _v0.artist;
+	var title = _v0.title;
+	var image = _v0.image;
+	var spotifyId = _v0.spotifyId;
+	var spotify = $author$project$Styles$spotifyLink(spotifyId);
+	var shadowText = F2(
+		function (str, n) {
+			return A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$shadow(
+						{
+							blur: 3,
+							color: A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.9),
+							offset: _Utils_Tuple2(0, 0)
+						}),
+						$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
+						$mdgriffith$elm_ui$Element$Font$italic,
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$mdgriffith$elm_ui$Element$Font$size(n)
+					]),
+				A2(
+					$mdgriffith$elm_ui$Element$paragraph,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$text(str)
+						])));
+		});
+	var shadowTextBig = function (str) {
+		return A2(shadowText, str, 18);
+	};
+	var shadowTextSmall = function (str) {
+		return A2(shadowText, str, 15);
+	};
+	var attrs = _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(192)),
+			$mdgriffith$elm_ui$Element$height(
+			$mdgriffith$elm_ui$Element$px(192)),
+			$author$project$Styles$paddingMedium,
+			$mdgriffith$elm_ui$Element$alignTop,
+			$author$project$Styles$roundedTL,
+			$mdgriffith$elm_ui$Element$Background$gradient(
+			{
+				angle: 3.14,
+				steps: _List_fromArray(
+					[
+						A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0.1),
+						A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+						A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0),
+						A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)
+					])
+			})
+		]);
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$author$project$Styles$roundedTL,
+				$mdgriffith$elm_ui$Element$Background$image(image),
+				$mdgriffith$elm_ui$Element$alignTop
+			]),
+		A2(
+			$mdgriffith$elm_ui$Element$el,
+			attrs,
+			A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						$author$project$Styles$spacingSmall,
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						shadowTextBig(title),
+						shadowTextSmall(artist),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[$mdgriffith$elm_ui$Element$alignBottom, $mdgriffith$elm_ui$Element$alignLeft]),
+						spotify)
+					]))));
+};
+var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Styles$viewReview = F9(
 	function (maybeUser, review, newComment, now, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
-		var spotify = $author$project$Styles$spotifyLink(review.subject.spotifyId);
 		var newCommentBox = A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
-				[
-					$author$project$Styles$paddingSmall,
-					$author$project$Styles$spacingMedium,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-				]),
+				[$author$project$Styles$paddingSmall, $author$project$Styles$spacingMedium]),
 			_List_fromArray(
 				[
 					A2(
@@ -17410,6 +17496,88 @@ var $author$project$Styles$viewReview = F9(
 				return u.username;
 			},
 			review.dislikes);
+		var rvw = A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+					$author$project$Styles$bottomLine,
+					$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha)
+				]),
+			_List_fromArray(
+				[
+					$author$project$Styles$subjectBox(
+					{artist: review.subject.artist, image: review.subject.image, spotifyId: review.subject.spotifyId, title: review.subject.title}),
+					A2(
+					$mdgriffith$elm_ui$Element$column,
+					_List_fromArray(
+						[
+							$author$project$Styles$spacingMedium,
+							$mdgriffith$elm_ui$Element$alignTop,
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$author$project$Styles$paddingMedium
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Element$column,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$alignTop,
+									$author$project$Styles$spacingMedium,
+									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+								]),
+							function () {
+								var _v1 = _Utils_Tuple2(
+									$elm$core$List$isEmpty(review.likes),
+									$elm$core$List$isEmpty(review.dislikes));
+								if (_v1.a) {
+									if (_v1.b) {
+										return _List_fromArray(
+											[
+												$author$project$Styles$nStars(review.stars),
+												nameAndText
+											]);
+									} else {
+										return _List_fromArray(
+											[
+												$author$project$Styles$nStars(review.stars),
+												nameAndText,
+												$author$project$Styles$dislikesBox(dislikes)
+											]);
+									}
+								} else {
+									if (_v1.b) {
+										return _List_fromArray(
+											[
+												$author$project$Styles$nStars(review.stars),
+												nameAndText,
+												$author$project$Styles$likesBox(likes)
+											]);
+									} else {
+										return _List_fromArray(
+											[
+												$author$project$Styles$nStars(review.stars),
+												nameAndText,
+												$author$project$Styles$likesBox(likes),
+												$author$project$Styles$dislikesBox(dislikes)
+											]);
+									}
+								}
+							}()),
+							A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_fromArray(
+								[
+									$author$project$Styles$spacingMedium,
+									$mdgriffith$elm_ui$Element$alignBottom,
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(40))
+								]),
+							_List_Nil)
+						]))
+				]));
 		var comments = A2(
 			$elm$core$List$map,
 			function (c) {
@@ -17436,94 +17604,21 @@ var $author$project$Styles$viewReview = F9(
 					return _List_Nil;
 			}
 		}();
-		var rvw = A2(
-			$mdgriffith$elm_ui$Element$row,
+		return A2(
+			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-					$author$project$Styles$bottomLine,
-					$mdgriffith$elm_ui$Element$Border$color($author$project$Styles$veryLightAlpha)
+					$author$project$Styles$lightShadow,
+					$author$project$Styles$roundedSmall,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+					$mdgriffith$elm_ui$Element$explain(
+					_Debug_todo(
+						'Styles',
+						{
+							start: {line: 546, column: 19},
+							end: {line: 546, column: 29}
+						}))
 				]),
-			_List_fromArray(
-				[
-					$author$project$Styles$subjectBox(
-					{artist: review.subject.artist, image: review.subject.image, title: review.subject.title}),
-					A2(
-					$mdgriffith$elm_ui$Element$column,
-					_List_fromArray(
-						[
-							$author$project$Styles$spacingMedium,
-							$mdgriffith$elm_ui$Element$alignTop,
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
-							$author$project$Styles$paddingMedium
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$mdgriffith$elm_ui$Element$column,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$alignTop,
-									$author$project$Styles$spacingMedium,
-									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
-								]),
-							function () {
-								var _v0 = _Utils_Tuple2(
-									$elm$core$List$isEmpty(review.likes),
-									$elm$core$List$isEmpty(review.dislikes));
-								if (_v0.a) {
-									if (_v0.b) {
-										return _List_fromArray(
-											[
-												$author$project$Styles$nStars(review.stars),
-												nameAndText
-											]);
-									} else {
-										return _List_fromArray(
-											[
-												$author$project$Styles$nStars(review.stars),
-												nameAndText,
-												$author$project$Styles$dislikesBox(dislikes)
-											]);
-									}
-								} else {
-									if (_v0.b) {
-										return _List_fromArray(
-											[
-												$author$project$Styles$nStars(review.stars),
-												nameAndText,
-												$author$project$Styles$likesBox(likes)
-											]);
-									} else {
-										return _List_fromArray(
-											[
-												$author$project$Styles$nStars(review.stars),
-												nameAndText,
-												$author$project$Styles$likesBox(likes),
-												$author$project$Styles$dislikesBox(dislikes)
-											]);
-									}
-								}
-							}()),
-							A2(
-							$mdgriffith$elm_ui$Element$row,
-							_List_fromArray(
-								[
-									$author$project$Styles$spacingMedium,
-									$mdgriffith$elm_ui$Element$alignBottom,
-									$mdgriffith$elm_ui$Element$height(
-									$mdgriffith$elm_ui$Element$px(40)),
-									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-								]),
-							_Utils_ap(
-								actions,
-								_List_fromArray(
-									[spotify])))
-						]))
-				]));
-		return $author$project$Styles$outerBox(
 			$elm$core$List$isEmpty(comments) ? _List_fromArray(
 				[rvw, newCommentBox]) : _List_fromArray(
 				[
@@ -18029,6 +18124,23 @@ var $author$project$Styles$buttonAlt = F2(
 				onPress: action
 			});
 	});
+var $author$project$Styles$buttonIcon = F2(
+	function (name, action) {
+		return A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
+					$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
+					$mdgriffith$elm_ui$Element$Font$bold,
+					$author$project$Styles$paddingSmall,
+					$author$project$Styles$roundedSmall
+				]),
+			{
+				label: $author$project$Styles$icon(name),
+				onPress: action
+			});
+	});
 var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
 var $author$project$Widgets$Navbar$view = F2(
@@ -18038,8 +18150,8 @@ var $author$project$Widgets$Navbar$view = F2(
 			'Sign Up',
 			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnSignupClicked));
 		var settings = A2(
-			$author$project$Styles$buttonAlt,
-			'Settings',
+			$author$project$Styles$buttonIcon,
+			'fas fa-cog',
 			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnSettingsClicked));
 		var profile = function (user) {
 			return A2(
@@ -18083,8 +18195,8 @@ var $author$project$Widgets$Navbar$view = F2(
 				});
 		};
 		var notifs = A2(
-			$author$project$Styles$buttonAlt,
-			A2($elm$core$Maybe$withDefault, false, session.unreadNotifications) ? 'Notifications (new)' : 'Notifications',
+			$author$project$Styles$buttonIcon,
+			A2($elm$core$Maybe$withDefault, false, session.unreadNotifications) ? 'fas fa-bell' : 'fas fa-bell',
 			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnNotificationsClicked));
 		var logout = A2(
 			$author$project$Styles$buttonAlt,
@@ -18095,8 +18207,8 @@ var $author$project$Widgets$Navbar$view = F2(
 			'Log in',
 			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnLoginClicked));
 		var home = A2(
-			$author$project$Styles$buttonAlt,
-			'Home',
+			$author$project$Styles$buttonIcon,
+			'fas fa-star',
 			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnLogoClicked));
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
