@@ -15040,9 +15040,7 @@ var $author$project$Styles$skeleton = F2(
 				$mdgriffith$elm_ui$Element$column,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$width(
-						A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill)),
-						$mdgriffith$elm_ui$Element$centerX
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 					]),
 				_List_fromArray(
 					[
@@ -15051,7 +15049,10 @@ var $author$project$Styles$skeleton = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$padding(8)
+								$mdgriffith$elm_ui$Element$padding(8),
+								$mdgriffith$elm_ui$Element$centerX,
+								$mdgriffith$elm_ui$Element$width(
+								A2($mdgriffith$elm_ui$Element$maximum, 1000, $mdgriffith$elm_ui$Element$fill))
 							]),
 						body)
 					])));
@@ -17349,7 +17350,8 @@ var $author$project$Styles$viewReview = F9(
 						[
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 							$mdgriffith$elm_ui$Element$height(
-							$mdgriffith$elm_ui$Element$px(38))
+							$mdgriffith$elm_ui$Element$px(38)),
+							$mdgriffith$elm_ui$Element$Font$size(16)
 						]),
 					{
 						label: $mdgriffith$elm_ui$Element$Input$labelHidden('comment'),
@@ -18101,6 +18103,7 @@ var $author$project$Widgets$Navbar$view = F2(
 				[
 					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$centerX,
 					$mdgriffith$elm_ui$Element$spaceEvenly,
 					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
 					$author$project$Styles$paddingMixedMedium,
