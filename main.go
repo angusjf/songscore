@@ -18,7 +18,7 @@ type server struct {
     router        *mux.Router
     jwtSecretKey  []byte
     spotifyToken  []byte
-    spotifyId     string
+    spotifyID     string
     spotifySecret string
     spotifyExp    time.Time
 }
@@ -48,8 +48,8 @@ func run() error {
         return fmt.Errorf("no database url!")
     }
 
-    s.spotifyId = os.Getenv("SPOTIFY_CLIENT_ID")
-    if s.spotifyId == "" {
+    s.spotifyID = os.Getenv("SPOTIFY_CLIENT_ID")
+    if s.spotifyID == "" {
         return fmt.Errorf("set SPOTIFY_CLIENT_ID")
     }
 
@@ -59,7 +59,7 @@ func run() error {
     }
 
     var spotifyErr error
-    s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyId, s.spotifySecret)
+    s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyID, s.spotifySecret)
     if spotifyErr != nil {
         return spotifyErr
     }
@@ -76,6 +76,7 @@ func run() error {
     s.db.AutoMigrate(&UserModel{})
     s.db.AutoMigrate(&SubjectModel{})
     s.db.AutoMigrate(&CommentModel{})
+    s.db.AutoMigrate(&NotificationModel{})
 
 	s.router = mux.NewRouter()
     s.routes()

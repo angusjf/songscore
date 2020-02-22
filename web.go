@@ -37,7 +37,7 @@ type CommentWeb struct {
 	ID   int     `json:"id"`
 	Text string  `json:"text"`
 	User UserWeb `json:"user"`
-    ReviewID int `json:"reviewId"`
+    ReviewID int `json:"reviewID"`
 }
 
 type SubjectWeb struct {
@@ -47,4 +47,10 @@ type SubjectWeb struct {
 	Image  string `json:"image"`
 	Kind   string `json:"kind"`
     SpotifyID string `json:"spotifyId"`
+}
+
+type NotificationWeb struct {
+    ID int `json:"id"`
+    Text string `json:"text"`
+    CreatedAt int64 `json:"createdAt"`
 }

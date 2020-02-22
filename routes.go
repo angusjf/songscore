@@ -43,6 +43,10 @@ func (s *server) routes() {
 
 	api.HandleFunc("/auth", s.handleAuthLogin()).Methods("POST")
 
+	api.HandleFunc("/notifications", s.handleNotificationsGet()).Methods("GET")
+	api.HandleFunc("/notifications/new", s.handleNotificationsNewGet()).Methods("GET")
+	api.HandleFunc("/notifications", s.handleNotificationsPost()).Methods("POST")
+
     api.PathPrefix("/").Handler(s.handleApiNotFound())
 
     s.router.PathPrefix("/").Handler(s.handlerSPA("build", "index.html"))
@@ -84,7 +88,7 @@ func (s *server) handleReviewPost() http.HandlerFunc {
         if err != nil {
             s.respond(w, r, "Couldn't decode review", http.StatusBadRequest)
         } else {
-            id, ok := s.getUserId(r)
+            id, ok := s.getUserID(r)
             if ok {
                 if review.User.ID == id {
                     model := s.NewReviewToModel(review)
@@ -116,7 +120,7 @@ func (s *server) handleReviewDelete() http.HandlerFunc {
                 s.respond(w, r, web, http.StatusOK)
             }
         } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+            s.respond(w, r, "Bad Request, No ID", http.StatusBadRequest)
         }
     }
 }
@@ -139,7 +143,7 @@ func (s *server) handleReviewGet() http.HandlerFunc {
                 s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
             }
         } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+            s.respond(w, r, "Bad Request, No ID", http.StatusBadRequest)
         }
     }
 }
@@ -160,19 +164,23 @@ func (s * server) handleReviewLikePost() http.HandlerFunc {
                 s.respond(w, r, "No review with that ID found", http.StatusNotFound)
             } else {
                 var userModel UserModel
-                userId, ok := s.getUserId(r)
-                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                userID, ok := s.getUserID(r)
+                if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
                     s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
                 } else {
                     review.Likers = append(review.Likers, &userModel)
                     if s.db.Save(&review).Error != nil {
                         s.respond(w, r, "Could not update review", http.StatusInternalServerError)
                     }
+                    var subjectModel SubjectModel
+                    if s.db.Where("ID = ?", review.SubjectID).Find(&subjectModel).Error == nil {
+                        s.notifyReviewLike(review.UserID, userModel, subjectModel)
+                    }
                     s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
                 }
             }
         } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+            s.respond(w, r, "Bad Request, No ID", http.StatusBadRequest)
         }
     }
 }
@@ -193,8 +201,8 @@ func (s * server) handleReviewDisikePost() http.HandlerFunc {
                 s.respond(w, r, "No review with that ID found", http.StatusNotFound)
             } else {
                 var userModel UserModel
-                userId, ok := s.getUserId(r)
-                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                userID, ok := s.getUserID(r)
+                if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
                     s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
                 } else {
                     review.Dislikers = append(review.Dislikers, &userModel)
@@ -205,7 +213,7 @@ func (s * server) handleReviewDisikePost() http.HandlerFunc {
                 }
             }
         } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+            s.respond(w, r, "Bad Request, No ID", http.StatusBadRequest)
         }
     }
 }
@@ -226,8 +234,8 @@ func (s *server) handleReviewCommentPost() http.HandlerFunc {
                 s.respond(w, r, "No review with that ID found", http.StatusNotFound)
             } else {
                 var userModel UserModel
-                userId, ok := s.getUserId(r)
-                if !ok || s.db.Where("ID = ?", userId).Find(&userModel).Error != nil {
+                userID, ok := s.getUserID(r)
+                if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
                     s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
                 } else {
                     var comment CommentWeb
@@ -236,11 +244,15 @@ func (s *server) handleReviewCommentPost() http.HandlerFunc {
                     if s.db.Save(&review).Error != nil {
                         s.respond(w, r, "Could not update review", http.StatusInternalServerError)
                     }
+                    var subjectModel SubjectModel
+                    if s.db.Where("ID = ?", review.SubjectID).Find(&subjectModel).Error == nil {
+                        s.notifyReviewComment(comment.Text, review.UserID, userModel, subjectModel)
+                    }
                     s.respond(w, r, s.ReviewToWeb(review), http.StatusOK)
                 }
             }
         } else {
-            s.respond(w, r, "Bad Request, No Id", http.StatusBadRequest)
+            s.respond(w, r, "Bad Request, No ID", http.StatusBadRequest)
         }
     }
 }
@@ -269,6 +281,11 @@ func (s *server) handleUsersPost() http.HandlerFunc {
             Username: newUser.Username,
             Image: newUser.Image,
             PasswordHash: string(hashed),
+        }
+
+        if len(user.Username) < 1 {
+            s.respond(w, r, "Could not create user", http.StatusBadRequest)
+            return
         }
 
         if s.db.Create(&user).Error != nil {
@@ -306,7 +323,7 @@ func (s *server) handleUsersPut() http.HandlerFunc {
             return
         }
 
-        id, ok := s.getUserId(r)
+        id, ok := s.getUserID(r)
         if !ok || id != patchedUser.ID {
             s.respond(w, r, "Not authorized", http.StatusForbidden)
             return
@@ -320,6 +337,11 @@ func (s *server) handleUsersPut() http.HandlerFunc {
 
         user.Username = patchedUser.Username
         user.Image = patchedUser.Image
+
+        if len(user.Username) < 1 {
+            s.respond(w, r, "Could not create user", http.StatusBadRequest)
+            return
+        }
 
         if s.db.Save(&user).Error != nil {
             s.respond(w, r, "Could not update user", http.StatusBadRequest)
@@ -369,7 +391,13 @@ func (s *server) handleUserReviewsGet() http.HandlerFunc {
                 return
             }
             var reviewModels []ReviewModel
-            if s.db.Where("USER_ID = ?", userModel.ID).Find(&reviewModels).Error != nil {
+            err := s.db.
+                    Where("USER_ID = ?", userModel.ID).
+                    Order("CREATED_AT desc").
+                    Limit(16).
+                    Find(&reviewModels).
+                    Error
+            if err != nil {
                 s.respond(w, r, "Database Error", http.StatusNotFound)
                 return
             }
@@ -469,7 +497,7 @@ func (s *server) handleSubjectsSearchGet() http.HandlerFunc {
         if time.Now().After(s.spotifyExp) {
             // get new token
             var spotifyErr error
-            s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyId, s.spotifySecret)
+            s.spotifyToken, s.spotifyExp, spotifyErr = getSpotifyToken(s.spotifyID, s.spotifySecret)
             if spotifyErr != nil {
                 s.respond(w, r, "Spotify token not found", http.StatusInternalServerError)
             }
@@ -528,11 +556,75 @@ func (s *server) handleAuthLogin() http.HandlerFunc {
     }
 }
 
-func (s *server) getTokenString(model UserModel) (string, error) {
-    token := jwt.New(jwt.SigningMethodHS256)
-    claims := token.Claims.(jwt.MapClaims)
-    claims["user_id"] = model.ID
-    return token.SignedString(s.jwtSecretKey)
+// NOTIFICATIONS
+
+func (s * server) handleNotificationsGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        var userModel UserModel
+        userID, ok := s.getUserID(r)
+        if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
+            s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+        } else {
+            var notifModels []NotificationModel
+
+            err := s.db.
+                    Order("CREATED_AT desc").
+                    Limit(16).
+                    Find(&notifModels).
+                    Error
+            if err != nil {
+                s.respond(w, r, "Database error!", http.StatusInternalServerError)
+                return
+            }
+            notifsWeb := make([]NotificationWeb, 0, len(notifModels))
+            for _, notif := range(notifModels) {
+                notifsWeb = append(notifsWeb, s.NotificationToWeb(notif))
+            }
+            s.respond(w, r, notifsWeb, http.StatusOK)
+        }
+    }
+}
+
+func (s * server) handleNotificationsNewGet() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        var userModel UserModel
+        userID, ok := s.getUserID(r)
+        if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
+            s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+        } else {
+            var unread []NotificationModel
+            if s.db.Where("SEEN = ?", false).Find(&unread).Error != nil {
+                s.respond(w, r, "Database error!", http.StatusInternalServerError)
+                return
+            } else {
+                s.respond(w, r, len(unread) > 0, http.StatusOK)
+            }
+        }
+    }
+}
+
+func (s * server) handleNotificationsPost() http.HandlerFunc {
+    return func (w http.ResponseWriter, r *http.Request) {
+        var userModel UserModel
+        userID, ok := s.getUserID(r)
+        if !ok || s.db.Where("ID = ?", userID).Find(&userModel).Error != nil {
+            s.respond(w, r, "Could not get logged in user", http.StatusInternalServerError)
+        } else {
+            var notifModels []NotificationModel
+            if s.db.Find(&notifModels).Error != nil {
+                s.respond(w, r, "Database read error!", http.StatusInternalServerError)
+                return
+            }
+            for _, notif := range(notifModels) {
+                notif.Seen = true
+                if s.db.Save(&notif).Error != nil {
+                    s.respond(w, r, "Database save error!", http.StatusInternalServerError)
+                    return
+                }
+            }
+            s.respond(w, r, false, http.StatusOK)
+        }
+    }
 }
 
 // MIDDLEWARE
@@ -619,6 +711,13 @@ func (s *server) handlerSPA(staticPath, indexPath string) http.HandlerFunc {
 
 // HELPERS
 
+func (s *server) getTokenString(model UserModel) (string, error) {
+    token := jwt.New(jwt.SigningMethodHS256)
+    claims := token.Claims.(jwt.MapClaims)
+    claims["user_id"] = model.ID
+    return token.SignedString(s.jwtSecretKey)
+}
+
 func (s *server) respond(w http.ResponseWriter, r *http.Request,
                             data interface{}, status int) {
     w.WriteHeader(status)
@@ -635,7 +734,39 @@ func (s *server) decode(w http.ResponseWriter, r *http.Request,
     return json.NewDecoder(r.Body).Decode(v)
 }
 
-func (s *server) getUserId(r *http.Request) (int, bool) {
+func (s *server) getUserID(r *http.Request) (int, bool) {
     id, ok := r.Context().Value("user_id").(float64)
     return int(id), ok
+}
+
+func (s *server) notifyReviewLike(userID int, liker UserModel, subject SubjectModel) {
+    text := fmt.Sprintf("@%s agreed with your review of '%s'", liker.Username, subject.Title)
+    notif := NotificationModel {
+        Text: text,
+        UserID: userID,
+        Seen: false,
+    }
+    err := s.db.Save(&notif)
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+    }
+}
+
+func (s *server) notifyReviewComment(comment string, userID int, liker UserModel, subject SubjectModel) {
+    var short string
+    if len(comment) > 15 {
+        short = comment[:12] + "..."
+    } else {
+        short = comment
+    }
+    text := fmt.Sprintf("@%s commented on your review of '%s', '%s'", liker.Username, subject.Title, short)
+    notif := NotificationModel {
+        Text: text,
+        UserID: userID,
+        Seen: false,
+    }
+    err := s.db.Save(&notif)
+    if err != nil {
+        // TODO
+    }
 }

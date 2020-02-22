@@ -4357,23 +4357,6 @@ function _Browser_load(url)
 }
 
 
-function _Url_percentEncode(string)
-{
-	return encodeURIComponent(string);
-}
-
-function _Url_percentDecode(string)
-{
-	try
-	{
-		return $elm$core$Maybe$Just(decodeURIComponent(string));
-	}
-	catch (e)
-	{
-		return $elm$core$Maybe$Nothing;
-	}
-}
-
 
 // SEND REQUEST
 
@@ -4594,6 +4577,23 @@ function _Time_getZoneName()
 	});
 }
 
+
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return $elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+}
 
 
 // DECODER
@@ -5605,77 +5605,49 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$application = _Browser_application;
 var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$Main$GotNewNotifications = function (a) {
+	return {$: 'GotNewNotifications', a: a};
+};
+var $author$project$Main$NavbarMsg = function (a) {
+	return {$: 'NavbarMsg', a: a};
+};
+var $author$project$Main$NewTime = function (a) {
+	return {$: 'NewTime', a: a};
+};
 var $author$project$Main$NotFound = {$: 'NotFound'};
-var $author$project$Session$create = F2(
-	function (uAndT, key) {
-		return {key: key, userAndToken: uAndT};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $author$project$Api$apiRoot = '/api';
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$http$Http$BadStatus_ = F2(
+	function (a, b) {
+		return {$: 'BadStatus_', a: a, b: b};
 	});
-var $elm$url$Url$Parser$State = F5(
-	function (visited, unvisited, params, frag, value) {
-		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
-	});
-var $elm$url$Url$Parser$getFirstMatch = function (states) {
-	getFirstMatch:
-	while (true) {
-		if (!states.b) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var state = states.a;
-			var rest = states.b;
-			var _v1 = state.unvisited;
-			if (!_v1.b) {
-				return $elm$core$Maybe$Just(state.value);
-			} else {
-				if ((_v1.a === '') && (!_v1.b.b)) {
-					return $elm$core$Maybe$Just(state.value);
-				} else {
-					var $temp$states = rest;
-					states = $temp$states;
-					continue getFirstMatch;
-				}
-			}
-		}
-	}
+var $elm$http$Http$BadUrl_ = function (a) {
+	return {$: 'BadUrl_', a: a};
 };
-var $elm$url$Url$Parser$removeFinalEmpty = function (segments) {
-	if (!segments.b) {
-		return _List_Nil;
+var $elm$http$Http$GoodStatus_ = F2(
+	function (a, b) {
+		return {$: 'GoodStatus_', a: a, b: b};
+	});
+var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
+var $elm$http$Http$Receiving = function (a) {
+	return {$: 'Receiving', a: a};
+};
+var $elm$http$Http$Sending = function (a) {
+	return {$: 'Sending', a: a};
+};
+var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Maybe$isJust = function (maybe) {
+	if (maybe.$ === 'Just') {
+		return true;
 	} else {
-		if ((segments.a === '') && (!segments.b.b)) {
-			return _List_Nil;
-		} else {
-			var segment = segments.a;
-			var rest = segments.b;
-			return A2(
-				$elm$core$List$cons,
-				segment,
-				$elm$url$Url$Parser$removeFinalEmpty(rest));
-		}
+		return false;
 	}
 };
-var $elm$url$Url$Parser$preparePath = function (path) {
-	var _v0 = A2($elm$core$String$split, '/', path);
-	if (_v0.b && (_v0.a === '')) {
-		var segments = _v0.b;
-		return $elm$url$Url$Parser$removeFinalEmpty(segments);
-	} else {
-		var segments = _v0;
-		return $elm$url$Url$Parser$removeFinalEmpty(segments);
-	}
-};
-var $elm$url$Url$Parser$addToParametersHelp = F2(
-	function (value, maybeList) {
-		if (maybeList.$ === 'Nothing') {
-			return $elm$core$Maybe$Just(
-				_List_fromArray(
-					[value]));
-		} else {
-			var list = maybeList.a;
-			return $elm$core$Maybe$Just(
-				A2($elm$core$List$cons, value, list));
-		}
-	});
-var $elm$url$Url$percentDecode = _Url_percentDecode;
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
@@ -5713,7 +5685,6 @@ var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
 		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$Red = {$: 'Red'};
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
@@ -6190,460 +6161,6 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $elm$url$Url$Parser$addParam = F2(
-	function (segment, dict) {
-		var _v0 = A2($elm$core$String$split, '=', segment);
-		if ((_v0.b && _v0.b.b) && (!_v0.b.b.b)) {
-			var rawKey = _v0.a;
-			var _v1 = _v0.b;
-			var rawValue = _v1.a;
-			var _v2 = $elm$url$Url$percentDecode(rawKey);
-			if (_v2.$ === 'Nothing') {
-				return dict;
-			} else {
-				var key = _v2.a;
-				var _v3 = $elm$url$Url$percentDecode(rawValue);
-				if (_v3.$ === 'Nothing') {
-					return dict;
-				} else {
-					var value = _v3.a;
-					return A3(
-						$elm$core$Dict$update,
-						key,
-						$elm$url$Url$Parser$addToParametersHelp(value),
-						dict);
-				}
-			}
-		} else {
-			return dict;
-		}
-	});
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$url$Url$Parser$prepareQuery = function (maybeQuery) {
-	if (maybeQuery.$ === 'Nothing') {
-		return $elm$core$Dict$empty;
-	} else {
-		var qry = maybeQuery.a;
-		return A3(
-			$elm$core$List$foldr,
-			$elm$url$Url$Parser$addParam,
-			$elm$core$Dict$empty,
-			A2($elm$core$String$split, '&', qry));
-	}
-};
-var $elm$url$Url$Parser$parse = F2(
-	function (_v0, url) {
-		var parser = _v0.a;
-		return $elm$url$Url$Parser$getFirstMatch(
-			parser(
-				A5(
-					$elm$url$Url$Parser$State,
-					_List_Nil,
-					$elm$url$Url$Parser$preparePath(url.path),
-					$elm$url$Url$Parser$prepareQuery(url.query),
-					url.fragment,
-					$elm$core$Basics$identity)));
-	});
-var $author$project$Route$Feed = {$: 'Feed'};
-var $author$project$Route$Login = {$: 'Login'};
-var $author$project$Route$Register = {$: 'Register'};
-var $author$project$Route$Review = F2(
-	function (a, b) {
-		return {$: 'Review', a: a, b: b};
-	});
-var $author$project$Route$Root = {$: 'Root'};
-var $author$project$Route$Settings = {$: 'Settings'};
-var $author$project$Route$User = function (a) {
-	return {$: 'User', a: a};
-};
-var $elm$url$Url$Parser$Parser = function (a) {
-	return {$: 'Parser', a: a};
-};
-var $elm$url$Url$Parser$custom = F2(
-	function (tipe, stringToSomething) {
-		return $elm$url$Url$Parser$Parser(
-			function (_v0) {
-				var visited = _v0.visited;
-				var unvisited = _v0.unvisited;
-				var params = _v0.params;
-				var frag = _v0.frag;
-				var value = _v0.value;
-				if (!unvisited.b) {
-					return _List_Nil;
-				} else {
-					var next = unvisited.a;
-					var rest = unvisited.b;
-					var _v2 = stringToSomething(next);
-					if (_v2.$ === 'Just') {
-						var nextValue = _v2.a;
-						return _List_fromArray(
-							[
-								A5(
-								$elm$url$Url$Parser$State,
-								A2($elm$core$List$cons, next, visited),
-								rest,
-								params,
-								frag,
-								value(nextValue))
-							]);
-					} else {
-						return _List_Nil;
-					}
-				}
-			});
-	});
-var $elm$url$Url$Parser$int = A2($elm$url$Url$Parser$custom, 'NUMBER', $elm$core$String$toInt);
-var $elm$url$Url$Parser$mapState = F2(
-	function (func, _v0) {
-		var visited = _v0.visited;
-		var unvisited = _v0.unvisited;
-		var params = _v0.params;
-		var frag = _v0.frag;
-		var value = _v0.value;
-		return A5(
-			$elm$url$Url$Parser$State,
-			visited,
-			unvisited,
-			params,
-			frag,
-			func(value));
-	});
-var $elm$url$Url$Parser$map = F2(
-	function (subValue, _v0) {
-		var parseArg = _v0.a;
-		return $elm$url$Url$Parser$Parser(
-			function (_v1) {
-				var visited = _v1.visited;
-				var unvisited = _v1.unvisited;
-				var params = _v1.params;
-				var frag = _v1.frag;
-				var value = _v1.value;
-				return A2(
-					$elm$core$List$map,
-					$elm$url$Url$Parser$mapState(value),
-					parseArg(
-						A5($elm$url$Url$Parser$State, visited, unvisited, params, frag, subValue)));
-			});
-	});
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
-var $elm$url$Url$Parser$oneOf = function (parsers) {
-	return $elm$url$Url$Parser$Parser(
-		function (state) {
-			return A2(
-				$elm$core$List$concatMap,
-				function (_v0) {
-					var parser = _v0.a;
-					return parser(state);
-				},
-				parsers);
-		});
-};
-var $elm$url$Url$Parser$s = function (str) {
-	return $elm$url$Url$Parser$Parser(
-		function (_v0) {
-			var visited = _v0.visited;
-			var unvisited = _v0.unvisited;
-			var params = _v0.params;
-			var frag = _v0.frag;
-			var value = _v0.value;
-			if (!unvisited.b) {
-				return _List_Nil;
-			} else {
-				var next = unvisited.a;
-				var rest = unvisited.b;
-				return _Utils_eq(next, str) ? _List_fromArray(
-					[
-						A5(
-						$elm$url$Url$Parser$State,
-						A2($elm$core$List$cons, next, visited),
-						rest,
-						params,
-						frag,
-						value)
-					]) : _List_Nil;
-			}
-		});
-};
-var $elm$url$Url$Parser$slash = F2(
-	function (_v0, _v1) {
-		var parseBefore = _v0.a;
-		var parseAfter = _v1.a;
-		return $elm$url$Url$Parser$Parser(
-			function (state) {
-				return A2(
-					$elm$core$List$concatMap,
-					parseAfter,
-					parseBefore(state));
-			});
-	});
-var $elm$url$Url$Parser$string = A2($elm$url$Url$Parser$custom, 'STRING', $elm$core$Maybe$Just);
-var $elm$url$Url$Parser$top = $elm$url$Url$Parser$Parser(
-	function (state) {
-		return _List_fromArray(
-			[state]);
-	});
-var $author$project$Route$routeParser = $elm$url$Url$Parser$oneOf(
-	_List_fromArray(
-		[
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$Register,
-			$elm$url$Url$Parser$s('register')),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$Feed,
-			$elm$url$Url$Parser$s('feed')),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$Login,
-			$elm$url$Url$Parser$s('login')),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$Review,
-			A2(
-				$elm$url$Url$Parser$slash,
-				$elm$url$Url$Parser$s('users'),
-				A2(
-					$elm$url$Url$Parser$slash,
-					$elm$url$Url$Parser$string,
-					A2(
-						$elm$url$Url$Parser$slash,
-						$elm$url$Url$Parser$s('reviews'),
-						$elm$url$Url$Parser$int)))),
-			A2($elm$url$Url$Parser$map, $author$project$Route$Root, $elm$url$Url$Parser$top),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$User,
-			A2(
-				$elm$url$Url$Parser$slash,
-				$elm$url$Url$Parser$s('users'),
-				$elm$url$Url$Parser$string)),
-			A2(
-			$elm$url$Url$Parser$map,
-			$author$project$Route$Settings,
-			$elm$url$Url$Parser$s('settings'))
-		]));
-var $author$project$Route$fromUrl = $elm$url$Url$Parser$parse($author$project$Route$routeParser);
-var $author$project$Pages$Feed$GotFeed = function (a) {
-	return {$: 'GotFeed', a: a};
-};
-var $author$project$Pages$Feed$NRFMsg = function (a) {
-	return {$: 'NRFMsg', a: a};
-};
-var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
-var $author$project$Pages$Feed$RLMsg = function (a) {
-	return {$: 'RLMsg', a: a};
-};
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $author$project$Api$apiRoot = '/api';
-var $author$project$Review$Review = F9(
-	function (id, text, stars, user, subject, comments, likes, dislikes, createdAt) {
-		return {comments: comments, createdAt: createdAt, dislikes: dislikes, id: id, likes: likes, stars: stars, subject: subject, text: text, user: user};
-	});
-var $author$project$Review$Comment = F3(
-	function (id, user, text) {
-		return {id: id, text: text, user: user};
-	});
-var $author$project$User$User = F3(
-	function (id, image, username) {
-		return {id: id, image: image, username: username};
-	});
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$maybe = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
-				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
-			]));
-};
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$User$decoder = A4(
-	$elm$json$Json$Decode$map3,
-	$author$project$User$User,
-	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
-var $author$project$Review$decodeComment = A4(
-	$elm$json$Json$Decode$map3,
-	$author$project$Review$Comment,
-	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
-	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
-	A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string));
-var $author$project$Subject$Subject = F6(
-	function (id, image, kind, title, artist, spotifyId) {
-		return {artist: artist, id: id, image: image, kind: kind, spotifyId: spotifyId, title: title};
-	});
-var $elm$json$Json$Decode$map6 = _Json_map6;
-var $author$project$Subject$Album = {$: 'Album'};
-var $author$project$Subject$Song = {$: 'Song'};
-var $author$project$Subject$toSubjectKind = function (kind) {
-	if (kind === 'Album') {
-		return $author$project$Subject$Album;
-	} else {
-		return $author$project$Subject$Song;
-	}
-};
-var $author$project$Subject$subjectKindDecoder = A2($elm$json$Json$Decode$map, $author$project$Subject$toSubjectKind, $elm$json$Json$Decode$string);
-var $author$project$Subject$decoder = A7(
-	$elm$json$Json$Decode$map6,
-	$author$project$Subject$Subject,
-	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
-	A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'kind', $author$project$Subject$subjectKindDecoder),
-	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'spotifyId', $elm$json$Json$Decode$string));
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $elm$json$Json$Decode$nullable = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
-			]));
-};
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
-var $elm$json$Json$Decode$decodeValue = _Json_run;
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder = F3(
-	function (pathDecoder, valDecoder, fallback) {
-		var nullOr = function (decoder) {
-			return $elm$json$Json$Decode$oneOf(
-				_List_fromArray(
-					[
-						decoder,
-						$elm$json$Json$Decode$null(fallback)
-					]));
-		};
-		var handleResult = function (input) {
-			var _v0 = A2($elm$json$Json$Decode$decodeValue, pathDecoder, input);
-			if (_v0.$ === 'Ok') {
-				var rawValue = _v0.a;
-				var _v1 = A2(
-					$elm$json$Json$Decode$decodeValue,
-					nullOr(valDecoder),
-					rawValue);
-				if (_v1.$ === 'Ok') {
-					var finalResult = _v1.a;
-					return $elm$json$Json$Decode$succeed(finalResult);
-				} else {
-					var finalErr = _v1.a;
-					return $elm$json$Json$Decode$fail(
-						$elm$json$Json$Decode$errorToString(finalErr));
-				}
-			} else {
-				return $elm$json$Json$Decode$succeed(fallback);
-			}
-		};
-		return A2($elm$json$Json$Decode$andThen, handleResult, $elm$json$Json$Decode$value);
-	});
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional = F4(
-	function (key, valDecoder, fallback, decoder) {
-		return A2(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
-			A3(
-				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder,
-				A2($elm$json$Json$Decode$field, key, $elm$json$Json$Decode$value),
-				valDecoder,
-				fallback),
-			decoder);
-	});
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
-	function (key, valDecoder, decoder) {
-		return A2(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
-			A2($elm$json$Json$Decode$field, key, valDecoder),
-			decoder);
-	});
-var $author$project$Review$decoder = A3(
-	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'createdAt',
-	$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
-	A3(
-		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'dislikes',
-		$elm$json$Json$Decode$list($author$project$User$decoder),
-		A3(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'likes',
-			$elm$json$Json$Decode$list($author$project$User$decoder),
-			A3(
-				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'comments',
-				$elm$json$Json$Decode$list($author$project$Review$decodeComment),
-				A3(
-					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'subject',
-					$author$project$Subject$decoder,
-					A3(
-						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'user',
-						$author$project$User$decoder,
-						A3(
-							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-							'stars',
-							$elm$json$Json$Decode$int,
-							A4(
-								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
-								'text',
-								$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string),
-								$elm$core$Maybe$Nothing,
-								A3(
-									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-									'id',
-									$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
-									$elm$json$Json$Decode$succeed($author$project$Review$Review))))))))));
-var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-var $elm$http$Http$BadStatus_ = F2(
-	function (a, b) {
-		return {$: 'BadStatus_', a: a, b: b};
-	});
-var $elm$http$Http$BadUrl_ = function (a) {
-	return {$: 'BadUrl_', a: a};
-};
-var $elm$http$Http$GoodStatus_ = F2(
-	function (a, b) {
-		return {$: 'GoodStatus_', a: a, b: b};
-	});
-var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
-var $elm$http$Http$Receiving = function (a) {
-	return {$: 'Receiving', a: a};
-};
-var $elm$http$Http$Sending = function (a) {
-	return {$: 'Sending', a: a};
-};
-var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
-var $elm$core$Maybe$isJust = function (maybe) {
-	if (maybe.$ === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -6918,6 +6435,532 @@ var $simonh1000$elm_jwt$Jwt$Http$get = F2(
 			token,
 			{body: $elm$http$Http$emptyBody, expect: expect, url: url});
 	});
+var $author$project$Api$getNewNotifications = F2(
+	function (uAndT, msg) {
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$get,
+			uAndT.token,
+			{
+				expect: A2($elm$http$Http$expectJson, msg, $elm$json$Json$Decode$bool),
+				url: $author$project$Api$apiRoot + '/notifications/new'
+			});
+	});
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Widgets$Navbar$init = function (userAndToken) {
+	var model = _Utils_Tuple0;
+	return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+};
+var $elm$core$Platform$Cmd$map = _Platform_map;
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $elm$url$Url$Parser$State = F5(
+	function (visited, unvisited, params, frag, value) {
+		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
+	});
+var $elm$url$Url$Parser$getFirstMatch = function (states) {
+	getFirstMatch:
+	while (true) {
+		if (!states.b) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var state = states.a;
+			var rest = states.b;
+			var _v1 = state.unvisited;
+			if (!_v1.b) {
+				return $elm$core$Maybe$Just(state.value);
+			} else {
+				if ((_v1.a === '') && (!_v1.b.b)) {
+					return $elm$core$Maybe$Just(state.value);
+				} else {
+					var $temp$states = rest;
+					states = $temp$states;
+					continue getFirstMatch;
+				}
+			}
+		}
+	}
+};
+var $elm$url$Url$Parser$removeFinalEmpty = function (segments) {
+	if (!segments.b) {
+		return _List_Nil;
+	} else {
+		if ((segments.a === '') && (!segments.b.b)) {
+			return _List_Nil;
+		} else {
+			var segment = segments.a;
+			var rest = segments.b;
+			return A2(
+				$elm$core$List$cons,
+				segment,
+				$elm$url$Url$Parser$removeFinalEmpty(rest));
+		}
+	}
+};
+var $elm$url$Url$Parser$preparePath = function (path) {
+	var _v0 = A2($elm$core$String$split, '/', path);
+	if (_v0.b && (_v0.a === '')) {
+		var segments = _v0.b;
+		return $elm$url$Url$Parser$removeFinalEmpty(segments);
+	} else {
+		var segments = _v0;
+		return $elm$url$Url$Parser$removeFinalEmpty(segments);
+	}
+};
+var $elm$url$Url$Parser$addToParametersHelp = F2(
+	function (value, maybeList) {
+		if (maybeList.$ === 'Nothing') {
+			return $elm$core$Maybe$Just(
+				_List_fromArray(
+					[value]));
+		} else {
+			var list = maybeList.a;
+			return $elm$core$Maybe$Just(
+				A2($elm$core$List$cons, value, list));
+		}
+	});
+var $elm$url$Url$percentDecode = _Url_percentDecode;
+var $elm$url$Url$Parser$addParam = F2(
+	function (segment, dict) {
+		var _v0 = A2($elm$core$String$split, '=', segment);
+		if ((_v0.b && _v0.b.b) && (!_v0.b.b.b)) {
+			var rawKey = _v0.a;
+			var _v1 = _v0.b;
+			var rawValue = _v1.a;
+			var _v2 = $elm$url$Url$percentDecode(rawKey);
+			if (_v2.$ === 'Nothing') {
+				return dict;
+			} else {
+				var key = _v2.a;
+				var _v3 = $elm$url$Url$percentDecode(rawValue);
+				if (_v3.$ === 'Nothing') {
+					return dict;
+				} else {
+					var value = _v3.a;
+					return A3(
+						$elm$core$Dict$update,
+						key,
+						$elm$url$Url$Parser$addToParametersHelp(value),
+						dict);
+				}
+			}
+		} else {
+			return dict;
+		}
+	});
+var $elm$url$Url$Parser$prepareQuery = function (maybeQuery) {
+	if (maybeQuery.$ === 'Nothing') {
+		return $elm$core$Dict$empty;
+	} else {
+		var qry = maybeQuery.a;
+		return A3(
+			$elm$core$List$foldr,
+			$elm$url$Url$Parser$addParam,
+			$elm$core$Dict$empty,
+			A2($elm$core$String$split, '&', qry));
+	}
+};
+var $elm$url$Url$Parser$parse = F2(
+	function (_v0, url) {
+		var parser = _v0.a;
+		return $elm$url$Url$Parser$getFirstMatch(
+			parser(
+				A5(
+					$elm$url$Url$Parser$State,
+					_List_Nil,
+					$elm$url$Url$Parser$preparePath(url.path),
+					$elm$url$Url$Parser$prepareQuery(url.query),
+					url.fragment,
+					$elm$core$Basics$identity)));
+	});
+var $author$project$Route$Feed = {$: 'Feed'};
+var $author$project$Route$Login = {$: 'Login'};
+var $author$project$Route$Notifications = {$: 'Notifications'};
+var $author$project$Route$Register = {$: 'Register'};
+var $author$project$Route$Review = F2(
+	function (a, b) {
+		return {$: 'Review', a: a, b: b};
+	});
+var $author$project$Route$Root = {$: 'Root'};
+var $author$project$Route$Settings = {$: 'Settings'};
+var $author$project$Route$User = function (a) {
+	return {$: 'User', a: a};
+};
+var $elm$url$Url$Parser$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var $elm$url$Url$Parser$custom = F2(
+	function (tipe, stringToSomething) {
+		return $elm$url$Url$Parser$Parser(
+			function (_v0) {
+				var visited = _v0.visited;
+				var unvisited = _v0.unvisited;
+				var params = _v0.params;
+				var frag = _v0.frag;
+				var value = _v0.value;
+				if (!unvisited.b) {
+					return _List_Nil;
+				} else {
+					var next = unvisited.a;
+					var rest = unvisited.b;
+					var _v2 = stringToSomething(next);
+					if (_v2.$ === 'Just') {
+						var nextValue = _v2.a;
+						return _List_fromArray(
+							[
+								A5(
+								$elm$url$Url$Parser$State,
+								A2($elm$core$List$cons, next, visited),
+								rest,
+								params,
+								frag,
+								value(nextValue))
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}
+			});
+	});
+var $elm$url$Url$Parser$int = A2($elm$url$Url$Parser$custom, 'NUMBER', $elm$core$String$toInt);
+var $elm$url$Url$Parser$mapState = F2(
+	function (func, _v0) {
+		var visited = _v0.visited;
+		var unvisited = _v0.unvisited;
+		var params = _v0.params;
+		var frag = _v0.frag;
+		var value = _v0.value;
+		return A5(
+			$elm$url$Url$Parser$State,
+			visited,
+			unvisited,
+			params,
+			frag,
+			func(value));
+	});
+var $elm$url$Url$Parser$map = F2(
+	function (subValue, _v0) {
+		var parseArg = _v0.a;
+		return $elm$url$Url$Parser$Parser(
+			function (_v1) {
+				var visited = _v1.visited;
+				var unvisited = _v1.unvisited;
+				var params = _v1.params;
+				var frag = _v1.frag;
+				var value = _v1.value;
+				return A2(
+					$elm$core$List$map,
+					$elm$url$Url$Parser$mapState(value),
+					parseArg(
+						A5($elm$url$Url$Parser$State, visited, unvisited, params, frag, subValue)));
+			});
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $elm$url$Url$Parser$oneOf = function (parsers) {
+	return $elm$url$Url$Parser$Parser(
+		function (state) {
+			return A2(
+				$elm$core$List$concatMap,
+				function (_v0) {
+					var parser = _v0.a;
+					return parser(state);
+				},
+				parsers);
+		});
+};
+var $elm$url$Url$Parser$s = function (str) {
+	return $elm$url$Url$Parser$Parser(
+		function (_v0) {
+			var visited = _v0.visited;
+			var unvisited = _v0.unvisited;
+			var params = _v0.params;
+			var frag = _v0.frag;
+			var value = _v0.value;
+			if (!unvisited.b) {
+				return _List_Nil;
+			} else {
+				var next = unvisited.a;
+				var rest = unvisited.b;
+				return _Utils_eq(next, str) ? _List_fromArray(
+					[
+						A5(
+						$elm$url$Url$Parser$State,
+						A2($elm$core$List$cons, next, visited),
+						rest,
+						params,
+						frag,
+						value)
+					]) : _List_Nil;
+			}
+		});
+};
+var $elm$url$Url$Parser$slash = F2(
+	function (_v0, _v1) {
+		var parseBefore = _v0.a;
+		var parseAfter = _v1.a;
+		return $elm$url$Url$Parser$Parser(
+			function (state) {
+				return A2(
+					$elm$core$List$concatMap,
+					parseAfter,
+					parseBefore(state));
+			});
+	});
+var $elm$url$Url$Parser$string = A2($elm$url$Url$Parser$custom, 'STRING', $elm$core$Maybe$Just);
+var $elm$url$Url$Parser$top = $elm$url$Url$Parser$Parser(
+	function (state) {
+		return _List_fromArray(
+			[state]);
+	});
+var $author$project$Route$routeParser = $elm$url$Url$Parser$oneOf(
+	_List_fromArray(
+		[
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Register,
+			$elm$url$Url$Parser$s('register')),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Feed,
+			$elm$url$Url$Parser$s('feed')),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Login,
+			$elm$url$Url$Parser$s('login')),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Review,
+			A2(
+				$elm$url$Url$Parser$slash,
+				$elm$url$Url$Parser$s('users'),
+				A2(
+					$elm$url$Url$Parser$slash,
+					$elm$url$Url$Parser$string,
+					A2(
+						$elm$url$Url$Parser$slash,
+						$elm$url$Url$Parser$s('reviews'),
+						$elm$url$Url$Parser$int)))),
+			A2($elm$url$Url$Parser$map, $author$project$Route$Root, $elm$url$Url$Parser$top),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$User,
+			A2(
+				$elm$url$Url$Parser$slash,
+				$elm$url$Url$Parser$s('users'),
+				$elm$url$Url$Parser$string)),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Settings,
+			$elm$url$Url$Parser$s('settings')),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Route$Notifications,
+			$elm$url$Url$Parser$s('notifications'))
+		]));
+var $author$project$Route$fromUrl = $elm$url$Url$Parser$parse($author$project$Route$routeParser);
+var $author$project$Pages$Feed$GotFeed = function (a) {
+	return {$: 'GotFeed', a: a};
+};
+var $author$project$Pages$Feed$NRFMsg = function (a) {
+	return {$: 'NRFMsg', a: a};
+};
+var $author$project$Pages$Feed$OnNRFSubmitPressed = {$: 'OnNRFSubmitPressed'};
+var $author$project$Pages$Feed$RLMsg = function (a) {
+	return {$: 'RLMsg', a: a};
+};
+var $author$project$Review$Review = F9(
+	function (id, text, stars, user, subject, comments, likes, dislikes, createdAt) {
+		return {comments: comments, createdAt: createdAt, dislikes: dislikes, id: id, likes: likes, stars: stars, subject: subject, text: text, user: user};
+	});
+var $author$project$Review$Comment = F3(
+	function (id, user, text) {
+		return {id: id, text: text, user: user};
+	});
+var $author$project$User$User = F3(
+	function (id, image, username) {
+		return {id: id, image: image, username: username};
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$User$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$User$User,
+	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'username', $elm$json$Json$Decode$string));
+var $author$project$Review$decodeComment = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$Review$Comment,
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
+	A2($elm$json$Json$Decode$field, 'user', $author$project$User$decoder),
+	A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string));
+var $author$project$Subject$Subject = F6(
+	function (id, image, kind, title, artist, spotifyId) {
+		return {artist: artist, id: id, image: image, kind: kind, spotifyId: spotifyId, title: title};
+	});
+var $elm$json$Json$Decode$map6 = _Json_map6;
+var $author$project$Subject$Album = {$: 'Album'};
+var $author$project$Subject$Song = {$: 'Song'};
+var $author$project$Subject$toSubjectKind = function (kind) {
+	if (kind === 'Album') {
+		return $author$project$Subject$Album;
+	} else {
+		return $author$project$Subject$Song;
+	}
+};
+var $author$project$Subject$subjectKindDecoder = A2($elm$json$Json$Decode$map, $author$project$Subject$toSubjectKind, $elm$json$Json$Decode$string);
+var $author$project$Subject$decoder = A7(
+	$elm$json$Json$Decode$map6,
+	$author$project$Subject$Subject,
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int)),
+	A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'kind', $author$project$Subject$subjectKindDecoder),
+	A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'artist', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'spotifyId', $elm$json$Json$Decode$string));
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $elm$json$Json$Decode$nullable = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
+			]));
+};
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return $elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						decoder,
+						$elm$json$Json$Decode$null(fallback)
+					]));
+		};
+		var handleResult = function (input) {
+			var _v0 = A2($elm$json$Json$Decode$decodeValue, pathDecoder, input);
+			if (_v0.$ === 'Ok') {
+				var rawValue = _v0.a;
+				var _v1 = A2(
+					$elm$json$Json$Decode$decodeValue,
+					nullOr(valDecoder),
+					rawValue);
+				if (_v1.$ === 'Ok') {
+					var finalResult = _v1.a;
+					return $elm$json$Json$Decode$succeed(finalResult);
+				} else {
+					var finalErr = _v1.a;
+					return $elm$json$Json$Decode$fail(
+						$elm$json$Json$Decode$errorToString(finalErr));
+				}
+			} else {
+				return $elm$json$Json$Decode$succeed(fallback);
+			}
+		};
+		return A2($elm$json$Json$Decode$andThen, handleResult, $elm$json$Json$Decode$value);
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A3(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder,
+				A2($elm$json$Json$Decode$field, key, $elm$json$Json$Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A2($elm$json$Json$Decode$field, key, valDecoder),
+			decoder);
+	});
+var $author$project$Review$decoder = A3(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+	'createdAt',
+	$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'dislikes',
+		$elm$json$Json$Decode$list($author$project$User$decoder),
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'likes',
+			$elm$json$Json$Decode$list($author$project$User$decoder),
+			A3(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+				'comments',
+				$elm$json$Json$Decode$list($author$project$Review$decodeComment),
+				A3(
+					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+					'subject',
+					$author$project$Subject$decoder,
+					A3(
+						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+						'user',
+						$author$project$User$decoder,
+						A3(
+							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+							'stars',
+							$elm$json$Json$Decode$int,
+							A4(
+								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+								'text',
+								$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string),
+								$elm$core$Maybe$Nothing,
+								A3(
+									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+									'id',
+									$elm$json$Json$Decode$nullable($elm$json$Json$Decode$int),
+									$elm$json$Json$Decode$succeed($author$project$Review$Review))))))))));
 var $author$project$Api$getFeed = F2(
 	function (userAndToken, msg) {
 		return A2(
@@ -6960,9 +7003,12 @@ var $author$project$Route$routeToPieces = function (route) {
 		case 'Root':
 			return _List_fromArray(
 				['']);
-		default:
+		case 'Settings':
 			return _List_fromArray(
 				['settings']);
+		default:
+			return _List_fromArray(
+				['notifications']);
 	}
 };
 var $author$project$Route$routeToString = function (route) {
@@ -6982,25 +7028,6 @@ var $author$project$Widgets$NewReviewForm$init = F2(
 	function (toOuterMsg, onPress) {
 		return {onPress: onPress, results: _List_Nil, stars: $elm$core$Maybe$Nothing, subject: $elm$core$Maybe$Nothing, subjectQuery: '', text: $elm$core$Maybe$Nothing, toOuterMsg: toOuterMsg};
 	});
-var $author$project$Widgets$ReviewList$GotTime = function (a) {
-	return {$: 'GotTime', a: a};
-};
-var $elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
-};
-var $elm$time$Time$Offset = function (a) {
-	return {$: 'Offset', a: a};
-};
-var $elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
-	});
-var $elm$time$Time$customZone = $elm$time$Time$Zone;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $author$project$Widgets$ReviewList$setReviews = function (reviews) {
 	return A2(
 		$elm$core$List$map,
@@ -7013,13 +7040,11 @@ var $author$project$Widgets$ReviewList$init = F2(
 	function (session, reviews) {
 		return _Utils_Tuple3(
 			{
-				currentTime: $elm$core$Maybe$Nothing,
 				reviews: $author$project$Widgets$ReviewList$setReviews(reviews)
 			},
 			session,
-			A2($elm$core$Task$perform, $author$project$Widgets$ReviewList$GotTime, $elm$time$Time$now));
+			$elm$core$Platform$Cmd$none);
 	});
-var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$Pages$Feed$init = function (session) {
 	var _v0 = A2($author$project$Widgets$ReviewList$init, session, _List_Nil);
 	var rl = _v0.a;
@@ -7048,10 +7073,77 @@ var $author$project$Pages$Feed$init = function (session) {
 			A2($author$project$Route$goTo, session.key, $author$project$Route$Login));
 	}
 };
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Pages$Login$init = function (session) {
 	var model = {password: '', problems: _List_Nil, username: ''};
 	return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+};
+var $author$project$Pages$Notifications$GotNewNotificationsCheck = function (a) {
+	return {$: 'GotNewNotificationsCheck', a: a};
+};
+var $author$project$Pages$Notifications$GotNotifications = function (a) {
+	return {$: 'GotNotifications', a: a};
+};
+var $author$project$Notification$Notification = F3(
+	function (id, text, createdAt) {
+		return {createdAt: createdAt, id: id, text: text};
+	});
+var $author$project$Notification$decoder = A3(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+	'createdAt',
+	$elm$json$Json$Decode$int,
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'text',
+		$elm$json$Json$Decode$string,
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'id',
+			$elm$json$Json$Decode$int,
+			$elm$json$Json$Decode$succeed($author$project$Notification$Notification))));
+var $author$project$Api$getNotifications = F2(
+	function (uAndT, msg) {
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$get,
+			uAndT.token,
+			{
+				expect: A2(
+					$elm$http$Http$expectJson,
+					msg,
+					$elm$json$Json$Decode$list($author$project$Notification$decoder)),
+				url: $author$project$Api$apiRoot + '/notifications'
+			});
+	});
+var $simonh1000$elm_jwt$Jwt$Http$post = $simonh1000$elm_jwt$Jwt$Http$createRequest('POST');
+var $author$project$Api$postNotifications = F2(
+	function (uAndT, msg) {
+		return A2(
+			$simonh1000$elm_jwt$Jwt$Http$post,
+			uAndT.token,
+			{
+				body: $elm$http$Http$emptyBody,
+				expect: A2($elm$http$Http$expectJson, msg, $elm$json$Json$Decode$bool),
+				url: $author$project$Api$apiRoot + '/notifications'
+			});
+	});
+var $author$project$Pages$Notifications$init = function (session) {
+	var model = {notifications: $elm$core$Maybe$Nothing};
+	var cmds = function () {
+		var _v0 = session.userAndToken;
+		if (_v0.$ === 'Just') {
+			var uAndT = _v0.a;
+			return _List_fromArray(
+				[
+					A2($author$project$Api$getNotifications, uAndT, $author$project$Pages$Notifications$GotNotifications),
+					A2($author$project$Api$postNotifications, uAndT, $author$project$Pages$Notifications$GotNewNotificationsCheck)
+				]);
+		} else {
+			return _List_Nil;
+		}
+	}();
+	return _Utils_Tuple3(
+		model,
+		session,
+		$elm$core$Platform$Cmd$batch(cmds));
 };
 var $author$project$Pages$Register$init = function (session) {
 	var model = {password: '', passwordRepeat: '', problems: _List_Nil, profilePicture: $elm$core$Maybe$Nothing, username: '', usernameAvailable: $elm$core$Maybe$Nothing};
@@ -7202,10 +7294,12 @@ var $author$project$Main$stepFeed = F2(
 		var session = _v0.b;
 		var feedCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$Feed(feedModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Feed(feedModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$FeedMsg, feedCmd));
 	});
 var $author$project$Main$Login = function (a) {
@@ -7220,11 +7314,33 @@ var $author$project$Main$stepLogin = F2(
 		var session = _v0.b;
 		var loginCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$Login(loginModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Login(loginModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$LoginMsg, loginCmd));
+	});
+var $author$project$Main$Notifications = function (a) {
+	return {$: 'Notifications', a: a};
+};
+var $author$project$Main$NotificationsMsg = function (a) {
+	return {$: 'NotificationsMsg', a: a};
+};
+var $author$project$Main$stepNotifications = F2(
+	function (model, _v0) {
+		var notificationsModel = _v0.a;
+		var session = _v0.b;
+		var notificationsCmd = _v0.c;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Notifications(notificationsModel),
+					session: session
+				}),
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$NotificationsMsg, notificationsCmd));
 	});
 var $author$project$Main$Register = function (a) {
 	return {$: 'Register', a: a};
@@ -7238,10 +7354,12 @@ var $author$project$Main$stepRegister = F2(
 		var session = _v0.b;
 		var registerCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$Register(registerModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Register(registerModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$RegisterMsg, registerCmd));
 	});
 var $author$project$Main$Review = function (a) {
@@ -7256,10 +7374,12 @@ var $author$project$Main$stepReview = F2(
 		var session = _v0.b;
 		var reviewCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$Review(reviewModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Review(reviewModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$ReviewMsg, reviewCmd));
 	});
 var $author$project$Main$Settings = function (a) {
@@ -7274,10 +7394,12 @@ var $author$project$Main$stepSettings = F2(
 		var session = _v0.b;
 		var settingsCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$Settings(settingsModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$Settings(settingsModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$SettingsMsg, settingsCmd));
 	});
 var $author$project$Main$User = function (a) {
@@ -7292,10 +7414,12 @@ var $author$project$Main$stepUser = F2(
 		var session = _v0.b;
 		var userCmd = _v0.c;
 		return _Utils_Tuple2(
-			{
-				page: $author$project$Main$User(userModel),
-				session: session
-			},
+			_Utils_update(
+				model,
+				{
+					page: $author$project$Main$User(userModel),
+					session: session
+				}),
 			A2($elm$core$Platform$Cmd$map, $author$project$Main$UserMsg, userCmd));
 	});
 var $author$project$Main$stepUrl = F2(
@@ -7355,40 +7479,69 @@ var $author$project$Main$stepUrl = F2(
 						$author$project$Main$stepReview,
 						model,
 						A3($author$project$Pages$Review$init, model.session, username, id));
-				default:
+				case 'Settings':
 					var _v7 = _v0.a;
 					return A2(
 						$author$project$Main$stepSettings,
 						model,
 						$author$project$Pages$Settings$init(model.session));
+				default:
+					var _v8 = _v0.a;
+					return A2(
+						$author$project$Main$stepNotifications,
+						model,
+						$author$project$Pages$Notifications$init(model.session));
 			}
 		}
 	});
 var $author$project$Main$init = F3(
 	function (uAndT, url, key) {
-		return A2(
-			$author$project$Main$stepUrl,
-			url,
-			{
-				page: $author$project$Main$NotFound,
-				session: A2($author$project$Session$create, uAndT, key)
-			});
+		var initSession = {currentTime: $elm$core$Maybe$Nothing, key: key, unreadNotifications: $elm$core$Maybe$Nothing, userAndToken: uAndT};
+		var _v0 = $author$project$Widgets$Navbar$init(uAndT);
+		var nav = _v0.a;
+		var navCmd = _v0.b;
+		var start = {navbarModel: nav, page: $author$project$Main$NotFound, session: initSession};
+		var _v1 = A2($author$project$Main$stepUrl, url, start);
+		var model = _v1.a;
+		var cmd = _v1.b;
+		var cmds = function () {
+			if (uAndT.$ === 'Just') {
+				var ut = uAndT.a;
+				return _List_fromArray(
+					[
+						cmd,
+						A2($elm$core$Platform$Cmd$map, $author$project$Main$NavbarMsg, navCmd),
+						A2($author$project$Api$getNewNotifications, ut, $author$project$Main$GotNewNotifications),
+						A2($elm$core$Task$perform, $author$project$Main$NewTime, $elm$time$Time$now)
+					]);
+			} else {
+				return _List_fromArray(
+					[
+						cmd,
+						A2($elm$core$Platform$Cmd$map, $author$project$Main$NavbarMsg, navCmd),
+						A2($elm$core$Task$perform, $author$project$Main$NewTime, $elm$time$Time$now)
+					]);
+			}
+		}();
+		return _Utils_Tuple2(
+			model,
+			$elm$core$Platform$Cmd$batch(cmds));
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$subscriptions = function (_v0) {
-	return $elm$core$Platform$Sub$none;
+var $author$project$Main$subscriptions = function (model) {
+	return $elm$core$Platform$Sub$batch(_List_Nil);
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $author$project$Main$stepNavbar = F2(
 	function (model, _v0) {
-		var session = _v0.a;
-		var cmd = _v0.b;
+		var navbarModel = _v0.a;
+		var session = _v0.b;
+		var navbarCmd = _v0.c;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{session: session}),
-			cmd);
+				{navbarModel: navbarModel, session: session}),
+			A2($elm$core$Platform$Cmd$map, $author$project$Main$NavbarMsg, navbarCmd));
 	});
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -7623,7 +7776,6 @@ var $elm$http$Http$jsonBody = function (value) {
 		'application/json',
 		A2($elm$json$Json$Encode$encode, 0, value));
 };
-var $simonh1000$elm_jwt$Jwt$Http$post = $simonh1000$elm_jwt$Jwt$Http$createRequest('POST');
 var $author$project$Api$postReview = F3(
 	function (userAndToken, review, msg) {
 		return A2(
@@ -8212,7 +8364,7 @@ var $author$project$Widgets$ReviewList$update = F3(
 				} else {
 					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
-			case 'OnReviewCommentChanged':
+			default:
 				var review = _v0.a;
 				var newComment = _v0.b;
 				return _Utils_Tuple3(
@@ -8220,16 +8372,6 @@ var $author$project$Widgets$ReviewList$update = F3(
 						model,
 						{
 							reviews: A3($author$project$Widgets$ReviewList$setComment, review, newComment, model.reviews)
-						}),
-					session,
-					$elm$core$Platform$Cmd$none);
-			default:
-				var posix = _v0.a;
-				return _Utils_Tuple3(
-					_Utils_update(
-						model,
-						{
-							currentTime: $elm$core$Maybe$Just(posix)
 						}),
 					session,
 					$elm$core$Platform$Cmd$none);
@@ -8481,6 +8623,40 @@ var $author$project$Pages$Login$update = F3(
 				}
 		}
 	});
+var $author$project$Pages$Notifications$update = F3(
+	function (msg, model, session) {
+		if (msg.$ === 'GotNotifications') {
+			var result = msg.a;
+			if (result.$ === 'Ok') {
+				var notifs = result.a;
+				return _Utils_Tuple3(
+					_Utils_update(
+						model,
+						{
+							notifications: $elm$core$Maybe$Just(notifs)
+						}),
+					session,
+					$elm$core$Platform$Cmd$none);
+			} else {
+				return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+			}
+		} else {
+			var result = msg.a;
+			if (result.$ === 'Ok') {
+				var _new = result.a;
+				return _Utils_Tuple3(
+					model,
+					_Utils_update(
+						session,
+						{
+							unreadNotifications: $elm$core$Maybe$Just(_new)
+						}),
+					$elm$core$Platform$Cmd$none);
+			} else {
+				return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
+			}
+		}
+	});
 var $author$project$Pages$Register$Completed = function (a) {
 	return {$: 'Completed', a: a};
 };
@@ -8500,7 +8676,6 @@ var $elm$file$File$Select$file = F2(
 			toMsg,
 			_File_uploadOne(mimes));
 	});
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Api$getUsernameAvailability = F2(
 	function (username, msg) {
 		return $elm$http$Http$get(
@@ -8909,36 +9084,41 @@ var $author$project$Pages$User$update = F3(
 					A3($author$project$Widgets$ReviewList$update, rlMsg, model.reviewListModel, session));
 		}
 	});
-var $author$project$Widgets$Navbar$update = F2(
-	function (msg, session) {
+var $author$project$Widgets$Navbar$update = F3(
+	function (msg, model, session) {
 		switch (msg.$) {
 			case 'OnLogoClicked':
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
+					model,
 					session,
 					A2($author$project$Route$goTo, session.key, $author$project$Route$Feed));
 			case 'OnSignupClicked':
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
+					model,
 					session,
 					A2($author$project$Route$goTo, session.key, $author$project$Route$Register));
 			case 'OnLoginClicked':
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
+					model,
 					session,
 					A2($author$project$Route$goTo, session.key, $author$project$Route$Login));
 			case 'OnUserClicked':
 				var _v1 = session.userAndToken;
 				if (_v1.$ === 'Just') {
 					var uAndT = _v1.a;
-					return _Utils_Tuple2(
+					return _Utils_Tuple3(
+						model,
 						session,
 						A2(
 							$author$project$Route$goTo,
 							session.key,
 							$author$project$Route$User(uAndT.user.username)));
 				} else {
-					return _Utils_Tuple2(session, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple3(model, session, $elm$core$Platform$Cmd$none);
 				}
 			case 'OnLogoutClicked':
-				return _Utils_Tuple2(
+				return _Utils_Tuple3(
+					model,
 					_Utils_update(
 						session,
 						{userAndToken: $elm$core$Maybe$Nothing}),
@@ -8948,10 +9128,16 @@ var $author$project$Widgets$Navbar$update = F2(
 								A2($author$project$Route$goTo, session.key, $author$project$Route$Root),
 								$author$project$Session$store($elm$core$Maybe$Nothing)
 							])));
-			default:
-				return _Utils_Tuple2(
+			case 'OnSettingsClicked':
+				return _Utils_Tuple3(
+					model,
 					session,
 					A2($author$project$Route$goTo, session.key, $author$project$Route$Settings));
+			default:
+				return _Utils_Tuple3(
+					model,
+					session,
+					A2($author$project$Route$goTo, session.key, $author$project$Route$Notifications));
 		}
 	});
 var $author$project$Main$update = F2(
@@ -9050,17 +9236,57 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'NotificationsMsg':
+				var msg = message.a;
+				var _v8 = model.page;
+				if (_v8.$ === 'Notifications') {
+					var innerModel = _v8.a;
+					return A2(
+						$author$project$Main$stepNotifications,
+						model,
+						A3($author$project$Pages$Notifications$update, msg, innerModel, model.session));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'NavbarMsg':
 				var msg = message.a;
 				return A2(
 					$author$project$Main$stepNavbar,
 					model,
-					A2($author$project$Widgets$Navbar$update, msg, model.session));
+					A3($author$project$Widgets$Navbar$update, msg, model.navbarModel, model.session));
+			case 'NewTime':
+				var now = message.a;
+				var oldSession = model.session;
+				var newSession = _Utils_update(
+					oldSession,
+					{
+						currentTime: $elm$core$Maybe$Just(now)
+					});
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{session: newSession}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var result = message.a;
+				if (result.$ === 'Ok') {
+					var unread = result.a;
+					var oldSession = model.session;
+					var newSession = _Utils_update(
+						oldSession,
+						{
+							unreadNotifications: $elm$core$Maybe$Just(unread)
+						});
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{session: newSession}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
-var $author$project$Main$NavbarMsg = function (a) {
-	return {$: 'NavbarMsg', a: a};
-};
 var $author$project$Main$None = {$: 'None'};
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
@@ -17326,7 +17552,7 @@ var $author$project$Widgets$ReviewList$viewReviewAndComment = F3(
 	});
 var $author$project$Widgets$ReviewList$view = F2(
 	function (session, model) {
-		var _v0 = model.currentTime;
+		var _v0 = session.currentTime;
 		if (_v0.$ === 'Just') {
 			var now = _v0.a;
 			return $author$project$Styles$contentList(
@@ -17459,6 +17685,38 @@ var $author$project$Pages$NotFound$view = {
 	body: $author$project$Styles$text('Not Found!'),
 	title: 'Not Found'
 };
+var $author$project$Pages$Notifications$viewNotification = function (notif) {
+	return $author$project$Styles$text(notif.text);
+};
+var $author$project$Pages$Notifications$view = F2(
+	function (session, model) {
+		return {
+			body: A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[$author$project$Styles$spacingMedium]),
+				function () {
+					var _v0 = model.notifications;
+					if (_v0.$ === 'Just') {
+						if (!_v0.a.b) {
+							return _List_fromArray(
+								[
+									$author$project$Styles$text('no notifications yet!')
+								]);
+						} else {
+							var notifs = _v0.a;
+							return A2($elm$core$List$map, $author$project$Pages$Notifications$viewNotification, notifs);
+						}
+					} else {
+						return _List_fromArray(
+							[
+								$author$project$Styles$text('loading...')
+							]);
+					}
+				}()),
+			title: 'Notifications'
+		};
+	});
 var $author$project$Pages$Register$PasswordChanged = function (a) {
 	return {$: 'PasswordChanged', a: a};
 };
@@ -17745,6 +18003,7 @@ var $author$project$Pages$User$view = F2(
 var $author$project$Widgets$Navbar$OnLoginClicked = {$: 'OnLoginClicked'};
 var $author$project$Widgets$Navbar$OnLogoClicked = {$: 'OnLogoClicked'};
 var $author$project$Widgets$Navbar$OnLogoutClicked = {$: 'OnLogoutClicked'};
+var $author$project$Widgets$Navbar$OnNotificationsClicked = {$: 'OnNotificationsClicked'};
 var $author$project$Widgets$Navbar$OnSettingsClicked = {$: 'OnSettingsClicked'};
 var $author$project$Widgets$Navbar$OnSignupClicked = {$: 'OnSignupClicked'};
 var $author$project$Widgets$Navbar$OnUserClicked = {$: 'OnUserClicked'};
@@ -17770,7 +18029,72 @@ var $author$project$Styles$buttonAlt = F2(
 var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
 var $author$project$Widgets$Navbar$view = F2(
-	function (toOuter, session) {
+	function (session, model) {
+		var signup = A2(
+			$author$project$Styles$buttonAlt,
+			'Sign Up',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnSignupClicked));
+		var settings = A2(
+			$author$project$Styles$buttonAlt,
+			'Settings',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnSettingsClicked));
+		var profile = function (user) {
+			return A2(
+				$mdgriffith$elm_ui$Element$Input$button,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$alignRight,
+						$author$project$Styles$spacingMedium,
+						$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
+						$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
+						$mdgriffith$elm_ui$Element$Font$bold,
+						$author$project$Styles$paddingSmall,
+						$author$project$Styles$roundedSmall
+					]),
+				{
+					label: function () {
+						var _v1 = user.image;
+						if (_v1.$ === 'Just') {
+							var image = _v1.a;
+							return A2(
+								$mdgriffith$elm_ui$Element$row,
+								_List_fromArray(
+									[$author$project$Styles$spacingSmall]),
+								_List_fromArray(
+									[
+										A2(
+										$mdgriffith$elm_ui$Element$image,
+										_List_fromArray(
+											[
+												$mdgriffith$elm_ui$Element$width(
+												$mdgriffith$elm_ui$Element$px(32))
+											]),
+										{description: 'profile picture', src: image}),
+										$author$project$Styles$text(user.username)
+									]));
+						} else {
+							return $author$project$Styles$text(user.username);
+						}
+					}(),
+					onPress: $elm$core$Maybe$Just($author$project$Widgets$Navbar$OnUserClicked)
+				});
+		};
+		var notifs = A2(
+			$author$project$Styles$buttonAlt,
+			A2($elm$core$Maybe$withDefault, false, session.unreadNotifications) ? 'Notifications (new)' : 'Notifications',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnNotificationsClicked));
+		var logout = A2(
+			$author$project$Styles$buttonAlt,
+			'Log out',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnLogoutClicked));
+		var login = A2(
+			$author$project$Styles$buttonAlt,
+			'Log in',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnLoginClicked));
+		var home = A2(
+			$author$project$Styles$buttonAlt,
+			'Home',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnLogoClicked));
 		return A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
@@ -17779,101 +18103,52 @@ var $author$project$Widgets$Navbar$view = F2(
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					$mdgriffith$elm_ui$Element$spaceEvenly,
 					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
-					$author$project$Styles$paddingMixedMedium
+					$author$project$Styles$paddingMixedMedium,
+					$author$project$Styles$spacingMedium
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$author$project$Styles$buttonAlt,
-					'Home',
-					$elm$core$Maybe$Just(
-						toOuter($author$project$Widgets$Navbar$OnLogoClicked))),
-					A2(
-					$mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
-					function () {
-						var _v0 = A2(
-							$elm$core$Maybe$map,
-							function ($) {
-								return $.user;
-							},
-							session.userAndToken);
-						if (_v0.$ === 'Just') {
-							var user = _v0.a;
-							return _List_fromArray(
+			function () {
+				var _v0 = A2(
+					$elm$core$Maybe$map,
+					function ($) {
+						return $.user;
+					},
+					session.userAndToken);
+				if (_v0.$ === 'Just') {
+					var user = _v0.a;
+					return _List_fromArray(
+						[
+							home,
+							notifs,
+							A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_fromArray(
+								[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
+							_List_fromArray(
 								[
-									A2(
-									$mdgriffith$elm_ui$Element$Input$button,
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$alignRight,
-											$author$project$Styles$spacingMedium,
-											$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$white),
-											$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$red),
-											$mdgriffith$elm_ui$Element$Font$bold,
-											$author$project$Styles$paddingSmall,
-											$author$project$Styles$roundedSmall
-										]),
-									{
-										label: function () {
-											var _v1 = user.image;
-											if (_v1.$ === 'Just') {
-												var image = _v1.a;
-												return A2(
-													$mdgriffith$elm_ui$Element$row,
-													_List_fromArray(
-														[$author$project$Styles$spacingSmall]),
-													_List_fromArray(
-														[
-															A2(
-															$mdgriffith$elm_ui$Element$image,
-															_List_fromArray(
-																[
-																	$mdgriffith$elm_ui$Element$width(
-																	$mdgriffith$elm_ui$Element$px(32))
-																]),
-															{description: 'profile picture', src: image}),
-															$author$project$Styles$text(user.username)
-														]));
-											} else {
-												return $author$project$Styles$text(user.username);
-											}
-										}(),
-										onPress: $elm$core$Maybe$Just(
-											toOuter($author$project$Widgets$Navbar$OnUserClicked))
-									}),
-									A2(
-									$author$project$Styles$buttonAlt,
-									'Settings',
-									$elm$core$Maybe$Just(
-										toOuter($author$project$Widgets$Navbar$OnSettingsClicked))),
-									A2(
-									$author$project$Styles$buttonAlt,
-									'Log out',
-									$elm$core$Maybe$Just(
-										toOuter($author$project$Widgets$Navbar$OnLogoutClicked)))
-								]);
-						} else {
-							return _List_fromArray(
-								[
-									A2(
-									$author$project$Styles$buttonAlt,
-									'Log in',
-									$elm$core$Maybe$Just(
-										toOuter($author$project$Widgets$Navbar$OnLoginClicked))),
-									A2(
-									$author$project$Styles$buttonAlt,
-									'Sign Up',
-									$elm$core$Maybe$Just(
-										toOuter($author$project$Widgets$Navbar$OnSignupClicked)))
-								]);
-						}
-					}())
-				]));
+									profile(user),
+									settings,
+									logout
+								]))
+						]);
+				} else {
+					return _List_fromArray(
+						[
+							home,
+							A2(
+							$mdgriffith$elm_ui$Element$row,
+							_List_fromArray(
+								[$mdgriffith$elm_ui$Element$alignRight, $author$project$Styles$spacingMedium]),
+							_List_fromArray(
+								[login, signup]))
+						]);
+				}
+			}());
 	});
 var $author$project$Main$view = function (model) {
-	var bar = A2($author$project$Widgets$Navbar$view, $author$project$Main$NavbarMsg, model.session);
+	var bar = A2(
+		$mdgriffith$elm_ui$Element$map,
+		$author$project$Main$NavbarMsg,
+		A2($author$project$Widgets$Navbar$view, model.session, model.navbarModel));
 	var _v0 = function () {
 		var _v1 = model.page;
 		switch (_v1.$) {
@@ -17912,12 +18187,18 @@ var $author$project$Main$view = function (model) {
 					$author$project$Page$map,
 					$author$project$Main$ReviewMsg,
 					A2($author$project$Pages$Review$view, model.session, innerModel));
-			default:
+			case 'Settings':
 				var innerModel = _v1.a;
 				return A2(
 					$author$project$Page$map,
 					$author$project$Main$SettingsMsg,
 					A2($author$project$Pages$Settings$view, model.session, innerModel));
+			default:
+				var innerModel = _v1.a;
+				return A2(
+					$author$project$Page$map,
+					$author$project$Main$NotificationsMsg,
+					A2($author$project$Pages$Notifications$view, model.session, innerModel));
 		}
 	}();
 	var title = _v0.title;

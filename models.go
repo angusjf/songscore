@@ -216,3 +216,19 @@ const (
 	Song  = 0
 	Album = 1
 )
+
+type NotificationModel struct {
+    ID int
+    UserID int
+    Text string
+    Seen bool
+    CreatedAt time.Time
+}
+
+func (s *server) NotificationToWeb(model NotificationModel) NotificationWeb {
+    return NotificationWeb{
+        ID: model.ID,
+        Text: model.Text,
+        CreatedAt: model.CreatedAt.Unix() * 1000,
+    }
+}
