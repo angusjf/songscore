@@ -14741,9 +14741,6 @@ var $mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
-var $mdgriffith$elm_ui$Element$explain = function (_v0) {
-	return $mdgriffith$elm_ui$Internal$Model$htmlClass('explain');
-};
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
@@ -15034,7 +15031,6 @@ var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Styles$skeleton = F2(
 	function (bar, body) {
 		return A2(
@@ -15049,14 +15045,7 @@ var $author$project$Styles$skeleton = F2(
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$width(
-						A2($mdgriffith$elm_ui$Element$minimum, 530, $mdgriffith$elm_ui$Element$fill)),
-						$mdgriffith$elm_ui$Element$explain(
-						_Debug_todo(
-							'Styles',
-							{
-								start: {line: 141, column: 19},
-								end: {line: 141, column: 29}
-							}))
+						A2($mdgriffith$elm_ui$Element$minimum, 530, $mdgriffith$elm_ui$Element$fill))
 					]),
 				_List_fromArray(
 					[
