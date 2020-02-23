@@ -17032,9 +17032,6 @@ var $author$project$Styles$dislikesBox = function (usernames) {
 			}
 		}());
 };
-var $mdgriffith$elm_ui$Element$explain = function (_v0) {
-	return $mdgriffith$elm_ui$Internal$Model$htmlClass('explain');
-};
 var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
 	return $elm$core$String$concat(
 		_List_fromArray(
@@ -17422,7 +17419,6 @@ var $author$project$Styles$subjectBox = function (_v0) {
 						spotify)
 					]))));
 };
-var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Styles$viewReview = F9(
 	function (maybeUser, review, newComment, now, onDelete, onLike, onDislike, onCommentChanged, onCommentPost) {
 		var newCommentBox = A2(
@@ -17610,14 +17606,7 @@ var $author$project$Styles$viewReview = F9(
 				[
 					$author$project$Styles$lightShadow,
 					$author$project$Styles$roundedSmall,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					$mdgriffith$elm_ui$Element$explain(
-					_Debug_todo(
-						'Styles',
-						{
-							start: {line: 546, column: 19},
-							end: {line: 546, column: 29}
-						}))
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink)
 				]),
 			$elm$core$List$isEmpty(comments) ? _List_fromArray(
 				[rvw, newCommentBox]) : _List_fromArray(
@@ -18143,6 +18132,17 @@ var $author$project$Styles$buttonIcon = F2(
 	});
 var $author$project$Styles$paddingMixedMedium = A2($mdgriffith$elm_ui$Element$paddingXY, 16, 8);
 var $mdgriffith$elm_ui$Element$spaceEvenly = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$spacing, $mdgriffith$elm_ui$Internal$Style$classes.spaceEvenly);
+var $author$project$Styles$textAlt = function (str) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16),
+				$mdgriffith$elm_ui$Element$Font$color($author$project$Styles$white),
+				$mdgriffith$elm_ui$Element$Font$bold
+			]),
+		$mdgriffith$elm_ui$Element$text(str));
+};
 var $author$project$Widgets$Navbar$view = F2(
 	function (session, model) {
 		var signup = A2(
@@ -18194,10 +18194,21 @@ var $author$project$Widgets$Navbar$view = F2(
 					onPress: $elm$core$Maybe$Just($author$project$Widgets$Navbar$OnUserClicked)
 				});
 		};
-		var notifs = A2(
+		var notifs = A2($elm$core$Maybe$withDefault, false, session.unreadNotifications) ? A2(
 			$author$project$Styles$buttonIcon,
-			A2($elm$core$Maybe$withDefault, false, session.unreadNotifications) ? 'fas fa-bell' : 'fas fa-bell',
-			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnNotificationsClicked));
+			'fas fa-bell',
+			$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnNotificationsClicked)) : A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[$author$project$Styles$spacingMedium]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Styles$buttonIcon,
+					'fas fa-bell',
+					$elm$core$Maybe$Just($author$project$Widgets$Navbar$OnNotificationsClicked)),
+					$author$project$Styles$textAlt('(new)')
+				]));
 		var logout = A2(
 			$author$project$Styles$buttonAlt,
 			'Log out',
@@ -18220,7 +18231,8 @@ var $author$project$Widgets$Navbar$view = F2(
 					$mdgriffith$elm_ui$Element$spaceEvenly,
 					$mdgriffith$elm_ui$Element$Background$color($author$project$Styles$red),
 					$author$project$Styles$paddingMixedMedium,
-					$author$project$Styles$spacingMedium
+					$author$project$Styles$spacingMedium,
+					$author$project$Styles$lightShadow
 				]),
 			function () {
 				var _v0 = A2(
