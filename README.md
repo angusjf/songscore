@@ -1,3 +1,3 @@
 # SongScore
 
-Elixir backend for songscore-frontend, hosted [here](songscore.herokuapp.com)
+Elixir backend for songscore-frontend, hosted [here](http://songscore.herokuapp.com)
