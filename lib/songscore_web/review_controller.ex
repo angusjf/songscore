@@ -5,7 +5,7 @@ defmodule SongscoreWeb.ReviewController do
 
   def feed(conn) do
     reviews =
-      Repo.all(from(r in Review, order_by: [desc: :inserted_at]))
+      Repo.all(from(r in Review, order_by: [desc: :inserted_at], limit: 10))
       |> Repo.preload([:user, :subject, :comments, :likes, :dislikes])
       |> Repo.preload(comments: [:user])
 
