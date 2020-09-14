@@ -30,11 +30,6 @@ defmodule SongscoreWeb.Router do
 
   plug(:dispatch)
 
-  get "/" do
-    conn
-    |> send_file(200, "priv/static/index.html")
-  end
-
   get("/api/feeds/:username", do: ReviewController.feed(conn))
 
   post("/api/reviews", do: ReviewController.create(conn))
@@ -61,6 +56,7 @@ defmodule SongscoreWeb.Router do
 
   post("/api/auth", do: AuthController.create(conn))
 
+  get(_, do: send_file(conn, 200, "priv/static/index.html"))
   match(_, do: send_resp(conn, 404, "route not found!"))
 
   def add_auth(conn, _) do
