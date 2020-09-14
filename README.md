@@ -1,8 +1,3 @@
-# songscore
-golang backend api for songscore-frontend
+# SongScore
 
-# instructions
-- set the `DATABASE_URL` variable to a postgres database
-- `go build`
-- `./songscore`
-- then visit `localhost:8081`
+Elixir backend for songscore-frontend, hosted [here](songscore.herokuapp.com)
