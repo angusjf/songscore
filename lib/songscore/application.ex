@@ -6,7 +6,7 @@ defmodule Songscore.Application do
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: SongscoreWeb.Router,
-        options: [port: 4000]
+        options: [port: System.fetch_env!("PORT")]
       ),
       Songscore.Repo,
       SongscoreWeb.SpotifyToken
