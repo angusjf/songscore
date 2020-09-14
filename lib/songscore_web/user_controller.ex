@@ -3,6 +3,7 @@ defmodule SongscoreWeb.UserController do
   import Ecto.Query, only: [from: 2]
   alias Songscore.Repo
   alias Songscore.User
+  alias Songscore.Review
 
   def create(conn) do
     data = conn.params
@@ -54,13 +55,18 @@ defmodule SongscoreWeb.UserController do
   def reviews(conn) do
     %{"username" => username} = conn.params
 
-    user =
-      Repo.one!(from(u in User, where: u.username == ^username))
-      |> Repo.preload(:reviews)
-
     reviews =
-      user.reviews
-      |> Enum.map(&Repo.preload(&1, [:user, :subject, :comments, :likes, :dislikes]))
+      Repo.all(
+        from(r in Review,
+          join: u in User,
+          on: u.id == r.user_id,
+          where: u.username == ^username,
+          limit: 10,
+          order_by: [desc: :inserted_at]
+        )
+      )
+      |> Repo.preload([:user, :subject, :comments, :likes, :dislikes])
+      |> Repo.preload(comments: [:user])
 
     conn
     |> put_resp_content_type("application/json")
