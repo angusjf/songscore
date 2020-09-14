@@ -3,7 +3,7 @@ defmodule Songscore.Application do
 
   def start(_type, _args) do
     {port, ""} = Integer.parse(System.fetch_env!("PORT"))
-    
+
     children = [
       Plug.Cowboy.child_spec(
         scheme: :http,

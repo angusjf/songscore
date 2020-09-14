@@ -16,7 +16,7 @@ defmodule SongscoreWeb.Router do
     at: "/",
     from: :songscore,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(main.js assets favicon.ico)
   )
 
   plug(:add_auth)
@@ -29,6 +29,11 @@ defmodule SongscoreWeb.Router do
   )
 
   plug(:dispatch)
+
+  get "/" do
+    conn
+    |> send_file(200, "priv/static/index.html")
+  end
 
   get("/api/feeds/:username", do: ReviewController.feed(conn))
 
