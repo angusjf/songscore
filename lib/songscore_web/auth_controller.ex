@@ -1,13 +1,12 @@
 defmodule SongscoreWeb.AuthController do
   import Plug.Conn
-  import Ecto.Query, only: [from: 2]
   alias Songscore.Repo
   alias Songscore.User
 
   def create(conn) do
     username = conn.params["username"]
     password = conn.params["password"]
-    user = Repo.one!(from(u in User, where: u.username == ^username))
+    user = Repo.get_by(User, username: username)
 
     if Bcrypt.verify_pass(password, user.password_hash) do
       claims = %{

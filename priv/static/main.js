@@ -8707,7 +8707,7 @@ var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				A2($elm$time$Time$every, 1000, $author$project$Main$NewTime)
+				A2($elm$time$Time$every, 3500, $author$project$Main$NewTime)
 			]));
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
@@ -18577,6 +18577,7 @@ var $author$project$Styles$likesBox = function (usernames) {
 				}())
 			]));
 };
+var $elm$core$Debug$log = _Debug_log;
 var $ryannhg$date_format$DateFormat$Relative$defaultInSomeDays = function (days) {
 	return (days < 2) ? 'tomorrow' : ('in ' + ($elm$core$String$fromInt(days) + ' days'));
 };
@@ -18892,8 +18893,9 @@ var $author$project$Styles$viewReview = F9(
 			},
 			review.likes);
 		var kind = function () {
-			if (maybeUser.$ === 'Just') {
-				var user = maybeUser.a;
+			var _v2 = A2($elm$core$Debug$log, 'maybeUser: ', maybeUser);
+			if (_v2.$ === 'Just') {
+				var user = _v2.a;
 				return _Utils_eq(user.id, review.user.id) ? $author$project$Styles$Mine : $author$project$Styles$Yours;
 			} else {
 				return $author$project$Styles$Guest;
@@ -18905,6 +18907,32 @@ var $author$project$Styles$viewReview = F9(
 				return u.username;
 			},
 			review.dislikes);
+		var comments = A2(
+			$elm$core$List$map,
+			function (c) {
+				return _Utils_Tuple2(c.user, c.text);
+			},
+			review.comments);
+		var actions = function () {
+			switch (kind.$) {
+				case 'Mine':
+					return _List_fromArray(
+						[
+							$author$project$Styles$deleteButton(
+							$elm$core$Maybe$Just(onDelete))
+						]);
+				case 'Yours':
+					return _List_fromArray(
+						[
+							$author$project$Styles$likeButton(
+							$elm$core$Maybe$Just(onLike)),
+							$author$project$Styles$dislikeButton(
+							$elm$core$Maybe$Just(onDislike))
+						]);
+				default:
+					return _List_Nil;
+			}
+		}();
 		var rvw = A2(
 			$mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
@@ -18938,11 +18966,11 @@ var $author$project$Styles$viewReview = F9(
 									$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
 								]),
 							function () {
-								var _v1 = _Utils_Tuple2(
+								var _v0 = _Utils_Tuple2(
 									$elm$core$List$isEmpty(review.likes),
 									$elm$core$List$isEmpty(review.dislikes));
-								if (_v1.a) {
-									if (_v1.b) {
+								if (_v0.a) {
+									if (_v0.b) {
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
@@ -18957,7 +18985,7 @@ var $author$project$Styles$viewReview = F9(
 											]);
 									}
 								} else {
-									if (_v1.b) {
+									if (_v0.b) {
 										return _List_fromArray(
 											[
 												$author$project$Styles$nStars(review.stars),
@@ -18984,35 +19012,9 @@ var $author$project$Styles$viewReview = F9(
 									$mdgriffith$elm_ui$Element$height(
 									$mdgriffith$elm_ui$Element$px(40))
 								]),
-							_List_Nil)
+							actions)
 						]))
 				]));
-		var comments = A2(
-			$elm$core$List$map,
-			function (c) {
-				return _Utils_Tuple2(c.user, c.text);
-			},
-			review.comments);
-		var actions = function () {
-			switch (kind.$) {
-				case 'Mine':
-					return _List_fromArray(
-						[
-							$author$project$Styles$deleteButton(
-							$elm$core$Maybe$Just(onDelete))
-						]);
-				case 'Yours':
-					return _List_fromArray(
-						[
-							$author$project$Styles$likeButton(
-							$elm$core$Maybe$Just(onLike)),
-							$author$project$Styles$dislikeButton(
-							$elm$core$Maybe$Just(onDislike))
-						]);
-				default:
-					return _List_Nil;
-			}
-		}();
 		return A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(

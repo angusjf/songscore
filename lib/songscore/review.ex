@@ -20,8 +20,7 @@ defmodule Songscore.Review do
   def changeset(review, attrs) do
     review
     |> cast(attrs, [:text, :stars])
-    |> validate_required([:text, :stars])
-    |> cast_assoc(:user)
+    |> validate_required([:stars])
     |> assoc_constraint(:user)
     |> cast_assoc(:subject)
     |> assoc_constraint(:subject)

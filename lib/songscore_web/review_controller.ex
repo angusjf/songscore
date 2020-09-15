@@ -1,11 +1,11 @@
 defmodule SongscoreWeb.ReviewController do
   import Plug.Conn
   import Ecto.Query, only: [from: 2]
-  alias Songscore.{Repo, Review, Notification, Comment}
+  alias Songscore.{Repo, Review, Notification, Comment, User}
 
   def feed(conn) do
     reviews =
-      Repo.all(from(r in Review, order_by: [desc: :inserted_at], limit: 10))
+      Repo.all(from(r in Review, order_by: [desc: :inserted_at], limit: 6))
       |> Repo.preload([:user, :subject, :comments, :likes, :dislikes])
       |> Repo.preload(comments: [:user])
 
@@ -15,7 +15,7 @@ defmodule SongscoreWeb.ReviewController do
   end
 
   def show(conn) do
-    %{"id" => id} = conn.params
+    %{"review_id" => id} = conn.params
     {id, ""} = Integer.parse(id)
     review = Repo.get!(Review, id)
 
@@ -28,10 +28,12 @@ defmodule SongscoreWeb.ReviewController do
     data = conn.params
 
     new_review =
-      %Review{}
-      |> Repo.preload([:user, :subject, :comments, :likes, :dislikes])
+      Repo.get!(User, data["user"]["id"])
+      |> Ecto.build_assoc(:reviews)
+      |> Repo.preload([:subject, :user, :comments, :likes, :dislikes])
       |> Review.changeset(data)
-      |> Repo.insert!()
+      |> IO.inspect
+      |> Repo.insert!
 
     conn
     |> put_resp_content_type("application/json")
@@ -39,9 +41,13 @@ defmodule SongscoreWeb.ReviewController do
   end
 
   def delete(conn) do
-    %{"id" => id} = conn.params
+    %{"review_id" => id} = conn.params
     {id_int, ""} = Integer.parse(id)
-    old_review = Repo.delete!(%Review{id: id_int})
+
+    old_review =
+      Repo.get(Review, id_int)
+      |> Repo.preload([:subject, :user, :comments, :likes, :dislikes])
+      |> Repo.delete!
 
     conn
     |> put_resp_content_type("application/json")
@@ -93,6 +99,11 @@ defmodule SongscoreWeb.ReviewController do
       user_id: data["user"]["id"],
       review_id: review_id
     })
+
+    Repo.update!(review)
+      # |> Repo.preload(:tags)
+      # |> Ecto.Changeset.cast(params, [:title]) # No need to allow :tags as we put them directly
+      # |> Ecto.Changeset.put_assoc(:likes, tags) # Explicitly set the tags
 
     conn
     |> put_resp_content_type("application/json")

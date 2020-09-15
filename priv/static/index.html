@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
     <link rel="manifest" href="/assets/site.webmanifest">
+    <script src="https://kit.fontawesome.com/070a8dc638.js" crossorigin="anonymous"></script>
 
     <script src="/main.js"></script>
   </head>
@@ -24,29 +25,17 @@
         flags = []
         flags[0] = null
       }
+
       flags[1] = Date.now()
       var app = Elm.Main.init({flags: flags})
 
-      app.ports[storageKey].subscribe( val => {
-
+      app.ports[storageKey].subscribe(val => {
         if (val === null) {
           localStorage.removeItem(storageKey)
         } else {
           localStorage.setItem(storageKey, JSON.stringify(val))
         }
-
-        // Report that the new session was stored successfully.
-        // setTimeout(() => { app.ports.onStoreChange.send(val) }, 0) TODO?
       })
-
-      // Whenever localStorage changes in another tab, report it if necessary.
-      /* TODO?
-      window.addEventListener("storage", event => {
-        if (event.storageArea === localStorage && event.key === storageKey) {
-          app.ports.onStoreChange.send(event.newValue)
-        }
-      }, false)
-      */
     </script>
   </body>
 </html>

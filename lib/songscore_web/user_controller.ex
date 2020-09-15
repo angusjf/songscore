@@ -45,7 +45,7 @@ defmodule SongscoreWeb.UserController do
 
   def show(conn) do
     %{"username" => username} = conn.params
-    user = Repo.one!(from(u in User, where: u.username == ^username))
+    user = Repo.get_by(User, username: username)
 
     conn
     |> put_resp_content_type("application/json")
@@ -75,7 +75,7 @@ defmodule SongscoreWeb.UserController do
 
   def available(conn) do
     %{"username" => username} = conn.params
-    users = Repo.all(from(u in User, where: u.username == ^username))
+    users = Repo.all(from u in User, where: u.username == ^username)
 
     conn
     |> put_resp_content_type("application/json")
@@ -85,7 +85,7 @@ defmodule SongscoreWeb.UserController do
   def followers(conn) do
     # TODO
     %{"username" => username} = conn.params
-    _user = Repo.one!(from(u in User, where: u.username == ^username))
+    _user = Repo.get_by(User, username: username)
     followers = []
 
     conn
@@ -96,7 +96,7 @@ defmodule SongscoreWeb.UserController do
   def following(conn) do
     # TODO
     %{"username" => username} = conn.params
-    _user = Repo.one!(from(u in User, where: u.username == ^username))
+    _user = Repo.get_by(User, username: username)
     following = []
 
     conn
@@ -107,7 +107,7 @@ defmodule SongscoreWeb.UserController do
   def follow(conn) do
     # TODO
     %{"username" => username} = conn.params
-    _user = Repo.one!(from(u in User, where: u.username == ^username))
+    _user = Repo.get_by(User, username: username)
 
     conn
     |> resp(200, "unimplemented!")
